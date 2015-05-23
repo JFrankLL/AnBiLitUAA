@@ -73,10 +73,10 @@ public class Escena implements Screen {
 		Gdx.gl.glClearColor((245/255f), (255/255f), (255/255f), 1); //RGB
 		boolean bul =true;
 		
-		if(true)
+		/*if(true)
         	world.step(0, 6, 2);
 		else
-			world.step(Gdx.graphics.getDeltaTime()*2, 6, 2);
+			world.step(Gdx.graphics.getDeltaTime()*2, 6, 2);*/
 		
 		//MOVER 
         //---------------------------------------------------------------------------------------------------

@@ -25,7 +25,9 @@ public class Escena implements Screen {
 	TextureRegion back, sling, sling2;
 	World world;
 	AnBiLit game;
-	int chido =0;
+	/*int chido =0;
+        Que onda pakensio
+    */
 	Box2DDebugRenderer dr = new Box2DDebugRenderer();
 	
 	Sprite sFloor;

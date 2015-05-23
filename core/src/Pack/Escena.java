@@ -78,6 +78,13 @@ public class Escena implements Screen {
 		else
 			world.step(Gdx.graphics.getDeltaTime()*2, 6, 2);*/
 		
+		/**
+		 * 
+		 * Comentario chidongongo azul
+		 * 
+		 */
+		
+		
 		//MOVER 
         //---------------------------------------------------------------------------------------------------
         mover();

@@ -23,6 +23,8 @@ public class MenuPrincipal implements Screen {
 	Stage stage;
 	AnBiLit game;
 	
+	//UN GRAN PODER CONLLEVA UNA GRAN RESPONSHABILIDAD
+	
 	public MenuPrincipal(AnBiLit game){
 		this.game = game;
 	}

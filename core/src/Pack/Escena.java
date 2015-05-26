@@ -12,12 +12,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 
 public class Escena implements Screen {
 	OrthographicCamera cam;
@@ -27,6 +27,12 @@ public class Escena implements Screen {
 	AnBiLit game;
 
 	//HOLA MUNDO
+	
+	/** Cosa rara de Git
+	 * esta madre esta 
+	 * con ganas
+	 * :P
+	 * */
 	
 	Box2DDebugRenderer dr = new Box2DDebugRenderer();
 	

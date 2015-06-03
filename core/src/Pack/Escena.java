@@ -133,20 +133,20 @@ public class Escena implements Screen {
         		rbX = red.body.getPosition().x, rbY = red.body.getPosition().y, x = cam.position.x, 
         		dX = Gdx.input.getDeltaX();
         if(Gdx.input.isTouched()){
+        	System.out.println(dX);
         	if(red.sprite.getBoundingRectangle().contains(iX + 50, gH - iY)){
-        		System.out.println("pajaro");
         		//red.create(world);
         	}
-        	if(cam.position.x >= 50+Gdx.graphics.getWidth()/2 && cam.position.x <= 1024){
-    			cam.position.set(x-dX, cam.position.y, 0);
+        	if(cam.position.x+dX >= 50+Gdx.graphics.getWidth()/2 && cam.position.x+dX <= 1024){
+    			cam.position.set(x+dX, cam.position.y, 0);
     			cam.zoom = (dX > 0 && cam.zoom >= 1)? cam.zoom-0.000006f*x : (dX < 0 && cam.zoom <= 1.3)? cam.zoom+0.000006f*x : cam.zoom;
     			
-    			/*Fixiada de scroll para camera*/
+    			/*Fixiada de scroll para camera
     			if(cam.position.x > 1024)
     				cam.position.set(1024, cam.position.y, 0);
     			else if(cam.position.x < 50+Gdx.graphics.getWidth()/2)
     				cam.position.set(50+Gdx.graphics.getWidth()/2, cam.position.y, 0);
-    			/*los 'else if' si sirven!!*/
+    			los 'else if' si sirven!!*/
         	}
         }
         //else red.sprite.setPosition(red.body.getPosition().x - red.sprite.getWidth()/2,red.body.getPosition().y - red.sprite.getWidth()/2);

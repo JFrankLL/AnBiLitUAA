@@ -25,14 +25,6 @@ public class Escena implements Screen {
 	TextureRegion back, sling, sling2;
 	World world;
 	AnBiLit game;
-
-	//HOLA MUNDO
-	
-	/** Cosa rara de Git
-	 * esta madre esta 
-	 * con ganas
-	 * :P
-	 * */
 	
 	Box2DDebugRenderer dr = new Box2DDebugRenderer();
 	
@@ -41,7 +33,6 @@ public class Escena implements Screen {
 	
 	public Escena(AnBiLit game){
 		this.game = game;
-		
 	}
 
 	@Override
@@ -74,24 +65,11 @@ public class Escena implements Screen {
 
 	@Override
 	public void render(float delta) {
-		
+		world.step(1/60f, 6, 2);
 		//ACTUALIZAR
 		cam.update();
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glClearColor((245/255f), (255/255f), (255/255f), 1); //RGB
-		boolean bul =true;
-		
-		/*if(true)
-        	world.step(0, 6, 2);
-		else
-			world.step(Gdx.graphics.getDeltaTime()*2, 6, 2);*/
-		
-		/**
-		 * 
-		 * Comentario chidongongo azul
-		 * 
-		 */
-		
 		
 		//MOVER 
         //---------------------------------------------------------------------------------------------------
@@ -155,15 +133,23 @@ public class Escena implements Screen {
         		rbX = red.body.getPosition().x, rbY = red.body.getPosition().y, x = cam.position.x, 
         		dX = Gdx.input.getDeltaX();
         if(Gdx.input.isTouched()){
-        	if(red.sprite.getBoundingRectangle().contains(iX + 50, gH - iY))
-        		red.create(world);
-        	if(cam.position.x >= 50+Gdx.graphics.getWidth()/2 && cam.position.x <= 1024)
+        	if(red.sprite.getBoundingRectangle().contains(iX + 50, gH - iY)){
+        		System.out.println("pajaro");
+        		//red.create(world);
+        	}
+        	if(cam.position.x >= 50+Gdx.graphics.getWidth()/2 && cam.position.x <= 1024){
     			cam.position.set(x-dX, cam.position.y, 0);
-        	cam.zoom = (dX > 0 && cam.zoom >= 1)? cam.zoom-0.000006f*x : (dX < 0 && cam.zoom <= 1.3)? cam.zoom+0.000006f*x : cam.zoom;
+    			cam.zoom = (dX > 0 && cam.zoom >= 1)? cam.zoom-0.000006f*x : (dX < 0 && cam.zoom <= 1.3)? cam.zoom+0.000006f*x : cam.zoom;
+    			
+    			/*Fixiada de scroll para camera*/
+    			if(cam.position.x > 1024)
+    				cam.position.set(1024, cam.position.y, 0);
+    			else if(cam.position.x < 50+Gdx.graphics.getWidth()/2)
+    				cam.position.set(50+Gdx.graphics.getWidth()/2, cam.position.y, 0);
+    			/*los 'else if' si sirven!!*/
+        	}
         }
-        else
-        	red.sprite.setPosition(red.body.getPosition().x - red.sprite.getWidth()/2,
-        			red.body.getPosition().y - red.sprite.getWidth()/2);
+        //else red.sprite.setPosition(red.body.getPosition().x - red.sprite.getWidth()/2,red.body.getPosition().y - red.sprite.getWidth()/2);
 	}
 	/*
 	public void lanzar(int x1, int y1, int x2, int y2){
@@ -226,6 +212,7 @@ class Pajaro{
 	}
 	
 	public void render(SpriteBatch sb){
+		sprite.setPosition(body.getPosition().x - sprite.getWidth()/2, body.getPosition().y - sprite.getWidth()/2);
 		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
 		//sb.begin();
 			sprite.draw(sb);

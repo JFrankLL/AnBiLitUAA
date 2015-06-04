@@ -100,7 +100,7 @@ public class Escena implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		cam.setToOrtho(false, width, height);
-		cam.position.set(50 + Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, 0);
+		//cam.position.set(50 + Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, 0);
 	}
 
 	@Override
@@ -131,25 +131,34 @@ public class Escena implements Screen {
         float iX = Gdx.input.getX(), iY = Gdx.input.getY(), 
         		gH = Gdx.graphics.getHeight(), 
         		rbX = red.body.getPosition().x, rbY = red.body.getPosition().y, x = cam.position.x, 
-        		dX = Gdx.input.getDeltaX();
+        		dX = Gdx.input.getDeltaX()*10, scrollDx = 0.000006f*x;
         if(Gdx.input.isTouched()){
-        	System.out.println(dX);
         	if(red.sprite.getBoundingRectangle().contains(iX + 50, gH - iY)){
+        		System.out.println("Red Tocado");
         		//red.create(world);
+        		return;
         	}
-        	if(cam.position.x+dX >= 50+Gdx.graphics.getWidth()/2 && cam.position.x+dX <= 1024){
-    			cam.position.set(x+dX, cam.position.y, 0);
-    			cam.zoom = (dX > 0 && cam.zoom >= 1)? cam.zoom-0.000006f*x : (dX < 0 && cam.zoom <= 1.3)? cam.zoom+0.000006f*x : cam.zoom;
+        	//---Movimiento en 'x'
+        	if(cam.position.x+dX >= Gdx.graphics.getWidth()/2 && cam.position.x+dX <= 1024+Gdx.graphics.getWidth()/2){
+        		cam.position.set(x+dX, cam.position.y, 0);
+        		//---Zoom de cam
+        		if(!(dX==0)) dX=(dX>0)? 1:-1;
+    			cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx : 0;
     			
-    			/*Fixiada de scroll para camera
-    			if(cam.position.x > 1024)
-    				cam.position.set(1024, cam.position.y, 0);
-    			else if(cam.position.x < 50+Gdx.graphics.getWidth()/2)
-    				cam.position.set(50+Gdx.graphics.getWidth()/2, cam.position.y, 0);
-    			los 'else if' si sirven!!*/
         	}
         }
-        //else red.sprite.setPosition(red.body.getPosition().x - red.sprite.getWidth()/2,red.body.getPosition().y - red.sprite.getWidth()/2);
+        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
+        	cam.position.set(x+10, cam.position.y, 0);
+        	if(!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
+        			&& !Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT))
+        		cam.zoom += -scrollDx;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
+        	cam.position.set(x-10, cam.position.y, 0);
+        	if(!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
+        			&& !Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT))
+             	cam.zoom += scrollDx;
+        }
 	}
 	/*
 	public void lanzar(int x1, int y1, int x2, int y2){

@@ -139,7 +139,7 @@ public class Escena implements Screen {
         		return;
         	}
         	//---Movimiento en 'x'
-        	if(cam.position.x+dX >= Gdx.graphics.getWidth()/2 && cam.position.x+dX <= 1024+Gdx.graphics.getWidth()/2){
+        	if(cam.position.x+dX >= Gdx.graphics.getWidth()/2 && cam.position.x+dX <= 1024){
         		cam.position.set(x+dX, cam.position.y, 0);
         		//---Zoom de cam
         		if(!(dX==0)) dX=(dX>0)? 1:-1;

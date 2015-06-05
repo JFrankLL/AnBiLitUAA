@@ -31,6 +31,8 @@ public class Escena implements Screen {
 	Sprite sFloor;
 	Body bFloor;
 	
+	boolean pajaroTouch = false;
+	
 	public Escena(AnBiLit game){
 		this.game = game;
 	}
@@ -50,7 +52,7 @@ public class Escena implements Screen {
 		//CUERPO ESTATICO (Ground)
         BodyDef groundBodyDef = new BodyDef();
         groundBodyDef.type = BodyDef.BodyType.StaticBody;
-        groundBodyDef.position.set(sFloor.getX() + sFloor.getWidth()/2, sFloor.getY() + sFloor.getHeight()/2);
+        groundBodyDef.position.set(sFloor.getX() + sFloor.getWidth()/2, 13/*sFloor.getY() + sFloor.getHeight()/2*/);
         bFloor = world.createBody(groundBodyDef);
 
 	    PolygonShape shape = new PolygonShape();
@@ -79,7 +81,7 @@ public class Escena implements Screen {
 		game.batch.setProjectionMatrix(cam.combined);
 		game.batch.begin();
 			game.batch.draw(back, 0, 0, back.getRegionWidth(), back.getRegionHeight());
-			sFloor.setPosition(0,0);
+			sFloor.setPosition(bFloor.getPosition().x-sFloor.getWidth()/2,bFloor.getPosition().y-sFloor.getHeight()/2);
 			sFloor.draw(game.batch);
 			game.batch.draw(sling, 150, 75, sling.getRegionWidth(), sling.getRegionHeight());
 			red.render(game.batch);
@@ -131,53 +133,34 @@ public class Escena implements Screen {
         float iX = Gdx.input.getX(), iY = Gdx.input.getY(), 
         		gH = Gdx.graphics.getHeight(), 
         		rbX = red.body.getPosition().x, rbY = red.body.getPosition().y, x = cam.position.x, 
-        		dX = Gdx.input.getDeltaX()*10, scrollDx = 0.000006f*x;
+        		dX = Gdx.input.getDeltaX(), scrollDx = 0.000006f*x;
+        
+        //Movimiento libre con mouse
+        if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)){
+        	if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
+        		cam.position.set(cam.position.x-Gdx.input.getDeltaX(), cam.position.y+Gdx.input.getDeltaY(), 0);
+        		return;
+        	}
+        }
+        //movimiento Gameplay
         if(Gdx.input.isTouched()){
-        	if(red.sprite.getBoundingRectangle().contains(iX + 50, gH - iY)){
+        	if(red.sprite.getBoundingRectangle().contains(iX, gH - iY)){
         		System.out.println("Red Tocado");
-        		//red.create(world);
         		return;
         	}
         	//---Movimiento en 'x'
-        	if(cam.position.x+dX >= Gdx.graphics.getWidth()/2 && cam.position.x+dX <= 1024){
-        		cam.position.set(x+dX, cam.position.y, 0);
-        		//---Zoom de cam
-        		if(!(dX==0)) dX=(dX>0)? 1:-1;
-    			cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx : 0;
-    			
-        	}
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
-        	cam.position.set(x+10, cam.position.y, 0);
-        	if(!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
-        			&& !Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT))
-        		cam.zoom += -scrollDx;
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-        	cam.position.set(x-10, cam.position.y, 0);
-        	if(!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
-        			&& !Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT))
-             	cam.zoom += scrollDx;
+	    	if(cam.position.x+dX >= Gdx.graphics.getWidth()/2 && cam.position.x+dX <= 1024){
+	    		if(iX > 150+sling.getTexture().getWidth()){	
+	    			cam.position.x = x+dX;
+		    		//---Zoom de cam
+		    		if(dX!=0) dX=(dX>0)? 1:-1;
+					cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx : 0;
+	    		}
+	    	}
         }
 	}
-	/*
-	public void lanzar(int x1, int y1, int x2, int y2){
-		float t=1/Gdx.graphics.getDeltaTime();
-		float hip = (float) Math.sqrt(((x2-x1)*(x2-x1)) + ((y2-y1)*(y2-y1)));
-		float Vi = hip/t;
-		float cos = Math.abs(x1-x2)/hip;
-		float sen = Math.abs(y1-y2)/hip;
-		float posX = Vi*cos*t + x1;
-		float posY = -(world.getGravity().y*t*t)/2 + Vi*sen*t + y1;
-		float velX = Vi*cos;
-		float velY = -(world.getGravity().y*t) + Vi*((Math.abs(x1-x2))/(hip));
-	
-		red.body.setLinearVelocity(velX, velY);
-		red.sprite.setPosition(posX, posY);
-	*/
 
 }
-
 
 class Pajaro{
 	Sprite sprite;

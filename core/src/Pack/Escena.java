@@ -45,7 +45,7 @@ public class Escena implements Screen {
 		sling = new TextureRegion(new Texture("slingshot.png"));
 		sling2 = new TextureRegion(new Texture("slingshot2.png"));
 		pajaro = new Pajaro(world, "red.png");
-		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
 		
 		//CUERPO ESTATICO (Ground)
         BodyDef groundBodyDef = new BodyDef();
@@ -98,10 +98,8 @@ public class Escena implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		cam.setToOrtho(false, width, height);
+		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
 		cam.setToOrtho(false, width/PPM, height/PPM);
-		
-		//cam.position.set(50 + Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, 0);
 	}
 
 	@Override
@@ -133,7 +131,7 @@ public class Escena implements Screen {
         		iY = Gdx.input.getY()/PPM, 
         		gH = Gdx.graphics.getHeight()/PPM, 
         		rbX = pajaro.body.getPosition().x/PPM, rbY = pajaro.body.getPosition().y/PPM, x = cam.position.x, 
-        		dX = Gdx.input.getDeltaX(), scrollDx = 0.000006f*x;
+        		dX = Gdx.input.getDeltaX(), scrollDx = 0.000003f*x;
         
         //Movimiento libre con mouse
         if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)){
@@ -152,15 +150,15 @@ public class Escena implements Screen {
         		return;
         	}
         	//---Movimiento en 'x' de la camara
-        	if(dX!=0)//limitador/estandarizador
-        		dX=(dX>0)? -10 : 10;
-        	if(x+dX > 0 && (x+dX) < (2048-Gdx.graphics.getWidth()/2)/PPM) {
+        	if(dX!=0) dX=(dX>0)? -10 : 10;
+        	if(x+dX/PPM > (Gdx.graphics.getWidth()/2)/PPM && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2)/PPM) {
 	    		if(iX > (150+sling.getTexture().getWidth())/PPM){//despues de la resortera
 	    			cam.position.x += dX/PPM;
 	    			//---Zoom de camara
-					cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.5)? -scrollDx : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx : 0;
-	    		}
+					cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx*PPM : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx*PPM : 0;
+				}
         	}
+        
         }
 	}
 

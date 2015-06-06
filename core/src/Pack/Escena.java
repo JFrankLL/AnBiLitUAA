@@ -1,5 +1,7 @@
 package Pack;
 
+import static utiles.Constantes.PPM;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -11,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -21,17 +24,14 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Escena implements Screen {
 	OrthographicCamera cam;
-	Pajaro red;
+	Pajaro pajaro;
 	TextureRegion back, sling, sling2;
 	World world;
 	AnBiLit game;
 	
 	Box2DDebugRenderer dr = new Box2DDebugRenderer();
-	
-	Sprite sFloor;
+
 	Body bFloor;
-	
-	boolean pajaroTouch = false;
 	
 	public Escena(AnBiLit game){
 		this.game = game;
@@ -44,22 +44,21 @@ public class Escena implements Screen {
 		back = new TextureRegion(new Texture("background.png"));
 		sling = new TextureRegion(new Texture("slingshot.png"));
 		sling2 = new TextureRegion(new Texture("slingshot2.png"));
-		red = new Pajaro(world, "red.png");
-		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		
-		sFloor = new Sprite(new Texture("ground.png"));
+		pajaro = new Pajaro(world, "red.png");
+		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
 		
 		//CUERPO ESTATICO (Ground)
         BodyDef groundBodyDef = new BodyDef();
         groundBodyDef.type = BodyDef.BodyType.StaticBody;
-        groundBodyDef.position.set(sFloor.getX() + sFloor.getWidth()/2, 13/*sFloor.getY() + sFloor.getHeight()/2*/);
+        groundBodyDef.position.set(1024/PPM, 32/PPM);
         bFloor = world.createBody(groundBodyDef);
-
-	    PolygonShape shape = new PolygonShape();
-	    shape.setAsBox(sFloor.getWidth()/2, sFloor.getHeight()/2);
+	    
+        PolygonShape shape = new PolygonShape();
+	    shape.setAsBox(1024/PPM, 32/PPM);
 		FixtureDef fixtureDef = new FixtureDef();
 	    fixtureDef.shape = shape;
 	    fixtureDef.density = 1f;
+	    
 	    bFloor.createFixture(fixtureDef);
 	    
         shape.dispose();
@@ -80,19 +79,17 @@ public class Escena implements Screen {
         //---------------------------------------------------------------------------------------------------
 		game.batch.setProjectionMatrix(cam.combined);
 		game.batch.begin();
-			game.batch.draw(back, 0, 0, back.getRegionWidth(), back.getRegionHeight());
-			sFloor.setPosition(bFloor.getPosition().x-sFloor.getWidth()/2,bFloor.getPosition().y-sFloor.getHeight()/2);
-			sFloor.draw(game.batch);
-			game.batch.draw(sling, 150, 75, sling.getRegionWidth(), sling.getRegionHeight());
-			red.render(game.batch);
-			game.batch.draw(sling2, 150, 75, sling.getRegionWidth(), sling.getRegionHeight());
+			game.batch.draw(back, 0, 0, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
+			game.batch.draw(sling, (back.getRegionWidth()*0.07f)/PPM, 64/PPM, sling.getRegionWidth()/PPM, sling.getRegionHeight()/PPM);
+			pajaro.render(game.batch);
+			game.batch.draw(sling2, (back.getRegionWidth()*0.07f)/PPM, 64/PPM, sling.getRegionWidth()/PPM, sling.getRegionHeight()/PPM);
 		game.batch.end();
 		
 			if(Gdx.input.isKeyJustPressed(Input.Keys.A))
 				game.setScreen(game.menu);
-			/*
-			if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
-				red.body.applyForceToCenter(new Vector2(1000000000, 1000000000), true);	*/
+			
+			if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+				pajaro.body.applyForceToCenter(new Vector2(100, 100), true);
 		
 		dr.setDrawBodies(true);
 		dr.setDrawVelocities(true);
@@ -102,6 +99,8 @@ public class Escena implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		cam.setToOrtho(false, width, height);
+		cam.setToOrtho(false, width/PPM, height/PPM);
+		
 		//cam.position.set(50 + Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, 0);
 	}
 
@@ -125,15 +124,16 @@ public class Escena implements Screen {
 	public void dispose() {
 		game.batch.dispose();
 		world.dispose();
-		red.dispose();
+		pajaro.dispose();
 	}
 	
 
 	public void mover(){
-        float iX = Gdx.input.getX(), iY = Gdx.input.getY(), 
-        		gH = Gdx.graphics.getHeight(), 
-        		rbX = red.body.getPosition().x, rbY = red.body.getPosition().y, x = cam.position.x, 
-        		dX = Gdx.input.getDeltaX(), scrollDx = 0.000006f*x;
+        float iX = cam.unproject(new Vector3(Gdx.input.getX()/PPM, Gdx.input.getY()/PPM, 0)).x,
+        		iY = Gdx.input.getY()/PPM, 
+        		gH = Gdx.graphics.getHeight()/PPM, 
+        		rbX = pajaro.body.getPosition().x/PPM, rbY = pajaro.body.getPosition().y/PPM, x = cam.position.x/PPM, 
+        		dX = Gdx.input.getDeltaX()/PPM, scrollDx = 0.000006f*x;
         
         //Movimiento libre con mouse
         if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)){
@@ -144,20 +144,23 @@ public class Escena implements Screen {
         }
         //movimiento Gameplay
         if(Gdx.input.isTouched()){
-        	if(red.sprite.getBoundingRectangle().contains(iX, gH - iY)){
+        	if(pajaro.sprite.getBoundingRectangle().contains(iX/PPM, (gH - iY)/PPM)){
         		System.out.println("Red Tocado");
         		return;
         	}
         	//---Movimiento en 'x'
-	    	if(cam.position.x+dX >= Gdx.graphics.getWidth()/2 && cam.position.x+dX <= 1024){
-	    		if(iX > 150+sling.getTexture().getWidth()){	
-	    			cam.position.x = x+dX;
+        	if(dX!=0)
+        		dX=(dX>0)? -10:10;
+	    	if(x+dX >= (Gdx.graphics.getWidth()/2)/PPM && x+dX <= 1024/PPM){
+	    		if(iX > (150+sling.getTexture().getWidth())/PPM){	
+	    			cam.position.x += dX;
 		    		//---Zoom de cam
-		    		if(dX!=0) dX=(dX>0)? 1:-1;
-					cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx : 0;
+					cam.zoom += (dX/10 > 0 && cam.zoom-scrollDx > 0.5)? -scrollDx/PPM : (dX/10 < 0 && cam.zoom+scrollDx <= 1 )? scrollDx/PPM : 0;
+					//cam.position.y += (dX/10 > 0 && cam.zoom-scrollDx > 0.5)? -scrollDx/PPM : (dX/10 < 0 && cam.zoom+scrollDx <= 1 )? scrollDx/PPM : 0;
 	    		}
 	    	}
         }
+        //cam.position.set(red.posision(), 0);
 	}
 
 }
@@ -171,7 +174,8 @@ class Pajaro{
 	Pajaro(World world, String texture){
 		textura = new Texture(texture);
 		sprite = new Sprite(textura);
-		sprite.setPosition(170, 210);
+		sprite.setPosition(170/PPM, 210/PPM);
+		sprite.setSize(sprite.getWidth()/PPM, sprite.getHeight()/PPM);
 		sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
 		
 		create(world);
@@ -209,5 +213,9 @@ class Pajaro{
 		//sb.begin();
 			sprite.draw(sb);
 		//sb.end();
+	}
+	
+	public Vector2 posision(){
+		return new Vector2(body.getPosition().x, body.getPosition().y);
 	}
 }

@@ -40,12 +40,12 @@ public class Escena implements Screen {
 	@Override
 	public void show() {
 		
-		world = new World(new Vector2(0, -9.8f), true);
+		world = new World(new Vector2(0, 0), true);
 		back = new TextureRegion(new Texture("background.png"));
 		sling = new TextureRegion(new Texture("slingshot.png"));
 		sling2 = new TextureRegion(new Texture("slingshot2.png"));
 		pajaro = new Pajaro(world, "red.png");
-		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
+		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
 		//CUERPO ESTATICO (Ground)
         BodyDef groundBodyDef = new BodyDef();
@@ -129,11 +129,11 @@ public class Escena implements Screen {
 	
 
 	public void mover(){
-        float iX = cam.unproject(new Vector3(Gdx.input.getX()/PPM, Gdx.input.getY()/PPM, 0)).x,
+        float iX = cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x,
         		iY = Gdx.input.getY()/PPM, 
         		gH = Gdx.graphics.getHeight()/PPM, 
-        		rbX = pajaro.body.getPosition().x/PPM, rbY = pajaro.body.getPosition().y/PPM, x = cam.position.x/PPM, 
-        		dX = Gdx.input.getDeltaX()/PPM, scrollDx = 0.000006f*x;
+        		rbX = pajaro.body.getPosition().x/PPM, rbY = pajaro.body.getPosition().y/PPM, x = cam.position.x, 
+        		dX = Gdx.input.getDeltaX(), scrollDx = 0.000006f*x;
         
         //Movimiento libre con mouse
         if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)){
@@ -142,25 +142,26 @@ public class Escena implements Screen {
         		return;
         	}
         }
-        //movimiento Gameplay
+        //Movimiento Gameplay
         if(Gdx.input.isTouched()){
-        	if(pajaro.sprite.getBoundingRectangle().contains(iX/PPM, (gH - iY)/PPM)){
-        		System.out.println("Red Tocado");
+        	if(pajaro.sprite.getBoundingRectangle().contains(iX, (gH - iY))){
+        		world.setGravity(new Vector2(0, -9.8f));
+        		pajaro.body.applyForceToCenter((float) (100*Math.pow((33-PPM), 3)), (float) (100*Math.pow((33-PPM), 3)), true);
+        		//TODO: perseguir pajaro con la camara y bloquear volver a tirar
+        		
         		return;
         	}
-        	//---Movimiento en 'x'
-        	if(dX!=0)
-        		dX=(dX>0)? -10:10;
-	    	if(x+dX >= (Gdx.graphics.getWidth()/2)/PPM && x+dX <= 1024/PPM){
-	    		if(iX > (150+sling.getTexture().getWidth())/PPM){	
-	    			cam.position.x += dX;
-		    		//---Zoom de cam
-					cam.zoom += (dX/10 > 0 && cam.zoom-scrollDx > 0.5)? -scrollDx/PPM : (dX/10 < 0 && cam.zoom+scrollDx <= 1 )? scrollDx/PPM : 0;
-					//cam.position.y += (dX/10 > 0 && cam.zoom-scrollDx > 0.5)? -scrollDx/PPM : (dX/10 < 0 && cam.zoom+scrollDx <= 1 )? scrollDx/PPM : 0;
+        	//---Movimiento en 'x' de la camara
+        	if(dX!=0)//limitador/estandarizador
+        		dX=(dX>0)? -10 : 10;
+        	if(x+dX > 0 && (x+dX) < (2048-Gdx.graphics.getWidth()/2)/PPM) {
+	    		if(iX > (150+sling.getTexture().getWidth())/PPM){//despues de la resortera
+	    			cam.position.x += dX/PPM;
+	    			//---Zoom de camara
+					cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.5)? -scrollDx : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx : 0;
 	    		}
-	    	}
+        	}
         }
-        //cam.position.set(red.posision(), 0);
 	}
 
 }
@@ -191,14 +192,14 @@ class Pajaro{
 	    body = world.createBody(bodyDef);
 	    
 	    CircleShape shape = new CircleShape();
-	    shape.setRadius(sprite.getHeight()/2);
+	    shape.setRadius((-1/4)+sprite.getHeight()/2);
 		FixtureDef fixtureDef = new FixtureDef();
 	    fixtureDef.density = 1f;
 	    fixtureDef.friction = 1f;
 	    fixtureDef.restitution = .5f;
 		fixtureDef.shape = shape;
 	    
-		body.setAngularDamping(5);
+		body.setAngularDamping(1);
 	    body.createFixture(fixtureDef);
 	    
         shape.dispose();

@@ -1,16 +1,19 @@
 package Pack;
 
 import static utiles.Constantes.PPM;
+import utiles.Constantes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.environment.AmbientCubemap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -21,6 +24,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class Escena implements Screen {
 	OrthographicCamera cam;
@@ -33,6 +37,9 @@ public class Escena implements Screen {
 
 	Body bFloor;
 	
+	boolean click=false;
+	private Vector2 vec2;
+	
 	public Escena(AnBiLit game){
 		this.game = game;
 	}
@@ -44,7 +51,7 @@ public class Escena implements Screen {
 		back = new TextureRegion(new Texture("background.png"));
 		sling = new TextureRegion(new Texture("slingshot.png"));
 		sling2 = new TextureRegion(new Texture("slingshot2.png"));
-		pajaro = new Pajaro(world, "red.png");
+		pajaro = new Pajaro(world);
 		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
 		
 		//CUERPO ESTATICO (Ground)
@@ -61,6 +68,9 @@ public class Escena implements Screen {
 	    
 	    bFloor.createFixture(fixtureDef);
 	    
+	    dr.setDrawBodies(true);
+		dr.setDrawVelocities(true);
+	    
         shape.dispose();
 	}
 
@@ -74,6 +84,7 @@ public class Escena implements Screen {
 		
 		//MOVER 
         //---------------------------------------------------------------------------------------------------
+		click = click();
         mover();
         //DIBUJAR
         //---------------------------------------------------------------------------------------------------
@@ -89,10 +100,8 @@ public class Escena implements Screen {
 				game.setScreen(game.menu);
 			
 			if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
-				pajaro.body.applyForceToCenter(new Vector2(100, 100), true);
+				pajaro.lanzar(100, 100);
 		
-		dr.setDrawBodies(true);
-		dr.setDrawVelocities(true);
 		dr.render(world, cam.combined);
 	}
 
@@ -125,12 +134,19 @@ public class Escena implements Screen {
 		pajaro.dispose();
 	}
 	
-
+	
+	public boolean click() {
+		if(!click)
+		vec2 = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
+		System.out.println(vec2.toString());
+		return Gdx.input.isTouched();
+	}
+	
 	public void mover(){
         float iX = cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x,
         		iY = Gdx.input.getY()/PPM, 
         		gH = Gdx.graphics.getHeight()/PPM, 
-        		rbX = pajaro.body.getPosition().x/PPM, rbY = pajaro.body.getPosition().y/PPM, x = cam.position.x, 
+        		rbX = pajaro.posision().x/PPM, rbY = pajaro.posision().y/PPM, x = cam.position.x, 
         		dX = Gdx.input.getDeltaX(), scrollDx = 0.000003f*x;
         
         //Movimiento libre con mouse
@@ -141,37 +157,44 @@ public class Escena implements Screen {
         	}
         }
         //Movimiento Gameplay
-        if(Gdx.input.isTouched()){
-        	if(pajaro.sprite.getBoundingRectangle().contains(iX, (gH - iY))){
-        		world.setGravity(new Vector2(0, -9.8f));
-        		pajaro.body.applyForceToCenter((float) (100*Math.pow((33-PPM), 3)), (float) (100*Math.pow((33-PPM), 3)), true);
+        if(click){//si click
+        	if(pajaro.getSprite().getBoundingRectangle().contains(iX, (gH - iY-pajaro.getSprite().getWidth()/2))){
+        		pajaro.tocado = true;
         		//TODO: perseguir pajaro con la camara y bloquear volver a tirar
-        		
-        		return;
         	}
         	//---Movimiento en 'x' de la camara
         	if(dX!=0) dX=(dX>0)? -10 : 10;
-        	if(x+dX/PPM > (Gdx.graphics.getWidth()/2)/PPM && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2)/PPM) {
+        	if(x+dX/PPM > (Gdx.graphics.getWidth()/2)/PPM && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2)/PPM && !pajaro.tocado) {
 	    		if(iX > (150+sling.getTexture().getWidth())/PPM){//despues de la resortera
 	    			cam.position.x += dX/PPM;
-	    			//---Zoom de camara
 					cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx*PPM : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx*PPM : 0;
 				}
         	}
         
         }
+        else {//no click
+        	if(!pajaro.tocado)
+        		return;
+    		pajaro.tocado = false;
+    		pajaro.lanzar(vec2.x, vec2.y);
+		}
+        pajaro.mover(iX, cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).y);
 	}
 
-}
 
 class Pajaro{
-	Sprite sprite;
-	Body body;
+	private Sprite sprite;
+	private Body body;
 	public BodyDef bodyDef;
-	Texture textura;
+	private Texture textura;
+	private World world;
 	
-	Pajaro(World world, String texture){
-		textura = new Texture(texture);
+	boolean tocado = false;
+	private boolean lanzado = false;
+	
+	Pajaro(World world){
+		this.world = world;
+		textura = new Texture(Constantes.Graficas.strTexRed);
 		sprite = new Sprite(textura);
 		sprite.setPosition(170/PPM, 210/PPM);
 		sprite.setSize(sprite.getWidth()/PPM, sprite.getHeight()/PPM);
@@ -179,7 +202,8 @@ class Pajaro{
 		
 		create(world);
 	}
-	public void create(World world) {
+	
+	private void create(World world) {
 		
 		if(body != null)
 			world.destroyBody(body);
@@ -212,9 +236,31 @@ class Pajaro{
 		//sb.begin();
 			sprite.draw(sb);
 		//sb.end();
+		//System.out.println(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x+","+cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);
+	}
+	
+	public void lanzar(float xi, float yi) {
+		if(lanzado)
+			return;
+		Vector2 vec2 = new Vector2((cam.unproject(new Vector3(Gdx.input.getX(), 0, 0))).x-xi,
+				(cam.unproject(new Vector3(0, Gdx.input.getY(), 0))).y-yi);
+		world.setGravity(new Vector2(0, -9.8f));
+		body.applyForceToCenter((float)(xi*PPM), (float)(vec2.y*PPM), true);
+		lanzado = true;
+	}
+	
+	public void mover(float x, float y) {
+		if(x < (214)/PPM)
+			if(tocado)
+			body.setTransform(new Vector2(x, y), body.getAngle());
 	}
 	
 	public Vector2 posision(){
 		return new Vector2(body.getPosition().x, body.getPosition().y);
 	}
+	
+	public Sprite getSprite() {
+		return sprite;
+	}
+}
 }

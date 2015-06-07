@@ -16,11 +16,13 @@ public class Constantes {
 		public static final String strTexBla = "black.png";//TODO:no Sirve
 		public static final String strTexPig = "pig.png";//TODO:no Sirve
 		
+		public static final String strNegroPxl = "negroPixel.png";
+		
 	}
 	
 	public static class Configuracion{
 		
-		public static boolean debug = true;//debugrenderer = circulos y cuadros de box2D
+		public static boolean debugRender = false;//debugrenderer = circulos y cuadros de box2D
 		
 	}
 	

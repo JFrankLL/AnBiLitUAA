@@ -1,8 +1,12 @@
 package Pack;
 
 import static utiles.Constantes.PPM;
+
+import java.awt.Color;
+
 import utiles.Constantes;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -10,6 +14,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -46,9 +52,10 @@ public class Escena implements Screen {
 		
 		world = new World(new Vector2(0, 0), true);
 		back = new TextureRegion(new Texture("background.png"));
-		sling = new Sling(world, "slingshot.png", "slingshot2.png");
 		pajaro = new Pajaro(world);
 		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
+		sling = new Sling(world, "slingshot.png", "slingshot2.png", cam);
+		sling.setPajaro(pajaro);
 		
 		//CUERPO ESTATICO (Ground)
         BodyDef groundBodyDef = new BodyDef();
@@ -90,15 +97,19 @@ public class Escena implements Screen {
 			game.batch.draw(sling.getTextura(), (back.getRegionWidth()*0.07f)/PPM, 64/PPM, sling.getTextura().getWidth()/PPM, sling.getTextura().getHeight()/PPM);
 			pajaro.render(game.batch);
 			game.batch.draw(sling.getTexturaAlt(), (back.getRegionWidth()*0.07f)/PPM, 64/PPM, sling.getTexturaAlt().getWidth()/PPM, sling.getTexturaAlt().getHeight()/PPM);
+			sling.render(game.batch);
 		game.batch.end();
 		
-			if(Gdx.input.isKeyJustPressed(Input.Keys.A))
-				game.setScreen(game.menu);
-			
-			if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
-				pajaro.lanzar(100, 100, sling);
 		
-		if(Constantes.Configuracion.debug)
+			if(Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+				game.setScreen(game.menu);
+				return;
+			}
+			
+			if(Gdx.input.isKeyJustPressed(Input.Keys.F4))
+					Constantes.Configuracion.debugRender=(Constantes.Configuracion.debugRender)?false:true;
+		
+		if(Constantes.Configuracion.debugRender)
 			dr.render(world, cam.combined);
 	}
 
@@ -134,7 +145,7 @@ public class Escena implements Screen {
 	
 	public boolean click() {
 		if(!click)
-		vec2 = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
+			vec2 = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
 		//System.out.println(vec2.toString());
 		return Gdx.input.isTouched();
 	}
@@ -155,7 +166,8 @@ public class Escena implements Screen {
         }
         //Movimiento Gameplay
         if(click){//si click
-        	if(pajaro.getSprite().getBoundingRectangle().contains(iX, (gH - iY-pajaro.getSprite().getWidth()/2))){
+        	System.out.println(gH-iY);
+        	if(pajaro.getSprite().getBoundingRectangle().contains(iX, (gH - iY))){
         		pajaro.tocado = true;
         		//TODO: perseguir pajaro con la camara y bloquear volver a tirar
         	}

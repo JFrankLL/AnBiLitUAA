@@ -81,6 +81,10 @@ public class Pajaro extends EntityAB{
 		System.out.println(((xib-body.getPosition().x)*PPM)+", "+((yib-body.getPosition().y)*PPM*4));*/
 	}
 	
+	public boolean isLanzado() {
+		return lanzado;
+	}
+	 
 	public void mover(float x, float y) {
 		if(x < (214)/PPM)
 			if(tocado)

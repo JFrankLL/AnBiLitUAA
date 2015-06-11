@@ -16,16 +16,19 @@ import com.badlogic.gdx.physics.box2d.World;
 import entidades.EntityAB;
 import entidades.Sling;
 
-public class Pajaro extends EntityAB{
+public class Pajaro extends EntityAB implements ComportamientoPajaro{
 	
-	Body body;
+	protected Body body;
 	private BodyDef bodyDef;
 	
 	public boolean tocado = false;
 	private boolean lanzado = false;
+	protected boolean comportamientoRealizado = false;
 	
-	public Pajaro(World world){
-		super(world, Constantes.Graficas.strTexRed);
+	float fuerzaLanzamiento = 10;
+	
+	public Pajaro(World world, String rutaTexture){
+		super(world, rutaTexture);
 		sprite.setPosition(170/PPM, 210/PPM);
 		
 		create(world);
@@ -33,8 +36,7 @@ public class Pajaro extends EntityAB{
 	
 	private void create(World world) {
 		
-		if(body != null)
-			world.destroyBody(body);
+		//if(body != null) world.destroyBody(body);
 		
 		bodyDef = new BodyDef();
 	    bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -51,6 +53,7 @@ public class Pajaro extends EntityAB{
 	    
 		body.setAngularDamping(1);//para que gire en el suelo
 	    body.createFixture(fixtureDef);
+	    body.setGravityScale(0);//para que no se caiga
 	    
         shape.dispose();
 	}
@@ -66,19 +69,30 @@ public class Pajaro extends EntityAB{
 	}
 	/**
 	 * 
-	 * @param xib, yib: posicion inicial al empezar a estirar la liga (al tomar al pájaro)
+	 * @param xib, yib: posición inicial al empezar a estirar la liga (al tomar al pájaro)
 	 * @param sling
 	 */
 	public void lanzar(float xib, float yib, Sling sling) {
-		if(lanzado)//ya fue lanzado.. cámara!
-			return;
-		world.setGravity(new Vector2(0, -9.8f));
+		//ya fue lanzado.. cámara!
+		if(lanzado) return;
+		
+		body.setGravityScale(1);//actuar gravedad sobre este pajaro
 		if(new Vector2(xib, yib).dst(body.getPosition().x, body.getPosition().y) < sling.dstMax)
-		body.applyForceToCenter((xib-body.getPosition().x)*PPM*6, (yib-body.getPosition().y)*PPM*6, true);
+		body.applyForceToCenter((xib-body.getPosition().x)*PPM*fuerzaLanzamiento, (yib-body.getPosition().y)*PPM*fuerzaLanzamiento, true);
 		lanzado = true;
 		/*System.out.println("xib: "+xib+", yib:"+yib);
 		System.out.println("xfa: "+body.getPosition().x+", yfa:"+body.getPosition().y);
 		System.out.println(((xib-body.getPosition().x)*PPM)+", "+((yib-body.getPosition().y)*PPM*4));*/
+	}
+	
+	@Override //de la interface
+	public void comportamiento(){
+		//TODO: hacer sonido
+		//O lo que sea
+		if(!comportamientoRealizado){
+			System.out.println("Comportamiento");
+			comportamientoRealizado = true;
+		}
 	}
 	
 	public boolean isLanzado() {
@@ -86,9 +100,7 @@ public class Pajaro extends EntityAB{
 	}
 	 
 	public void mover(float x, float y) {
-		if(x < (214)/PPM)
-			if(tocado)
-			body.setTransform(new Vector2(x, y), body.getAngle());
+		body.setTransform(new Vector2(x, y), body.getAngle());
 	}
 	
 	public Vector2 posision(){
@@ -97,6 +109,10 @@ public class Pajaro extends EntityAB{
 	
 	public Sprite getSprite() {
 		return sprite;
+	}
+	
+	public Body getBody() {
+		return body;
 	}
 }
 

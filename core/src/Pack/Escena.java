@@ -1,12 +1,8 @@
 package Pack;
 
 import static utiles.Constantes.PPM;
-
-import java.awt.Color;
-
 import utiles.Constantes;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -14,8 +10,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -27,6 +21,7 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import entidades.Sling;
 import entidades.pajaros.Pajaro;
+import entidades.pajaros.PajaroAmarillo;
 
 public class Escena implements Screen {
 	OrthographicCamera cam;
@@ -40,7 +35,6 @@ public class Escena implements Screen {
 
 	Body bFloor;
 	
-	boolean click=false;
 	private Vector2 vec2;
 	
 	public Escena(AnBiLit game){
@@ -50,9 +44,12 @@ public class Escena implements Screen {
 	@Override
 	public void show() {
 		
-		world = new World(new Vector2(0, 0), true);
+		world = new World(new Vector2(0, -9.8f), true);
 		back = new TextureRegion(new Texture("background.png"));
-		pajaro = new Pajaro(world);
+		//pajaro = new Pajaro(world, Constantes.Graficas.strTexRed);
+		
+		pajaro = new PajaroAmarillo(world);
+		
 		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
 		sling = new Sling(world, "slingshot.png", "slingshot2.png", cam);
 		sling.setPajaro(pajaro);
@@ -87,7 +84,7 @@ public class Escena implements Screen {
 		
 		//MOVER 
         //---------------------------------------------------------------------------------------------------
-		click = click();
+		Constantes.click = click();
         mover();
         //DIBUJAR
         //---------------------------------------------------------------------------------------------------
@@ -144,7 +141,7 @@ public class Escena implements Screen {
 	
 	
 	public boolean click() {
-		if(!click)
+		if(!Constantes.click)
 			vec2 = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
 		//System.out.println(vec2.toString());
 		return Gdx.input.isTouched();
@@ -165,16 +162,20 @@ public class Escena implements Screen {
         	}
         }
         //Movimiento Gameplay
-        if(click){//si click
-        	System.out.println(gH-iY);
+        if(Constantes.click){//si click
         	if(pajaro.getSprite().getBoundingRectangle().contains(iX, (gH - iY))){
         		pajaro.tocado = true;
-        		//TODO: perseguir pajaro con la camara y bloquear volver a tirar
         	}
-        	//---Movimiento en 'x' de la camara
+        	if(pajaro.tocado){
+        		sling.estirar(iX, cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).y);
+        		return;
+        	}
+        	if(pajaro.isLanzado())
+        		pajaro.comportamiento();
+        	//---Movimiento en 'x' de la cámara
         	if(dX!=0) dX=(dX>0)? -10 : 10;
         	if(x+dX/PPM > (Gdx.graphics.getWidth()/2)/PPM && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2)/PPM && !pajaro.tocado) {
-	    		if(iX > (150+sling.getTextura().getWidth())/PPM){//despues de la resortera
+	    		if(iX > (150+sling.getTextura().getWidth())/PPM){//Después de la resortera
 	    			cam.position.x += dX/PPM;
 					cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx*PPM : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx*PPM : 0;
 				}
@@ -184,9 +185,11 @@ public class Escena implements Screen {
         else {//no click
         	if(!pajaro.tocado)
         		return;
-    		pajaro.tocado = false;
-    		pajaro.lanzar(vec2.x, vec2.y, sling);
+        	else{
+	    		pajaro.tocado = false;
+	    		pajaro.lanzar(vec2.x, vec2.y, sling);
+        	}
 		}
-        pajaro.mover(iX, cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).y);
+        
 	}
 }

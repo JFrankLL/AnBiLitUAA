@@ -22,7 +22,7 @@ public class Sling extends EntityAB{
 	
 	private int fuerzaElastico;//fuerza de lanzamiento Nota::incremental
 	public Vector2 pivote1, pivote2;//donde esta amarrado el elastico: para poseriormente dibujarse
-	public int dstMax = 150/PPM;//distancia de "estiramiento" maximo de la liga
+	public int dstMax = 200/PPM;//distancia de "estiramiento" maximo de la liga
 	private float estiramiento;
 	
 	Pajaro pajaro;

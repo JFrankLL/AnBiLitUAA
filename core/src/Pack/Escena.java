@@ -22,6 +22,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import entidades.Sling;
 import entidades.pajaros.Pajaro;
 import entidades.pajaros.PajaroAmarillo;
+import entidades.pajaros.PajaroRedGrande;
 
 public class Escena implements Screen {
 	OrthographicCamera cam;

@@ -1,7 +1,6 @@
 package entidades.pajaros;
 
 import static utiles.Constantes.PPM;
-import utiles.Constantes;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -16,7 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import entidades.EntityAB;
 import entidades.Sling;
 
-public class Pajaro extends EntityAB implements ComportamientoPajaro{
+public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	
 	protected Body body;
 	private BodyDef bodyDef;
@@ -30,13 +29,6 @@ public class Pajaro extends EntityAB implements ComportamientoPajaro{
 	public Pajaro(World world, String rutaTexture){
 		super(world, rutaTexture);
 		sprite.setPosition(170/PPM, 210/PPM);
-		
-		create(world);
-	}
-	
-	private void create(World world) {
-		
-		//if(body != null) world.destroyBody(body);
 		
 		bodyDef = new BodyDef();
 	    bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -57,6 +49,7 @@ public class Pajaro extends EntityAB implements ComportamientoPajaro{
 	    
         shape.dispose();
 	}
+	
 	public void dispose(){
 		super.dispose();
 	}
@@ -77,7 +70,7 @@ public class Pajaro extends EntityAB implements ComportamientoPajaro{
 		if(lanzado) return;
 		
 		body.setGravityScale(1);//actuar gravedad sobre este pajaro
-		if(new Vector2(xib, yib).dst(body.getPosition().x, body.getPosition().y) < sling.dstMax)
+		//if(new Vector2(xib, yib).dst(body.getPosition().x, body.getPosition().y) < sling.dstMax)
 		body.applyForceToCenter((xib-body.getPosition().x)*PPM*fuerzaLanzamiento, (yib-body.getPosition().y)*PPM*fuerzaLanzamiento, true);
 		lanzado = true;
 		/*System.out.println("xib: "+xib+", yib:"+yib);
@@ -86,13 +79,11 @@ public class Pajaro extends EntityAB implements ComportamientoPajaro{
 	}
 	
 	@Override //de la interface
-	public void comportamiento(){
-		//TODO: hacer sonido
-		//O lo que sea
-		if(!comportamientoRealizado){
-			System.out.println("Comportamiento");
-			comportamientoRealizado = true;
-		}
+	public boolean comportamiento(){
+		if(lanzado)
+			if(!comportamientoRealizado)
+				comportamientoRealizado = true;
+		return comportamientoRealizado;
 	}
 	
 	public boolean isLanzado() {

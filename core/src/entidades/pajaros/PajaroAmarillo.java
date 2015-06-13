@@ -12,15 +12,12 @@ public final class PajaroAmarillo extends Pajaro implements ComportamientoPajaro
 	}
 
 	@Override
-	public void comportamiento() {
-		if(!comportamientoRealizado){
-			System.out.println("Comportamiento");
-			body.applyForceToCenter(
-					new Vector2(body.getLinearVelocity().x * fuerzaLanzamiento * fuerzaLanzamiento,
-							body.getLinearVelocity().y * fuerzaLanzamiento * fuerzaLanzamiento), false);
-			comportamientoRealizado = true;
-		}
-		
+	public boolean comportamiento() {
+		if(comportamientoRealizado)
+			return true;
+		body.applyForceToCenter( new Vector2((float) Math.pow(fuerzaLanzamiento, 3), (float) Math.pow(fuerzaLanzamiento, 3)), false);
+		super.comportamiento();
+		return comportamientoRealizado;
 	}
 
 }

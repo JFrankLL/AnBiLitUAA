@@ -2,6 +2,6 @@ package entidades.pajaros;
 
 public interface ComportamientoPajaro {
 	
-	public abstract void comportamiento();
+	public abstract boolean comportamiento();
 	
 }

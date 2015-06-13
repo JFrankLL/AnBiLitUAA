@@ -49,7 +49,7 @@ public class Escena implements Screen {
 		back = new TextureRegion(new Texture("background.png"));
 		//pajaro = new Pajaro(world, Constantes.Graficas.strTexRed);
 		
-		pajaro = new PajaroAmarillo(world);
+		pajaro = new PajaroRedGrande(world);
 		
 		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
 		sling = new Sling(world, "slingshot.png", "slingshot2.png", cam);

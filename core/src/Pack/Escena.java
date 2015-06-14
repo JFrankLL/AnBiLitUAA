@@ -9,6 +9,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -43,7 +44,6 @@ public class Escena implements Screen {
 
 	@Override
 	public void show() {
-		
 		world = new World(new Vector2(0, -9.8f), true);
 		back = new TextureRegion(new Texture("background.png"));
 		//pajaro = new Pajaro(world, Constantes.Graficas.strTexRed);
@@ -112,7 +112,8 @@ public class Escena implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
+		//NO ES NECESARIO
+		//cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
 		cam.setToOrtho(false, width/PPM, height/PPM);
 	}
 

@@ -20,16 +20,15 @@ public class Sling extends EntityAB{
 	
 	Texture textureAlt;//segunda parte del sling//frontal (creo)
 	private TextureRegion textureLiga;
-	ShapeRenderer shapeRenderer = new ShapeRenderer();
 	
 	private int fuerzaElastico;//fuerza de lanzamiento Nota::incremental
 	public Vector2 pivote1, pivote2;//donde esta amarrado el elastico: para poseriormente dibujarse
 	public float dstMax = 100f/PPM;//distancia de "estiramiento" maximo de la liga
 	public boolean estiramiento;
 	
-	Pajaro pajaro;
+	Pajaro pajaro;//pajaro cargado en la resortera
 	
-	private Camera cam;
+	private Camera cam;//referencia
 	
 	public Sling(World world, String rutaSprite, String rutaSprite2, Camera cam) {
 		super(world, rutaSprite);
@@ -42,7 +41,7 @@ public class Sling extends EntityAB{
 
 	@Override
 	public void render(SpriteBatch sb) {
-		if(pajaro.posision().x > ((2048*0.07f)+32)/PPM && pajaro.isLanzado())
+		if(pajaro.posision().x > ((2048*0.07f)+32)/PPM && pajaro.lanzado)
 			return;
 		
 		Vector2 vec2 = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
@@ -64,8 +63,17 @@ public class Sling extends EntityAB{
 	}
 	
 	public void estirar(float x, float y) {
-		pajaro.mover(x, y);
-		//TODO: problema de limites
+		
+		int xx = (x>208/PPM)?0:(x>80/PPM)?1:0;
+		int yy = (y>400/PPM)?0:(y>100/PPM)?1:0;
+		
+		if(pajaro.tocado && Constantes.click){
+			pajaro.mover((xx==1)?x:pajaro.posision().x, (yy==1)?y:pajaro.posision().y);
+			return;
+		}
+		else if(pajaro.tocado)
+		System.out.println("Lanzar!!");
+		
 	}
 	
 	public void lanzar(){
@@ -100,10 +108,11 @@ public class Sling extends EntityAB{
 		//puntoB - puntoA
 	    float dx = (x2-x1);
 	    float dy = (y2-y1);
-	    float largoLinea = (float)Math.sqrt(dx*dx + dy*dy)+0.5f;//distancia entre puntos
+	    float largoLinea = (float)Math.sqrt(dx*dx + dy*dy)+(pajaro.sprite.getWidth()/2);//distancia entre puntos
 	    float anguloRadianes = (float)Math.atan2(dy, dx);//angulo entre puntos
 	    
 	    sb.draw(textureLiga, 192/PPM, 7, 0, 0, largoLinea, grosor, 1, 1, (float) Math.toDegrees(anguloRadianes));
+	    estiramiento = largoLinea < dstMax;
 	    //sb.draw(textura, x1, y1, dist, thickness, 0, 0, rad);
 	}
 	
@@ -111,7 +120,7 @@ public class Sling extends EntityAB{
 		//puntoB - puntoA
 	    float dx = (x2-x1);
 	    float dy = (y2-y1);
-	    float largoLinea = (float)Math.sqrt(dx*dx + dy*dy)+0.5f;//distancia entre puntos
+	    float largoLinea = (float)Math.sqrt(dx*dx + dy*dy)+(pajaro.sprite.getWidth()/2);//distancia entre puntos
 	    float anguloRadianes = (float)Math.atan2(dy, dx);//angulo entre puntos
 	    
 	    sb.draw(textureLiga, 160/PPM, 7, 0, 0, largoLinea, grosor, 1, 1, (float) Math.toDegrees(anguloRadianes));

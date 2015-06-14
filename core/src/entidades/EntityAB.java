@@ -5,6 +5,8 @@ import static utiles.Constantes.PPM;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 
 public abstract class EntityAB {
@@ -12,6 +14,8 @@ public abstract class EntityAB {
 	protected World world;
 	protected Texture textura;
 	protected Sprite sprite;
+	protected Body body;
+	protected BodyDef bodyDef;
 	
 	public EntityAB(World world, String rutaSprite) {
 		this.world = world;

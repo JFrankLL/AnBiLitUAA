@@ -1,6 +1,9 @@
 package Pack;
 
 import static utiles.Constantes.PPM;
+
+import java.util.ArrayList;
+
 import utiles.Constantes;
 
 import com.badlogic.gdx.Gdx;
@@ -20,12 +23,18 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 import entidades.Sling;
+import entidades.bloques.Bloque;
+import entidades.bloques.Bloques;
+import entidades.cerdos.Cerdos.CerdoC;
 import entidades.pajaros.Pajaro;
 import entidades.pajaros.PajaroAmarillo;
+import entidades.pajaros.PajaroRed;
 
 public class Escena implements Screen {
 	OrthographicCamera cam;
 	Pajaro pajaro;
+	ArrayList<Bloque> bloques = new ArrayList<Bloque>();
+	ArrayList<entidades.cerdos.CerdoBase> cerdos = new ArrayList<entidades.cerdos.CerdoBase>();
 	Sling sling;
 	TextureRegion back;
 	World world;
@@ -46,10 +55,18 @@ public class Escena implements Screen {
 		
 		world = new World(new Vector2(0, -9.8f), true);
 		back = new TextureRegion(new Texture("background.png"));
-		//pajaro = new Pajaro(world, Constantes.Graficas.strTexRed);
 		
-		pajaro = new PajaroAmarillo(world);
+		pajaro = new PajaroRed(world);
 		
+		cerdos.clear();
+		cerdos.add(new CerdoC(world, 500, 100));
+		
+		bloques.clear();
+		for(int i=10;i<15;i++)
+			bloques.add(new Bloques.PiedraG(world, i*100, 100, (short)90));
+		//bloques.add(new Bloque(world, Constantes.Graficas.Bloques.Madera.G1, 1300, 300, (short)0));
+		
+		Constantes.seguirPajaro = false;
 		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
 		sling = new Sling(world, "slingshot.png", "slingshot2.png", cam);
 		sling.setPajaro(pajaro);
@@ -78,7 +95,7 @@ public class Escena implements Screen {
 	public void render(float delta) {
 		world.step(1/60f, 6, 2);
 		//ACTUALIZAR
-		cam.update();
+		camUpdate();
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glClearColor((245/255f), (255/255f), (255/255f), 1); //RGB
 		
@@ -95,6 +112,10 @@ public class Escena implements Screen {
 			pajaro.render(game.batch);
 			game.batch.draw(sling.getTexturaAlt(), (back.getRegionWidth()*0.07f)/PPM, 64/PPM, sling.getTexturaAlt().getWidth()/PPM, sling.getTexturaAlt().getHeight()/PPM);
 			sling.render(game.batch);
+			for(Bloque b: bloques)
+				b.render(game.batch);
+			for(Pajaro c: cerdos)
+				c.render(game.batch);
 		game.batch.end();
 		
 		
@@ -108,6 +129,18 @@ public class Escena implements Screen {
 		
 		if(Constantes.Configuracion.debugRender)
 			dr.render(world, cam.combined);
+	}
+
+	private void camUpdate() {
+		if(Constantes.seguirPajaro){
+			Vector2 pajPos = pajaro.posision();
+			if(pajPos.x > Gdx.graphics.getWidth()/2/PPM &&
+				pajPos.x < (2048/PPM)-Gdx.graphics.getWidth()/2/PPM)
+				cam.position.x = pajPos.x;
+			if(pajPos.y > (Gdx.graphics.getHeight())*0.75f/PPM)
+				cam.position.y = pajPos.y - (Gdx.graphics.getHeight()+PPM)*0.25f/PPM;
+		}
+		cam.update();
 	}
 
 	@Override
@@ -139,10 +172,24 @@ public class Escena implements Screen {
 		pajaro.dispose();
 	}
 	
-	
 	public boolean click() {
 		if(!Constantes.click)
 			vec2 = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
+			
+		if(Gdx.input.isTouched()){
+			if(pajaro.getSprite().getBoundingRectangle().contains(vec2.x, vec2.y)){
+				pajaro.tocado = true;
+			}
+			Constantes.click = true;
+		}
+		else{
+			if(pajaro.tocado){
+				pajaro.lanzar(vec2.x, vec2.y, sling);
+				pajaro.tocado = false;
+			}
+		}
+		sling.estirar(cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x, cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).y);
+		
 		//System.out.println(vec2.toString());
 		return Gdx.input.isTouched();
 	}
@@ -153,23 +200,10 @@ public class Escena implements Screen {
         		gH = Gdx.graphics.getHeight()/PPM, 
         		rbX = pajaro.posision().x/PPM, rbY = pajaro.posision().y/PPM, x = cam.position.x, 
         		dX = Gdx.input.getDeltaX(), scrollDx = 0.000003f*x;
-        
-        //Movimiento Gameplay
+        	
         if(Constantes.click){//si click
         	
-        	if(pajaro.tocado){
-    			sling.estirar(iX, cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).y);
-    			return;
-    		}
-        	
-        	if(pajaro.comportamiento()) System.out.println("comporta");
-        	
-        	if(pajaro.getSprite().getBoundingRectangle().contains(iX, (gH - iY))){
-        		if(!pajaro.tocado){
-	        		pajaro.tocado = true;
-	        		return;
-        		}
-        	}
+        	pajaro.comportamiento();
         	
         	//---Movimiento en 'x' de la cámara
         	if(dX!=0) dX=(dX>0)? -10 : 10;
@@ -178,12 +212,6 @@ public class Escena implements Screen {
 	    			cam.position.x += dX/PPM;
 					cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx*PPM : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx*PPM : 0;
 				}
-        	}
-        }
-        else if(!Constantes.click){
-        	if(pajaro.tocado){
-        		pajaro.lanzar(vec2.x, vec2.y, sling);
-        		pajaro.tocado = false;
         	}
         }
         

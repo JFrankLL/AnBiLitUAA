@@ -8,6 +8,7 @@ public class PajaroRed extends Pajaro implements ComportamientoPajaro {
 
 	public PajaroRed(World world) {
 		super(world, Constantes.Graficas.strTexRed);
+		fuerzaLanzamiento += 1;
 	}
 	
 	@Override
@@ -17,5 +18,10 @@ public class PajaroRed extends Pajaro implements ComportamientoPajaro {
 		super.comportamiento();
 		return comportamientoRealizado;
 	}
-
+	
+	@Override
+	public boolean isComportamientoRealizado() {
+		return comportamientoRealizado = true;
+	}
+	
 }

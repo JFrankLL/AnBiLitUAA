@@ -9,6 +9,7 @@ public final class PajaroRedGrande extends Pajaro implements ComportamientoPajar
 	public PajaroRedGrande(World world) {
 		super(world, Constantes.Graficas.strTexRedG);
 		fuerzaLanzamiento *= 3;
+		danio*=2;
 	}
 	
 	@Override
@@ -18,5 +19,10 @@ public final class PajaroRedGrande extends Pajaro implements ComportamientoPajar
 		super.comportamiento();
 		return comportamientoRealizado;
 	}
-
+	
+	@Override
+	public boolean isComportamientoRealizado() {
+		return comportamientoRealizado;
+	}
+	
 }

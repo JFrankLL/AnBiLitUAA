@@ -8,6 +8,7 @@ public final class PajaroAmarillo extends Pajaro implements ComportamientoPajaro
 
 	public PajaroAmarillo(World world) {
 		super(world, Constantes.Graficas.strTexYel);
+		danio += 10;
 	}
 
 	@Override
@@ -15,11 +16,17 @@ public final class PajaroAmarillo extends Pajaro implements ComportamientoPajaro
 		if(comportamientoRealizado)
 			return false;
 		
+		danio+=10;
 		body.applyForceToCenter(body.getLinearVelocity().setLength(1000), true);
 		
 		//body.applyForceToCenter( new Vector2((float) Math.pow(fuerzaLanzamiento, 3), (float) Math.pow(fuerzaLanzamiento, 3)), false);
 		super.comportamiento();
 		return comportamientoRealizado;
+	}
+	
+	@Override
+	public boolean isComportamientoRealizado() {
+		return comportamientoRealizado = true;
 	}
 
 }

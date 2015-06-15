@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import entidades.EntityAB;
 import entidades.Sling;
@@ -20,9 +21,10 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	
 	public boolean tocado = false;
 	public boolean lanzado = false;
-	protected boolean comportamientoRealizado = false;
+	public boolean comportamientoRealizado = false;
 	
-	float fuerzaLanzamiento = 10;
+	public float fuerzaLanzamiento = 10;
+	public int danio = 25;
 	
 	public Pajaro(World world, String rutaTexture){
 		super(world, rutaTexture);
@@ -44,6 +46,10 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 		body.setAngularDamping(10.5f);//para que gire en el suelo
 	    body.createFixture(fixtureDef);
 	    body.setGravityScale(0);//para que no se caiga
+	    
+	    //body.setUserData(new Vector2(1f, 1f));
+	    aguanteGolpe = 10f;
+	    body.setUserData(this);
 	    
         shape.dispose();
 	}
@@ -87,6 +93,8 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	public Vector2 posision(){
 		return new Vector2(body.getPosition().x, body.getPosition().y);
 	}
+	
+	public abstract boolean isComportamientoRealizado();
 	
 	public Sprite getSprite() {
 		return sprite;

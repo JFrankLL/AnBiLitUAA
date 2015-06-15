@@ -4,6 +4,7 @@ import static utiles.Constantes.PPM;
 
 import java.util.ArrayList;
 
+import jdk.nashorn.internal.ir.ContinueNode;
 import utiles.Constantes;
 
 import com.badlogic.gdx.Gdx;
@@ -19,25 +20,39 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
+import entidades.EntityAB;
 import entidades.Sling;
 import entidades.bloques.Bloque;
 import entidades.bloques.Bloques;
+import entidades.cerdos.CerdoBase;
+import entidades.cerdos.Cerdos;
 import entidades.cerdos.Cerdos.CerdoC;
 import entidades.pajaros.Pajaro;
 import entidades.pajaros.PajaroAmarillo;
 import entidades.pajaros.PajaroRed;
+import entidades.pajaros.PajaroRedGrande;
 
 public class Escena implements Screen {
 	OrthographicCamera cam;
 	Pajaro pajaro;
-	ArrayList<Bloque> bloques = new ArrayList<Bloque>();
+	Array<Bloque> bloques = new Array<Bloque>();
 	ArrayList<entidades.cerdos.CerdoBase> cerdos = new ArrayList<entidades.cerdos.CerdoBase>();
+	
+	//Array<Body> fixturesToDestroy = new Array<Body>();
+	Array<EntityAB> fixturesPorQuitar = new Array<EntityAB>();
+	
 	Sling sling;
-	TextureRegion back;
+	TextureRegion back, ground;
 	World world;
 	AnBiLit game;
 	
@@ -55,16 +70,24 @@ public class Escena implements Screen {
 	public void show() {
 		world = new World(new Vector2(0, -9.8f), true);
 		back = new TextureRegion(new Texture("background.png"));
+		ground = new TextureRegion(new Texture("ground.png"));
 		
-		pajaro = new PajaroRed(world);
+		pajaro = new PajaroAmarillo(world);
+		//Nivel Temporal//------------------------------------------------------------------------------
+		System.out.println("\n\n\n");
 		
 		cerdos.clear();
-		cerdos.add(new CerdoC(world, 500, 100));
+		cerdos.add(new CerdoC(world, 300f, 200f));
 		
 		bloques.clear();
-		for(int i=10;i<15;i++)
-			bloques.add(new Bloques.PiedraG(world, i*100, 100, (short)90));
-		//bloques.add(new Bloque(world, Constantes.Graficas.Bloques.Madera.G1, 1300, 300, (short)0));
+		bloques.add(new Bloques.VidrioG(world,300f, 100f, (short)90));
+		bloques.add(new Bloques.PiedraG(world,300f, 200f, (short)90));
+		bloques.add(new Bloques.MaderaG(world,400f, 100*5f, (short)90));
+		bloques.add(new Bloques.PiedraG(world,450f, 100*5f, (short)90));
+		bloques.add(new Bloques.MaderaG(world,500f, 100*5f, (short)90));
+		bloques.add(new Bloques.PiedraG(world,1350f, 160*5f, (short)0));
+		bloques.add(new Bloques.VidrioG(world,1450f, 160*5f, (short)0));
+		//Nivel Temporal//------------------------------------------------------------------------------
 		
 		Constantes.seguirPajaro = false;
 		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
@@ -89,6 +112,51 @@ public class Escena implements Screen {
 		dr.setDrawVelocities(true);
 	    
         shape.dispose();
+        
+        //Contact listener----------------------------------------------------------------------------
+        world.setContactListener(new ContactListener() {
+			public void postSolve(Contact contact, ContactImpulse impulse) {
+				Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
+				try{
+					if((golpeador.getBody().getUserData() instanceof Pajaro && golpeado.getBody().getUserData() instanceof Bloque)){
+						System.out.println("paj pega bloq");
+						pajaro.comportamientoRealizado = true;
+						if(checarDanio(golpeado, golpeador, impulse))
+							((Bloque)golpeado.getBody().getUserData()).vida -= ((Pajaro)golpeador.getBody().getUserData()).fuerzaLanzamiento;
+					}
+					else if((golpeador.getBody().getUserData() instanceof CerdoBase && golpeado.getBody().getUserData() instanceof Pajaro)){
+						System.out.println("cer pega paj");
+						pajaro.comportamientoRealizado = true;
+					}
+					else if((golpeador.getBody().getUserData() instanceof CerdoBase && golpeado.getBody().getUserData() instanceof Bloque)){
+						System.out.println("cer pega bloq");
+					}
+					else{//cualquier otra cosa
+						if(golpeador.getBody().getUserData() instanceof Pajaro)
+							pajaro.isComportamientoRealizado();//bloquea el comportamiento según su tipo
+						return;
+					}
+					//solo pasa aqui si los contactos fue entre pajaro-cerdo, pajaro-bloque, cerdo-bloque
+					
+					//TODO: Checar tipo de material y pajaro para asi poder 
+					//		dañar adecuadamente.
+					
+					if(((EntityAB)golpeado.getBody().getUserData()).aguanteGolpe < sum(impulse.getNormalImpulses()))
+						fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+					//checar apachurramiento 
+					if(((EntityAB)golpeado.getBody().getUserData()).aguantePression < sum(impulse.getTangentImpulses()))
+						fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+					 
+				}catch (Exception e) {
+					System.out.println("error");
+					e.printStackTrace();
+				}
+			}
+			public void beginContact(Contact contact) {}
+			public void endContact(Contact contact) {}
+			public void preSolve(Contact contact, Manifold oldManifold) {}
+		});
+        //--------------------------------------------------------------------------------------------
 	}
 
 	@Override
@@ -107,28 +175,49 @@ public class Escena implements Screen {
         //---------------------------------------------------------------------------------------------------
 		game.batch.setProjectionMatrix(cam.combined);
 		game.batch.begin();
-			game.batch.draw(back, 0, 0, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
+			game.batch.draw(back, 0, -170f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
 			game.batch.draw(sling.getTextura(), (back.getRegionWidth()*0.07f)/PPM, 64/PPM, sling.getTextura().getWidth()/PPM, sling.getTextura().getHeight()/PPM);
 			pajaro.render(game.batch);
 			game.batch.draw(sling.getTexturaAlt(), (back.getRegionWidth()*0.07f)/PPM, 64/PPM, sling.getTexturaAlt().getWidth()/PPM, sling.getTexturaAlt().getHeight()/PPM);
 			sling.render(game.batch);
 			for(Bloque b: bloques)
 				b.render(game.batch);
-			for(Pajaro c: cerdos)
+			for(CerdoBase c: cerdos)
 				c.render(game.batch);
+			game.batch.draw(ground, 0, -125f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
 		game.batch.end();
 		
 		
-			if(Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+			if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
 				game.setScreen(game.menu);
 				return;
 			}
 			
 			if(Gdx.input.isKeyJustPressed(Input.Keys.F4))
-					Constantes.Configuracion.debugRender=(Constantes.Configuracion.debugRender)?false:true;
+				Constantes.Configuracion.debugRender=(Constantes.Configuracion.debugRender)?false:true;
+			else if(Gdx.input.isKeyJustPressed(Input.Keys.F2))
+				game.setScreen(game.escena);
 		
 		if(Constantes.Configuracion.debugRender)
 			dr.render(world, cam.combined);
+		
+		for(EntityAB b: fixturesPorQuitar){
+			for(Bloque bl: bloques){
+				if(bl.getBody() == b.getBody()){
+					/*if(bl.estado>=1){
+						bl.estado--;
+						break;
+					}*/
+					//else{
+						world.destroyBody(b.getBody());
+						fixturesPorQuitar.removeValue(b, true);
+						bloques.removeValue(bl, true);
+						break;
+					//}
+				}
+			}
+		}
+		
 	}
 
 	private void camUpdate() {
@@ -215,6 +304,24 @@ public class Escena implements Screen {
 				}
         	}
         }
-        
+	}
+	//para contact listener//------------------------
+	
+	private boolean checarDanio(Fixture golpeado, Fixture golpeador, ContactImpulse impulse){
+			if(((EntityAB)golpeado.getBody().getUserData()).aguanteGolpe < sum(impulse.getNormalImpulses()))
+				//fixturesToDestroy.add((EntityAB)golpeado.getBody().getUserData());
+				return true;
+			//checar apachurramiento 
+			if(((EntityAB)golpeado.getBody().getUserData()).aguantePression < sum(impulse.getTangentImpulses()))
+				//fixturesToDestroy.add((EntityAB)golpeado.getBody().getUserData());
+				return true;
+			return false;
+	}
+	
+	public static float sum(float[] a){
+		float s=0;
+		for(float f: a)
+			s+=f;
+		return s;
 	}
 }

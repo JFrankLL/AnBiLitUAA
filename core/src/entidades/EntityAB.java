@@ -17,6 +17,8 @@ public abstract class EntityAB {
 	protected Body body;
 	protected BodyDef bodyDef;
 	
+	public float aguanteGolpe=6f, aguantePression=1000f;//este debe ser muy pequeño
+	
 	public EntityAB(World world, String rutaSprite) {
 		this.world = world;
 		textura = new Texture(rutaSprite);
@@ -29,6 +31,10 @@ public abstract class EntityAB {
 	
 	public void dispose() {
 		textura.dispose();
+	}
+	
+	public Body getBody() {
+		return body;
 	}
 	
 }

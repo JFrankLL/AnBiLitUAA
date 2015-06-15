@@ -13,7 +13,7 @@ public class AnBiLit extends Game {
 		batch = new SpriteBatch();
 		menu = new MenuPrincipal(this);
 		escena = new Escena(this);
-		setScreen(escena);
+		setScreen(menu);
 	}
 	
 	@Override

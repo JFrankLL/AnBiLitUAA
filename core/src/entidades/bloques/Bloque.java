@@ -13,10 +13,9 @@ import entidades.EntityAB;
 
 public abstract class Bloque extends EntityAB {
 	
+	public int vida = 100;
 	
-	float resistencia;
-	
-	public Bloque(World world, String[] rutasSprites, int x, int y, short angulo) {
+	public Bloque(World world, String[] rutasSprites, float x, float y, short angulo) {
 		super(world, rutasSprites[0]);
 		
 		sprite.setPosition(x/PPM, y/PPM);
@@ -35,12 +34,14 @@ public abstract class Bloque extends EntityAB {
 		FixtureDef fixtureDef = new FixtureDef();
 	    fixtureDef.density = 1f;//+- peso
 	    fixtureDef.friction = 5f;//para que se frene en el suelo
-	    //fixtureDef.restitution = .5f;//rebote
+	    fixtureDef.restitution = 0.1f;//rebote
 		fixtureDef.shape = shape;
 	    
 		body.setAngularDamping(1);//para que se frene en el suelo
 	    body.createFixture(fixtureDef);
 	    
+	    //body.setUserData(new Vector2(8f, 3f));//aguante [presion, golpe]
+	    body.setUserData(this);
 	    
         shape.dispose();
 	}
@@ -51,5 +52,5 @@ public abstract class Bloque extends EntityAB {
 		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);//actualiza ángulo del ave (giración)
 		sprite.draw(sb);
 	}
-
+	
 }

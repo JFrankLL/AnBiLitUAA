@@ -136,9 +136,9 @@ public class Escena implements Screen {
 							pajaro.isComportamientoRealizado();//bloquea el comportamiento según su tipo
 						return;
 					}
-					//solo pasa aqui si los contactos fue entre pajaro-cerdo, pajaro-bloque, cerdo-bloque
+					//solo pasa aquí si los contactos fue entre pájaro-cerdo, pájaro-bloque, cerdo-bloque
 					
-					//TODO: Checar tipo de material y pajaro para asi poder 
+					//TODO: Checar tipo de material y pájaro para así poder 
 					//		dañar adecuadamente.
 					
 					if(((EntityAB)golpeado.getBody().getUserData()).aguanteGolpe < sum(impulse.getNormalImpulses()))

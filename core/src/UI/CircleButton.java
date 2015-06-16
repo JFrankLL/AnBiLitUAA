@@ -1,12 +1,12 @@
 package UI;
 
 public class CircleButton extends Button{
-	public CircleButton(String path, float x, float y) {
-		super(path, x, y);
+	public CircleButton(String path) {
+		super(path);
 	}
-	public boolean selected (float ix, float iy, float gH) {
-		float sx = skin.getOriginX(), sy = skin.getOriginY();
-    	if(skin.getWidth()/2.1 > (Math.sqrt((ix-sx)*(ix-sx)+(gH-iy-sy)*(gH-iy-sy))))
+	public boolean selected (float iX, float iY, float gH) {
+		float sx = getX()+getWidth()/2, sy = getY()+getWidth()/2;
+    	if(getWidth()/2 > (Math.sqrt((iX-sx)*(iX-sx)+(gH-iY-sy)*(gH-iY-sy))))
     		return true;
 		return false;
     }

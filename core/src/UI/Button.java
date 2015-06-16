@@ -3,16 +3,18 @@ package UI;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
-public class Button {
-	public Sprite skin;
-    Texture texture;
+public class Button extends Sprite{
+    static Texture texture;
 
-    public Button(String path, float x, float y) {
-    	skin = new Sprite(texture = new Texture(path));
-    	skin.setPosition(x, y);
-    	skin.setSize(texture.getWidth(), texture.getHeight());
+    public Button(String path) {
+    	super(texture = new Texture(path));
+    	setSize(texture.getWidth(), texture.getHeight());
+    }
+    public void setBounds(float x, float y, float width, float height){
+    	setPosition(x, y);
+    	setSize(width, height);
     }
     public void press(String path){
-    	skin.setTexture(texture = new Texture(path));
+    	setTexture(texture = new Texture(path));
     }
 }

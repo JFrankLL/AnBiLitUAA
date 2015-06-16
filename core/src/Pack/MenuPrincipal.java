@@ -14,10 +14,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class MenuPrincipal extends ScreenAdapter {
+    int gW=0, gH=0;
     Music theme;
 	AnBiLit game;
-	CircleButton play;
 	OrthographicCamera cam;
+	CircleButton play, conf;
     TextureRegion background, logo;
 	
 	public MenuPrincipal(AnBiLit game){
@@ -28,7 +29,8 @@ public class MenuPrincipal extends ScreenAdapter {
 	public void show() {
 	    cam = new OrthographicCamera();
 		game.batch = new SpriteBatch();
-		play = new CircleButton("btnMaderaPlay.png", 0, 0);
+		play = new CircleButton("btnMaderaPlay.png");
+		conf = new CircleButton("btnMute.png");
 		logo  = new TextureRegion(new Texture("Imagenes/logo.png"));
 		theme = Gdx.audio.newMusic(Gdx.files.internal("Audio/theme.mp3"));
 		background  = new TextureRegion(new Texture("menuBackground.png"));
@@ -37,7 +39,8 @@ public class MenuPrincipal extends ScreenAdapter {
 
 	@Override
 	public void render(float delta) {
-		int gW=Gdx.graphics.getWidth(), gH=Gdx.graphics.getHeight(), iX=Gdx.input.getX(), iY=Gdx.input.getY();
+		int iX=Gdx.input.getX(), iY=Gdx.input.getY();
+		boolean playSelected = play.selected(iX, iY, gH), confSelected = conf.selected(iX, iY, gH);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glClearColor((0/255f), (0/255f), (0/255f), 1); //RGB
 	    cam.update();
@@ -46,34 +49,39 @@ public class MenuPrincipal extends ScreenAdapter {
 	    game.batch.setProjectionMatrix(cam.combined);
 		game.batch.begin();
 			game.batch.draw(background, 0, 0, gW, gH);
-			game.batch.draw(logo, gW/3.5f, gH/2, gW/2, gH/3);
-			play.skin.draw(game.batch);
+			game.batch.draw(logo, gW/50f, gH/2, gW, gH/2.5f);
+		    play.setBounds(gW/10, gH/10, (gW+gH)/10, (gW+gH)/10);
+			play.draw(game.batch);
+		    conf.setBounds(gW-conf.getWidth()-gW/10, gH/10, (gW+gH)/10, (gW+gH)/10);
+			conf.draw(game.batch);
 		game.batch.end();
 		if(Gdx.input.isTouched()){
 			Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor2.png")), 0, 0);
-			if(play.selected(iX, iY, gH)){
-				play.press("btnMaderaPlayPress.png");
-				Constantes.click = true;
-			}
-			else{
-				play.press("btnMaderaPlay.png");
-				Constantes.click = false;
-			}
+			play.press(playSelected?"btnMaderaPlayPress.png":"btnMaderaPlay.png");
+			conf.press(confSelected?"btnMutePress.png":"btnMute.png");
+			Constantes.click = true;
 		}
 		else{
 			Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
-			if(Constantes.click)
-				game.setScreen(game.escena);
-			play.skin.setScale((play.selected(iX, iY, gH))?1.08f:1f);
+			if(Constantes.click){
+				Constantes.click = false;
+				if(playSelected)
+					game.setScreen(game.escena);
+			theme.setVolume(confSelected?0:1);
+			}
+			play.setScale(playSelected?1.08f:1f);
+			conf.setScale(confSelected?1.08f:1f);
 		}
 	}
 	
 	@Override
 	public void resize(int width, int height){
+	    gW = Gdx.graphics.getWidth();
+	    gH = Gdx.graphics.getHeight();
 		cam.viewportWidth = width;
 		cam.viewportHeight = height;
-	    cam.position.x = Gdx.graphics.getWidth()/2;
-	    cam.position.y = Gdx.graphics.getHeight()/2;
+	    cam.position.x = gW/2;
+	    cam.position.y = gH/2;
 	}
 	public void hide(){
 		theme.pause();

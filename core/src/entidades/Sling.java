@@ -108,7 +108,7 @@ public class Sling extends EntityAB{
 		//puntoB - puntoA
 	    float dx = (x2-x1);
 	    float dy = (y2-y1);
-	    float largoLinea = (float)Math.sqrt(dx*dx + dy*dy)+(pajaro.sprite.getWidth()/2);//distancia entre puntos
+	    float largoLinea = (float)(Math.sqrt(dx*dx + dy*dy)+(pajaro.sprite.getWidth()/2));//distancia entre puntos
 	    float anguloRadianes = (float)Math.atan2(dy, dx);//angulo entre puntos
 	    
 	    sb.draw(textureLiga, 192/PPM, 7, 0, 0, largoLinea, grosor, 1, 1, (float) Math.toDegrees(anguloRadianes));
@@ -120,9 +120,24 @@ public class Sling extends EntityAB{
 		//puntoB - puntoA
 	    float dx = (x2-x1);
 	    float dy = (y2-y1);
-	    float largoLinea = (float)Math.sqrt(dx*dx + dy*dy)+(pajaro.sprite.getWidth()/2);//distancia entre puntos
+	    float largoLinea = (float)(Math.sqrt(dx*dx + dy*dy)+pajaro.sprite.getWidth()/2);//distancia entre puntos
 	    float anguloRadianes = (float)Math.atan2(dy, dx);//angulo entre puntos
-	    
 	    sb.draw(textureLiga, 160/PPM, 7, 0, 0, largoLinea, grosor, 1, 1, (float) Math.toDegrees(anguloRadianes));
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

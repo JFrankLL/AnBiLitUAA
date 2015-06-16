@@ -29,8 +29,8 @@ public class MenuPrincipal extends ScreenAdapter {
 	public void show() {
 	    cam = new OrthographicCamera();
 		game.batch = new SpriteBatch();
-		play = new CircleButton("btnMaderaPlay.png");
 		conf = new CircleButton("btnMute.png");
+		play = new CircleButton("btnMaderaPlay.png");
 		logo  = new TextureRegion(new Texture("Imagenes/logo.png"));
 		theme = Gdx.audio.newMusic(Gdx.files.internal("Audio/theme.mp3"));
 		background  = new TextureRegion(new Texture("menuBackground.png"));
@@ -50,9 +50,7 @@ public class MenuPrincipal extends ScreenAdapter {
 		game.batch.begin();
 			game.batch.draw(background, 0, 0, gW, gH);
 			game.batch.draw(logo, gW/50f, gH/2, gW, gH/2.5f);
-		    play.setBounds(gW/10, gH/10, (gW+gH)/10, (gW+gH)/10);
 			play.draw(game.batch);
-		    conf.setBounds(gW-conf.getWidth()-gW/10, gH/10, (gW+gH)/10, (gW+gH)/10);
 			conf.draw(game.batch);
 		game.batch.end();
 		if(Gdx.input.isTouched()){
@@ -67,7 +65,7 @@ public class MenuPrincipal extends ScreenAdapter {
 				Constantes.click = false;
 				if(playSelected)
 					game.setScreen(game.escena);
-			theme.setVolume(confSelected?0:1);
+				theme.setVolume(confSelected?0:1);
 			}
 			play.setScale(playSelected?1.08f:1f);
 			conf.setScale(confSelected?1.08f:1f);
@@ -82,6 +80,8 @@ public class MenuPrincipal extends ScreenAdapter {
 		cam.viewportHeight = height;
 	    cam.position.x = gW/2;
 	    cam.position.y = gH/2;
+	    play.setBounds(gW/10, gH/10, (gW+gH)/10, (gW+gH)/10);
+	    conf.setBounds(gW-(gW+gH)/10-gW/10, gH/10, (gW+gH)/10, (gW+gH)/10);
 	}
 	public void hide(){
 		theme.pause();

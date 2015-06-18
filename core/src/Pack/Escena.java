@@ -4,7 +4,6 @@ import static utiles.Constantes.PPM;
 
 import java.util.ArrayList;
 
-import jdk.nashorn.internal.ir.ContinueNode;
 import utiles.Constantes;
 
 import com.badlogic.gdx.Gdx;
@@ -13,7 +12,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -35,12 +33,9 @@ import entidades.Sling;
 import entidades.bloques.Bloque;
 import entidades.bloques.Bloques;
 import entidades.cerdos.CerdoBase;
-import entidades.cerdos.Cerdos;
 import entidades.cerdos.Cerdos.CerdoC;
 import entidades.pajaros.Pajaro;
 import entidades.pajaros.PajaroAmarillo;
-import entidades.pajaros.PajaroRed;
-import entidades.pajaros.PajaroRedGrande;
 
 public class Escena implements Screen {
 	OrthographicCamera cam;
@@ -91,8 +86,7 @@ public class Escena implements Screen {
 		
 		Constantes.seguirPajaro = false;
 		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
-		sling = new Sling(world, "slingshot.png", "slingshot2.png", cam);
-		sling.setPajaro(pajaro);
+		sling = new Sling(world, "slingshot.png", "slingshot2.png", pajaro);
 		
 		//CUERPO ESTATICO (Ground)
         BodyDef groundBodyDef = new BodyDef();
@@ -176,9 +170,8 @@ public class Escena implements Screen {
 		game.batch.setProjectionMatrix(cam.combined);
 		game.batch.begin();
 			game.batch.draw(back, 0, -170f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
-			game.batch.draw(sling.getTextura(), (back.getRegionWidth()*0.07f)/PPM, 64/PPM, sling.getTextura().getWidth()/PPM, sling.getTextura().getHeight()/PPM);
-			pajaro.render(game.batch);
-			game.batch.draw(sling.getTexturaAlt(), (back.getRegionWidth()*0.07f)/PPM, 64/PPM, sling.getTexturaAlt().getWidth()/PPM, sling.getTexturaAlt().getHeight()/PPM);
+			if(pajaro.lanzado) 
+				pajaro.render(game.batch);
 			sling.render(game.batch);
 			for(Bloque b: bloques)
 				b.render(game.batch);
@@ -186,7 +179,6 @@ public class Escena implements Screen {
 				c.render(game.batch);
 			game.batch.draw(ground, 0, -125f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
 		game.batch.end();
-		
 		
 			if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
 				game.setScreen(game.menu);
@@ -234,26 +226,17 @@ public class Escena implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		//NO ES NECESARIO
-		//cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
 		cam.setToOrtho(false, width/PPM, height/PPM);
 	}
 
 	@Override
-	public void pause() {
-	}
+	public void pause() {}
 
 	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-
-	}
+	public void resume() {}
 
 	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-
-	}
+	public void hide() {}
 
 	@Override
 	public void dispose() {
@@ -267,16 +250,13 @@ public class Escena implements Screen {
 			vec2 = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
 			
 		if(Gdx.input.isTouched()){
-			if(pajaro.getSprite().getBoundingRectangle().contains(vec2.x, vec2.y)){
+			if(pajaro.getSprite().getBoundingRectangle().contains(vec2.x, vec2.y))
 				pajaro.tocado = true;
-			}
 			Constantes.click = true;
 		}
-		else{
-			if(pajaro.tocado){
-				pajaro.lanzar(vec2.x, vec2.y, sling);
-				pajaro.tocado = false;
-			}
+		else if(pajaro.tocado){
+			pajaro.lanzar(vec2.x, vec2.y, sling);
+			pajaro.tocado = false;
 		}
 		sling.estirar(cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x, cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).y);
 		

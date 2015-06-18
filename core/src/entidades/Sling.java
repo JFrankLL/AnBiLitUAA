@@ -28,11 +28,9 @@ public class Sling extends EntityAB{
 	
 	Pajaro pajaro;//pajaro cargado en la resortera
 	
-	private Camera cam;//referencia
-	
-	public Sling(World world, String rutaSprite, String rutaSprite2, Camera cam) {
+	public Sling(World world, String rutaSprite, String rutaSprite2, Pajaro pajaro) {
 		super(world, rutaSprite);
-		this.cam=cam;
+		this.pajaro = pajaro;
 		textureAlt = new Texture(rutaSprite2);
 		textureLiga = new TextureRegion(new Texture(Constantes.Graficas.strNegroPxl));
 		pivote1 = new Vector2(-140/PPM, -20/PPM);
@@ -41,24 +39,12 @@ public class Sling extends EntityAB{
 
 	@Override
 	public void render(SpriteBatch sb) {
-		if(pajaro.posision().x > ((2048*0.07f)+32)/PPM && pajaro.lanzado)
-			return;
-		
-		Vector2 vec2 = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
-		
-		ShapeRenderer sr = new ShapeRenderer();//ligas
-        sr.setColor(Color.BLACK);
-        sr.setProjectionMatrix(cam.combined);
 		//liga derecha//
-        //dibujarLigaD(pivote1.x, pivote1.y, vec2.x, vec2.y, 6.4f/PPM, sb);
         dibujarLigaD(pivote1.x, pivote1.y, pajaro.posision().x-320/PPM, pajaro.posision().y-240/PPM, 6.4f/PPM, sb);
-       
 		sb.draw(textura, (2048*0.07f)/PPM, 64/PPM, textura.getWidth()/PPM, textura.getHeight()/PPM);//sling
 		pajaro.render(sb);
 		//liga izquierda
-		//dibujarLigaI(pivote2.x, pivote2.y, vec2.x, vec2.y, 6.4f/PPM, sb);
 		dibujarLigaI(pivote2.x, pivote2.y, pajaro.posision().x-320/PPM, pajaro.posision().y-240/PPM, 6.4f/PPM, sb);
-		
 		sb.draw(textureAlt, (2048*0.07f)/PPM, 64/PPM, textureAlt.getWidth()/PPM, textureAlt.getHeight()/PPM);//sling
 	}
 	
@@ -105,6 +91,8 @@ public class Sling extends EntityAB{
 	}
 	
 	private void dibujarLigaD(float x1, float y1, float x2, float y2, float grosor, SpriteBatch sb) {
+		if(pajaro.posision().x > ((2048*0.07f)+32)/PPM && pajaro.lanzado)
+			return;
 		//puntoB - puntoA
 	    float dx = (x2-x1);
 	    float dy = (y2-y1);
@@ -117,6 +105,8 @@ public class Sling extends EntityAB{
 	}
 	
 	private void dibujarLigaI(float x1, float y1, float x2, float y2, float grosor, SpriteBatch sb) {
+		if(pajaro.posision().x > ((2048*0.07f)+32)/PPM && pajaro.lanzado)
+			return;
 		//puntoB - puntoA
 	    float dx = (x2-x1);
 	    float dy = (y2-y1);

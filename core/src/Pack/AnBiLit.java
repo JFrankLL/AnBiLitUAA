@@ -19,7 +19,7 @@ public class AnBiLit extends Game {
 		escena = new Escena(this);
 		niveles = new MenuNiveles(this);
 		theme = Gdx.audio.newMusic(Gdx.files.internal("Audio/theme.mp3"));
-		setScreen(menu);
+		setScreen(escena);
 	}
 	
 	@Override

@@ -1,25 +1,26 @@
 package Pack;
 
 import UI.CircleButton;
+import UI.SquareButton;
 import utiles.Constantes;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 
-public class MenuPrincipal extends ScreenAdapter {
+public class MenuNiveles extends ScreenAdapter{
     int gW=0, gH=0;
 	AnBiLit game;
+	CircleButton play; 
+	SquareButton [][] lvl = new SquareButton[2][3];
 	OrthographicCamera cam;
-	CircleButton play, conf;
-    TextureRegion background, logo;
+    TextureRegion background;
 	
-	public MenuPrincipal(AnBiLit game){
+	public MenuNiveles(AnBiLit game) {
 		this.game = game;
 	}
 	
@@ -27,29 +28,33 @@ public class MenuPrincipal extends ScreenAdapter {
 	public void show() {
 	    cam = new OrthographicCamera();
 		game.batch = new SpriteBatch();
-		conf = new CircleButton("btnMute.png");
 		play = new CircleButton("btnMaderaPlay.png");
-		logo  = new TextureRegion(new Texture("Imagenes/logo.png"));
+		for (int i = 0; i < lvl.length; i++)
+			for (int j = 0; j < lvl[i].length; j++)
+				lvl[i][j] = new SquareButton("Imagenes/Niveles/locked.png");
 		background  = new TextureRegion(new Texture("menuBackground.png"));
-		Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
 	}
 
 	@Override
 	public void render(float delta) {
 		int iX=Gdx.input.getX(), iY=Gdx.input.getY();
-		boolean playSelected = play.selected(iX, iY, gH), confSelected = conf.selected(iX, iY, gH);
+		boolean playSelected = play.selected(iX, iY, gH), lvlSelected[][] = new boolean [2][3];
+		for (int i = 0; i < lvlSelected.length; i++)
+			for (int j = 0; j < lvlSelected[i].length; j++)
+				lvlSelected[i][j] = lvl[i][j].selected(iX, iY, gH);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glClearColor((0/255f), (0/255f), (0/255f), 1); //RGB
 	    cam.update();
 	    
-	    game.theme.play();
 	    game.batch.setProjectionMatrix(cam.combined);
 		game.batch.begin();
 			game.batch.draw(background, 0, 0, gW, gH);
-			game.batch.draw(logo, gW/50f, gH/2, gW, gH/2.5f);
 			play.draw(game.batch);
-			conf.draw(game.batch);
-		game.batch.end();
+			for (int i = 0; i < lvl.length; i++)
+				for (int j = 0; j < lvl[i].length; j++){
+					lvl[i][j].draw(game.batch);
+					lvl[i][j].setScale(lvlSelected[i][j]?1.08f:1f);
+			}
 		if(Gdx.input.isTouched()){
 			Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor2.png")), 0, 0);
 			play.press(playSelected?"btnMaderaPlayPress.png":"btnMaderaPlay.png");
@@ -59,21 +64,16 @@ public class MenuPrincipal extends ScreenAdapter {
 			if(Constantes.click){
 				Constantes.click = false;
 				if(playSelected)
-					game.setScreen(game.escena);
-				if(confSelected){
-					conf.pressed = !conf.pressed;
-					game.theme.setVolume((conf.pressed)?0:1);
-					conf.press((conf.pressed)?"btnMutePress.png":"btnMute.png");
-				}
+					game.setScreen(game.menu);
 			}
 			Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
 			play.setScale(playSelected?1.08f:1f);
-			conf.setScale(confSelected?1.08f:1f);
 		}
+		game.batch.end();
 	}
-	
+
 	@Override
-	public void resize(int width, int height){
+	public void resize(int width, int height) {
 	    gW = Gdx.graphics.getWidth();
 	    gH = Gdx.graphics.getHeight();
 		cam.viewportWidth = width;
@@ -81,14 +81,18 @@ public class MenuPrincipal extends ScreenAdapter {
 	    cam.position.x = gW/2;
 	    cam.position.y = gH/2;
 	    play.setBounds(gW/10, gH/10, (gW+gH)/10, (gW+gH)/10);
-	    conf.setBounds(gW-(gW+gH)/10-gW/10, gH/10, (gW+gH)/10, (gW+gH)/10);
+	    //MODIFICAR
+		for (int i = 0; i < lvl.length; i++)
+			for (int j = 0; j < lvl[i].length; j++){
+				lvl[i][j].setBounds(i*gW/10 + 3*gW/10, j*gH/10, (gW+gH)/10, (gW+gH)/10); //1,7 //4, 7
+			}
 	}
-	public void hide(){
-		//game.theme.pause();
-		Constantes.click = false;
-	}
+
 	@Override
-	public void dispose(){
-		game.theme.dispose();
+	public void hide() {
+	}
+
+	@Override
+	public void dispose() {
 	}
 }

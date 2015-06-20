@@ -5,10 +5,12 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Button extends Sprite{
     static Texture texture;
+    public boolean pressed;
 
     public Button(String path) {
     	super(texture = new Texture(path));
     	setSize(texture.getWidth(), texture.getHeight());
+    	pressed = false;
     }
     public void setBounds(float x, float y, float width, float height){
     	setPosition(x, y);

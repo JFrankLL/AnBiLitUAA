@@ -59,7 +59,7 @@ public class MenuPrincipal extends ScreenAdapter {
 			if(Constantes.click){
 				Constantes.click = false;
 				if(playSelected)
-					game.setScreen(game.escena);
+					game.setScreen(game.niveles);
 				if(confSelected){
 					conf.pressed = !conf.pressed;
 					game.theme.setVolume((conf.pressed)?0:1);
@@ -80,8 +80,8 @@ public class MenuPrincipal extends ScreenAdapter {
 		cam.viewportHeight = height;
 	    cam.position.x = gW/2;
 	    cam.position.y = gH/2;
-	    play.setBounds(gW/10, gH/10, (gW+gH)/10, (gW+gH)/10);
-	    conf.setBounds(gW-(gW+gH)/10-gW/10, gH/10, (gW+gH)/10, (gW+gH)/10);
+	    play.setBounds(gW/12, gH/12, (gW+gH)/12, (gW+gH)/12);
+	    conf.setBounds(gW-(gW+gH)/12-gW/12, gH/12, (gW+gH)/12, (gW+gH)/12);
 	}
 	public void hide(){
 		//game.theme.pause();

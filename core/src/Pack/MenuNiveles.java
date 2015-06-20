@@ -55,6 +55,7 @@ public class MenuNiveles extends ScreenAdapter{
 					lvl[i][j].draw(game.batch);
 					lvl[i][j].setScale(lvlSelected[i][j]?1.08f:1f);
 			}
+		game.batch.end();
 		if(Gdx.input.isTouched()){
 			Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor2.png")), 0, 0);
 			play.press(playSelected?"btnMaderaPlayPress.png":"btnMaderaPlay.png");
@@ -69,7 +70,6 @@ public class MenuNiveles extends ScreenAdapter{
 			Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
 			play.setScale(playSelected?1.08f:1f);
 		}
-		game.batch.end();
 	}
 
 	@Override
@@ -80,12 +80,11 @@ public class MenuNiveles extends ScreenAdapter{
 		cam.viewportHeight = height;
 	    cam.position.x = gW/2;
 	    cam.position.y = gH/2;
-	    play.setBounds(gW/10, gH/10, (gW+gH)/10, (gW+gH)/10);
+	    play.setBounds(gW/12, gH/12, (gW+gH)/12, (gW+gH)/12);
 	    //MODIFICAR
-		for (int i = 0; i < lvl.length; i++)
-			for (int j = 0; j < lvl[i].length; j++){
-				lvl[i][j].setBounds(i*gW/10 + 3*gW/10, j*gH/10, (gW+gH)/10, (gW+gH)/10); //1,7 //4, 7
-			}
+		for (int i=lvl.length-1; i>=0 ; i--)
+			for (int j=0; j<lvl[i].length; j++)
+				lvl[i][j].setBounds((j*3+2)*gW/12, (i*3+5.4f)*gH/12, (gW+gH)/12, (gW+gH)/12); //1,7 //4, 7
 	}
 
 	@Override

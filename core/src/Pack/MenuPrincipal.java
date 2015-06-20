@@ -56,17 +56,20 @@ public class MenuPrincipal extends ScreenAdapter {
 		if(Gdx.input.isTouched()){
 			Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor2.png")), 0, 0);
 			play.press(playSelected?"btnMaderaPlayPress.png":"btnMaderaPlay.png");
-			conf.press(confSelected?"btnMutePress.png":"btnMute.png");
 			Constantes.click = true;
 		}
 		else{
-			Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
 			if(Constantes.click){
 				Constantes.click = false;
 				if(playSelected)
 					game.setScreen(game.escena);
-				theme.setVolume(confSelected?0:1);
+				if(confSelected){
+					conf.pressed = !conf.pressed;
+					theme.setVolume((conf.pressed)?0:1);
+					conf.press((conf.pressed)?"btnMutePress.png":"btnMute.png");
+				}
 			}
+			Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
 			play.setScale(playSelected?1.08f:1f);
 			conf.setScale(confSelected?1.08f:1f);
 		}
@@ -92,5 +95,3 @@ public class MenuPrincipal extends ScreenAdapter {
 		theme.dispose();
 	}
 }
-
-

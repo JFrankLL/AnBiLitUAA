@@ -20,8 +20,7 @@ import entidades.Sling;
 
 public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	
-	public boolean tocado = false;
-	public boolean lanzado = false;
+	public boolean tocado = false, lanzado = false;
 	public boolean comportamientoRealizado = false;
 	
 	public float fuerzaLanzamiento = 10;

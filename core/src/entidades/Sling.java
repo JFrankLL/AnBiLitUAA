@@ -35,7 +35,8 @@ public class Sling extends EntityAB{
 		pivote1 = new Vector2(-140/PPM, -20/PPM);
 		pivote2 = new Vector2(-180/PPM, -17/PPM);
 	}
-
+	//RENDER
+	//------------------------------------------------------------------------------------------------
 	@Override
 	public void render(SpriteBatch sb) {
 		//parte derecha sling//
@@ -50,7 +51,31 @@ public class Sling extends EntityAB{
 		//parte izquierda sling//
 		sb.draw(textureAlt, (2048*0.07f)/PPM, 64/PPM, textureAlt.getWidth()/PPM, textureAlt.getHeight()/PPM);//sling
 	}
-	
+	private void dibujarLigaD(float x1, float y1, float x2, float y2, float grosor, SpriteBatch sb) {
+		if(pajaro.lanzado)
+			return;
+		//puntoB - puntoA
+	    float dx = (x2-x1);
+	    float dy = (y2-y1);
+	    float largoLinea = (float)(Math.sqrt(dx*dx + dy*dy)+(pajaro.sprite.getWidth()/2));//distancia entre puntos
+	    float anguloRadianes = (float)Math.atan2(dy, dx);//햚gulo entre puntos
+	    dst = largoLinea;
+	    
+	    sb.draw(textureLiga, 192/PPM, 7, 0, 0, largoLinea, grosor, 1, 1, (float) Math.toDegrees(anguloRadianes));
+	    //sb.draw(textura, x1, y1, dist, thickness, 0, 0, rad);//referencia
+	}
+	private void dibujarLigaI(float x1, float y1, float x2, float y2, float grosor, SpriteBatch sb) {
+		if(pajaro.lanzado)
+			return;
+		//puntoB - puntoA
+	    float dx = (x2-x1);
+	    float dy = (y2-y1);
+	    float largoLinea = (float)(Math.sqrt(dx*dx + dy*dy)+pajaro.sprite.getWidth()/2);//distancia entre puntos
+	    float anguloRadianes = (float)Math.atan2(dy, dx);//햚gulo entre puntos
+	    sb.draw(textureLiga, 160/PPM, 7, 0, 0, largoLinea, grosor, 1, 1, (float) Math.toDegrees(anguloRadianes));
+	}
+	//MECANICA
+	//------------------------------------------------------------------------------------------------
 	public boolean estirar(float x, float y, Camera cam) {
 
 		Vector2 posActual = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
@@ -87,7 +112,10 @@ public class Sling extends EntityAB{
 		grosor = (dst<dstMin*2)? 15f/PPM : 32f/PPM/dst;
 		return estirando;
 	}
-	
+	@Override
+	public void actualizar() {}
+	//UTILES
+	//------------------------------------------------------------------------------------------------
 	@Override
 	public void dispose() {
 		super.dispose();
@@ -97,40 +125,13 @@ public class Sling extends EntityAB{
 	public Texture getTextura() {
 		return textura;
 	}
-	
 	public Texture getTexturaAlt() {
 		return textureAlt;
 	}
-	
 	public int getFuerzaElastico() {
 		//TODO rango de estiramiento devuelve diferente valor
 		// a mayor distancia mayor fuerza;
 		return fuerzaElastico;
-	}
-	
-	private void dibujarLigaD(float x1, float y1, float x2, float y2, float grosor, SpriteBatch sb) {
-		if(pajaro.lanzado)
-			return;
-		//puntoB - puntoA
-	    float dx = (x2-x1);
-	    float dy = (y2-y1);
-	    float largoLinea = (float)(Math.sqrt(dx*dx + dy*dy)+(pajaro.sprite.getWidth()/2));//distancia entre puntos
-	    float anguloRadianes = (float)Math.atan2(dy, dx);//햚gulo entre puntos
-	    dst = largoLinea;
-	    
-	    sb.draw(textureLiga, 192/PPM, 7, 0, 0, largoLinea, grosor, 1, 1, (float) Math.toDegrees(anguloRadianes));
-	    //sb.draw(textura, x1, y1, dist, thickness, 0, 0, rad);//referencia
-	}
-	
-	private void dibujarLigaI(float x1, float y1, float x2, float y2, float grosor, SpriteBatch sb) {
-		if(pajaro.lanzado)
-			return;
-		//puntoB - puntoA
-	    float dx = (x2-x1);
-	    float dy = (y2-y1);
-	    float largoLinea = (float)(Math.sqrt(dx*dx + dy*dy)+pajaro.sprite.getWidth()/2);//distancia entre puntos
-	    float anguloRadianes = (float)Math.atan2(dy, dx);//햚gulo entre puntos
-	    sb.draw(textureLiga, 160/PPM, 7, 0, 0, largoLinea, grosor, 1, 1, (float) Math.toDegrees(anguloRadianes));
 	}
 	
 }

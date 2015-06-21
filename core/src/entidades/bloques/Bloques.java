@@ -4,6 +4,11 @@ import utiles.Constantes;
 
 import com.badlogic.gdx.physics.box2d.World;
 
+import entidades.pajaros.Pajaro;
+import entidades.pajaros.PajaroAmarillo;
+import entidades.pajaros.PajaroBlue;
+import entidades.pajaros.PajaroRed;
+
 public abstract class Bloques{
 	//**********************************[VIDRIO]**********************************
 	public static abstract class Vidrio extends Bloque{
@@ -11,6 +16,13 @@ public abstract class Bloques{
 			super(world, rutasSprites, x, y, angulo);
 			normalMax += 80f; tangentMax += 1f;
 			normalMax /= 4;  tangentMax /= 4;
+		}
+		public boolean daniar(entidades.EntityAB daniador) {
+			if(daniador instanceof Pajaro && ((PajaroBlue)daniador).tipo=="blue")
+				vida -= daniador.danio*10;//especialidad +
+			else
+				vida -= daniador.danio;
+			return vida<0;
 		}
 	}
 	public static class VidrioG extends Vidrio {
@@ -35,6 +47,13 @@ public abstract class Bloques{
 			normalMax += 50f; tangentMax += 5f;
 			normalMax /= 4;  tangentMax /= 4;
 		}
+		public boolean daniar(entidades.EntityAB daniador) {
+			if(daniador instanceof Pajaro && ((PajaroAmarillo)daniador).tipo=="blue")
+				vida -= daniador.danio*2;//especialidad +
+			else
+				vida -= daniador.danio;
+			return vida<0;
+		}
 	}
 	public static class MaderaG extends Madera {
 		public MaderaG(World world, float x, float y, short angulo) {
@@ -57,6 +76,13 @@ public abstract class Bloques{
 			super(world, rutasSprites, x, y, angulo);
 			normalMax += 70f; tangentMax += 7;
 			normalMax /= 4;  tangentMax /= 4;
+		}
+		public boolean daniar(entidades.EntityAB daniador) {
+			if(daniador instanceof Pajaro && ((PajaroRed)daniador).tipo=="blue")
+				vida -= daniador.danio;//especialidad -
+			else
+				vida -= daniador.danio;
+			return vida<0;
 		}
 	}
 	public static class PiedraG extends Piedra {

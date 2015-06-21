@@ -23,7 +23,6 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	
 	public String tipo;
 	public float fuerzaLanzamiento = 10;
-	public int danio = 25;
 	
 	public Pajaro(World world, String rutaTexture){
 		super(rutaTexture);
@@ -46,8 +45,8 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	    body.createFixture(fixtureDef);
 	    body.setGravityScale(0);//para que no se caiga
 	    
-	    //body.setUserData(new Vector2(1f, 1f));
 	    normalMax = 10f;
+	    danio = 25;
 	    body.setUserData(this);
 	    
         shape.dispose();

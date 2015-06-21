@@ -15,7 +15,6 @@ import entidades.EntityAB;
 
 public abstract class Bloque extends EntityAB {
 	
-	public int vida = 100;
 	Sprite[] sprites = new Sprite[4];
 	
 	public Bloque(World world, String[] rutasSprites, float x, float y, short angulo) {
@@ -49,8 +48,8 @@ public abstract class Bloque extends EntityAB {
 		body.setAngularDamping(1);//para que se frene en el suelo
 	    body.createFixture(fixtureDef);
 	    
-	    //body.setUserData(new Vector2(8f, 3f));//aguante [presion, golpe]
 	    body.setUserData(this);
+	    danio = 10;
 	    
         shape.dispose();
 	}
@@ -60,8 +59,7 @@ public abstract class Bloque extends EntityAB {
 		sprite.setPosition(body.getPosition().x - sprite.getWidth()/2, body.getPosition().y - sprite.getHeight()/2);
 		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);//actualiza ángulo del ave (giración)
 		sprite.draw(sb);
-	}
-	
+	}	
 	public void actualizar(){
 		try{
 			sprite = sprites[4-(int)(vida/25)];
@@ -70,5 +68,6 @@ public abstract class Bloque extends EntityAB {
 		}
 		System.out.println("actualizado "+ this.getClass().getSimpleName()+" vida: "+vida);
 	}
-	
+	public abstract boolean daniar(EntityAB daniador);
+
 }

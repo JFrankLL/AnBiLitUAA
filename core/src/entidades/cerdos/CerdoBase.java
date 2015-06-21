@@ -45,4 +45,8 @@ public class CerdoBase extends EntityAB {
 		sprite.draw(sb);
 		//sb deberá terminar donde fue llamada esta función
 	}
+	@Override
+	public void actualizar() {
+		//TODO: cambier sprite deacuerdo a la vida, como bloques
+	}
 }	

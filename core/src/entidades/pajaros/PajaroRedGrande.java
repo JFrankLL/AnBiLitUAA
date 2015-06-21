@@ -25,5 +25,9 @@ public final class PajaroRedGrande extends Pajaro implements ComportamientoPajar
 	public boolean isComportamientoRealizado() {
 		return comportamientoRealizado;
 	}
-	
+	@Override
+	public void actualizar() {
+		// TODO Auto-generated method stub
+		
+	}
 }

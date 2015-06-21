@@ -37,6 +37,7 @@ import entidades.cerdos.CerdoBase;
 import entidades.cerdos.Cerdos.CerdoC;
 import entidades.pajaros.Pajaro;
 import entidades.pajaros.PajaroAmarillo;
+import entidades.pajaros.PajaroBlue;
 import entidades.pajaros.PajaroRed;
 import entidades.pajaros.PajaroRedGrande;
 
@@ -50,9 +51,8 @@ public class Escena implements Screen, ContactListener {
 	Pajaro pajaro;
 	Body bFloor;
 	
-	Array<Bloque> bloques = new Array<Bloque>();
-	Array<CerdoBase> cerdos = new Array<CerdoBase>();
-	Array<EntityAB> fixturesPorQuitar = new Array<EntityAB>();
+	Array<EntityAB> entidades = new Array<EntityAB>();
+	Array<Body> fixturesPorQuitar = new Array<Body>();
 	
 	static float sumaFuerzas;
 	
@@ -68,25 +68,25 @@ public class Escena implements Screen, ContactListener {
 		back = new TextureRegion(new Texture("background.png"));
 		ground = new TextureRegion(new Texture("ground.png"));
 		
-		pajaro = new PajaroAmarillo(world);
+		pajaro = new PajaroBlue(world);
 		//Nivel Temporal//------------------------------------------------------------------------------
-		System.out.println("\n\n\n");
+		System.out.println("\n\n\n\n");
 		
-		cerdos.clear();
-		cerdos.add(new CerdoC(world, 300f, 200f));
+		entidades.clear();
+		entidades.add(new CerdoC(world, 300f, 200f));
 		
-		bloques.clear();
-		bloques.add(new Bloques.PiedraG(world,410f, 100f, (short)90));
-		bloques.add(new Bloques.MaderaG(world,410f, 200f, (short)90));
-		bloques.add(new Bloques.VidrioG(world,410f, 300f, (short)90));
+		entidades.clear();
+		entidades.add(new Bloques.PiedraG(world,410f, 100f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,410f, 200f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,410f, 300f, (short)90));
 		
-		bloques.add(new Bloques.PiedraG(world,420f, 100f, (short)90));
-		bloques.add(new Bloques.MaderaG(world,420f, 200f, (short)90));
-		bloques.add(new Bloques.VidrioG(world,420f, 300f, (short)90));
+		entidades.add(new Bloques.PiedraG(world,420f, 100f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,420f, 200f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,420f, 300f, (short)90));
 		
-		bloques.add(new Bloques.PiedraG(world,430f, 100f, (short)90));
-		bloques.add(new Bloques.MaderaG(world,430f, 200f, (short)90));
-		bloques.add(new Bloques.VidrioG(world,430f, 300f, (short)90));
+		entidades.add(new Bloques.PiedraG(world,430f, 100f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,430f, 200f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,430f, 300f, (short)90));
 		//Nivel Temporal//------------------------------------------------------------------------------
 		
 		Constantes.seguirPajaro = false;
@@ -116,60 +116,51 @@ public class Escena implements Screen, ContactListener {
 	}
 	@Override
 	public void render(float delta) {
+		//MECANICA DE OPCIONES 
+        //---------------------------------------------------------------------------------------------------
+		//TODO: esto debe ser un switch, creo..
+		if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
+			game.setScreen(game.menu);
+		else if(Gdx.input.isKeyJustPressed(Input.Keys.F4))
+			Constantes.Configuracion.debugRender=(Constantes.Configuracion.debugRender)?false:true;
+		else if(Gdx.input.isKeyJustPressed(Input.Keys.F2))
+			game.setScreen(game.escena);
+		//---------------------------------------------------------------------------------------------------
 		world.step(1/60f, 6, 2);
 		//ACTUALIZAR
 		camUpdate();
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glClearColor((245/255f), (255/255f), (255/255f), 1); //RGB
 		
-		//MECANICA DE JUEGO 
+		//MECANICA DE JUEGO// 
         //---------------------------------------------------------------------------------------------------
-		click();//click inicial principalmente
-        mover();
-        if(Constantes.click && !(sling.estirando))//si click
+		click();//click inicial principalmente. para poder lanzar
+        mover();//Scroll en el juego
+        if(Constantes.click && !(sling.estirando))//si click y no apuntando para lanzar
         	pajaro.comportamiento();
-        //DIBUJAR
+        removerRotos();//quitar entidades 'muertas'
+        //DIBUJAR//
         //---------------------------------------------------------------------------------------------------
 		game.batch.setProjectionMatrix(cam.combined);
 		game.batch.begin();
+			//fondo
 			game.batch.draw(back, 0, -170f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
+			//Pájaro
 			if(pajaro.lanzado) 
 				pajaro.render(game.batch);
+			//renderiza el pájaro (aveces), entre el sling y ligas.
 			sling.render(game.batch);
-			for(Bloque b: bloques)
+			for(EntityAB b: entidades)//renderiza elementos en el nivel
 				b.render(game.batch);
-			for(CerdoBase c: cerdos)
-				c.render(game.batch);
+			//piso/suelo
 			game.batch.draw(ground, 0, -125f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
 		game.batch.end();
-		
-			if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-				game.setScreen(game.menu);
-				return;
-			}
-			
-			if(Gdx.input.isKeyJustPressed(Input.Keys.F4))
-				Constantes.Configuracion.debugRender=(Constantes.Configuracion.debugRender)?false:true;
-			else if(Gdx.input.isKeyJustPressed(Input.Keys.F2))
-				game.setScreen(game.escena);
-		
 		if(Constantes.Configuracion.debugRender)
 			dr.render(world, cam.combined);
+		//---------------------------------------------------------------------------------------------------
 		
-		//-------------------------------------------------------
-		for(EntityAB b: fixturesPorQuitar){
-			for(Bloque bl: bloques){
-				if(bl.getBody() == b.getBody() && bl.vida<0){
-					world.destroyBody(b.getBody());
-					fixturesPorQuitar.removeValue(b, true);
-					bloques.removeValue(bl, true);
-					break;
-				}
-			}
-		}
-		//-------------------------------------------------------
 	}
-	//MECANICA EJECUCION
+	//METODOS T.EJECUCION
 	//------------------------------------------------------------------------------------------------------------------
 	@Override
 	public void resize(int width, int height) {
@@ -230,12 +221,32 @@ public class Escena implements Screen, ContactListener {
 		}
 		cam.update();
 	}
-	//CONTACT LISTENER
-	//------------------------------------------------------------------------------------------------------------------
-	
+	private void removerRotos(){
+		for(Body b: fixturesPorQuitar){
+			for(EntityAB entidad: entidades){
+				if(entidad.getBody()==b && entidad.vida<0){
+					world.destroyBody(b);
+					fixturesPorQuitar.removeValue(b, true);
+					entidades.removeValue(entidad, true);
+					break;
+				}
+			}
+		}
+	}
 	//CONTACT LISTENER
 	//------------------------------------------------------------------------------------------------------------------
 	public void postSolve(Contact contact, ContactImpulse impulse) {
+		Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
+		//--------------------------NO  BORRAR--------------------------
+		//							[version0]creo que esta es mas "simple"
+		if(golpeado.getBody()!=bFloor && golpeador.getBody()!=bFloor)//el piso no extiende de entity; se arroja excepción
+		try{
+			if(checarDanio(golpeado, golpeador, impulse)){
+				fixturesPorQuitar.add(golpeado.getBody());
+				((Bloque)golpeado.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData());
+				((EntityAB)golpeado.getBody().getUserData()).actualizar();
+			}
+		}catch(Exception e){e.printStackTrace();}
 		//--------------------------NO  BORRAR--------------------------
 		//							[version1]
 		/*Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
@@ -271,10 +282,9 @@ public class Escena implements Screen, ContactListener {
 		}catch (Exception e) {e.printStackTrace();}
 		*/			
 		//--------------------------NO  BORRAR--------------------------
-		//							[version2]creo que esta es mejor
-	
-		Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
-		try{
+		//							[version2]
+		
+		/*try{
 			if(golpeador.getBody().getUserData() instanceof Pajaro){
 				float danio = ((Pajaro)golpeador.getBody().getUserData()).danio;
 				switch (((Pajaro)golpeador.getBody().getUserData()).tipo) {
@@ -350,7 +360,7 @@ public class Escena implements Screen, ContactListener {
 			else if(golpeador.getBody().getUserData() instanceof CerdoBase && golpeado.getBody().getUserData() instanceof Bloque){
 				System.out.println("Cerdo golpeo!!");
 			}
-		}catch(Exception e){System.out.println("ex");}
+		}catch(Exception e){System.out.println("ex");}*/
 		
 	}
 	public void beginContact(Contact contact) {}
@@ -358,7 +368,6 @@ public class Escena implements Screen, ContactListener {
 	public void preSolve(Contact contact, Manifold oldManifold) {}
 	//COMPLEMENTOS A CONTACT LISTENER
 	//------------------------------------------------------------------------------------------------------------------
-	
 	private boolean checarDanio(Fixture golpeado, Fixture golpeador, ContactImpulse impulse){
 		// impacto
 		if(((EntityAB)golpeado.getBody().getUserData()).normalMax < sum(impulse.getNormalImpulses()))
@@ -367,14 +376,12 @@ public class Escena implements Screen, ContactListener {
 		if(((EntityAB)golpeado.getBody().getUserData()).tangentMax < sum(impulse.getTangentImpulses()))
 			return true;
 		return false;
-	}
-	
+	}	
 	private static float sum(float[] a){//sumatoria -.-
 		sumaFuerzas = 0;
 		for(float f: a)
 			sumaFuerzas+=f;
 		return sumaFuerzas;
 	}
-	
 	//------------------------------------------------------------------------------------------------------------------
 }

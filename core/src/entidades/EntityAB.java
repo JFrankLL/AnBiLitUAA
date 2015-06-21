@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.World;
 
 public abstract class EntityAB {
 	
@@ -16,7 +15,8 @@ public abstract class EntityAB {
 	protected Body body;
 	protected BodyDef bodyDef;
 	
-	public float normalMax=0f, tangentMax=0f;//este debe ser muy pequeño
+	public float danio, normalMax=0f, tangentMax=0f;
+	public int vida = 100;
 	
 	public EntityAB(String rutaSprite) {
 		textura = new Texture(rutaSprite);
@@ -26,6 +26,7 @@ public abstract class EntityAB {
 	}
 	
 	public abstract void render(SpriteBatch sb);
+	public abstract void actualizar();
 	
 	public void dispose() {
 		textura.dispose();

@@ -3,6 +3,7 @@ package entidades.cerdos;
 import static utiles.Constantes.PPM;
 import utiles.Constantes;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -13,6 +14,9 @@ public abstract class Cerdos{
 			super(world, Constantes.Graficas.strTexPig);
 			body.setTransform(new Vector2(x/PPM, y/PPM), body.getAngle());
 		}
-
+		@Override
+		public void render(SpriteBatch sb) {
+			super.render(sb);
+		}
 	}
 }	

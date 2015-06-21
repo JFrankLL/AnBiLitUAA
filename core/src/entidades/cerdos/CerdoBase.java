@@ -11,7 +11,7 @@ import entidades.EntityAB;
 
 public class CerdoBase extends EntityAB {
 	public CerdoBase(World world, String rutaSprite) {
-		super(world, rutaSprite);
+		super(rutaSprite);
 		
 		bodyDef = new BodyDef();
 	    bodyDef.type = BodyDef.BodyType.DynamicBody;

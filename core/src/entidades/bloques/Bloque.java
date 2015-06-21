@@ -19,7 +19,7 @@ public abstract class Bloque extends EntityAB {
 	Sprite[] sprites = new Sprite[4];
 	
 	public Bloque(World world, String[] rutasSprites, float x, float y, short angulo) {
-		super(world, rutasSprites[0]);
+		super(rutasSprites[0]);
 		
 		for(int i=0; i<rutasSprites.length; i++){
 			sprites[i] = new Sprite(new Texture(rutasSprites[i]));

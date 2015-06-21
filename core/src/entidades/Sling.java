@@ -26,8 +26,8 @@ public class Sling extends EntityAB{
 	
 	Pajaro pajaro;//Pájaro cargado en la resortera
 	
-	public Sling(World world, String rutaSprite, String rutaSprite2, Pajaro pajaro) {
-		super(world, rutaSprite);
+	public Sling(String rutaSprite, String rutaSprite2, Pajaro pajaro) {
+		super(rutaSprite);
 		this.pajaro = pajaro;
 		textureAlt = new Texture(rutaSprite2);
 		textureLiga = new TextureRegion(new Texture(Constantes.Graficas.strNegroPxl));

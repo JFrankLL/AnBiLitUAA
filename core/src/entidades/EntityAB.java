@@ -11,7 +11,6 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public abstract class EntityAB {
 	
-	protected World world;
 	protected Texture textura;
 	protected Sprite sprite;
 	protected Body body;
@@ -19,8 +18,7 @@ public abstract class EntityAB {
 	
 	public float normalMax=0f, tangentMax=0f;//este debe ser muy pequeño
 	
-	public EntityAB(World world, String rutaSprite) {
-		this.world = world;
+	public EntityAB(String rutaSprite) {
 		textura = new Texture(rutaSprite);
 		sprite = new Sprite(textura);
 		sprite.setOrigin((sprite.getWidth()/2)/PPM, (sprite.getHeight()/2)/PPM);

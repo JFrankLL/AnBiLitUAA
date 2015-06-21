@@ -26,7 +26,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	public int danio = 25;
 	
 	public Pajaro(World world, String rutaTexture){
-		super(world, rutaTexture);
+		super(rutaTexture);
 		sprite.setPosition(170/PPM, 210/PPM);
 		
 		bodyDef = new BodyDef();

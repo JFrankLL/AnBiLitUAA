@@ -91,7 +91,7 @@ public class Escena implements Screen, ContactListener {
 		
 		Constantes.seguirPajaro = false;
 		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
-		sling = new Sling(world, "slingshot.png", "slingshot2.png", pajaro);
+		sling = new Sling("slingshot.png", "slingshot2.png", pajaro);
 		
 		//CUERPO ESTATICO (Ground)
         BodyDef groundBodyDef = new BodyDef();

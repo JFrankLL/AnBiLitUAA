@@ -36,7 +36,7 @@ import entidades.bloques.Bloques;
 import entidades.cerdos.CerdoBase;
 import entidades.cerdos.Cerdos.CerdoC;
 import entidades.pajaros.Pajaro;
-import entidades.pajaros.PajaroAmarillo;
+import entidades.pajaros.PajaroRedGrande;
 
 public class Escena implements Screen, ContactListener {
 	OrthographicCamera cam;
@@ -66,7 +66,7 @@ public class Escena implements Screen, ContactListener {
 		back = new TextureRegion(new Texture("background.png"));
 		ground = new TextureRegion(new Texture("ground.png"));
 		
-		pajaro = new PajaroAmarillo(world);
+		pajaro = new PajaroRedGrande(world);
 		//Nivel Temporal//------------------------------------------------------------------------------
 		System.out.println("\n\n\n");
 		
@@ -206,7 +206,7 @@ public class Escena implements Screen, ContactListener {
 		pajaro.dispose();
 	}
 	
-	public void click() {
+	private void click() {
 		if(!Constantes.click)
 			Constantes.vecClickInicial = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
 			
@@ -217,7 +217,7 @@ public class Escena implements Screen, ContactListener {
 		Constantes.click = Gdx.input.isTouched();
 	}
 	
-	public void mover(){
+	private void mover(){
 		if(!Gdx.input.isTouched())
 			return;
         float iX = cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x,
@@ -229,10 +229,13 @@ public class Escena implements Screen, ContactListener {
     	//---Movimiento en 'x' de la cámara
     	if(dX!=0) dX=(dX>0)? -10 : 10;
     	if(x+dX/PPM > (Gdx.graphics.getWidth()/2)/PPM && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2)/PPM && !pajaro.tocado) {
+    		System.out.println("mover");
     		if(iX > (150+sling.getTextura().getWidth())/PPM){//Después de la resortera
+    			Constantes.seguirPajaro = false;
     			cam.position.x += dX/PPM;
 				cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx*PPM : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx*PPM : 0;
-			}
+				System.out.println("moviendome");
+    		}
     	}
 	}
 	
@@ -278,24 +281,31 @@ public class Escena implements Screen, ContactListener {
 	public void endContact(Contact contact) {}
 	public void preSolve(Contact contact, Manifold oldManifold) {
 		Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
-		if(golpeador.getBody().getUserData() instanceof Pajaro)
-			switch (((Pajaro)golpeador.getBody().getUserData()).tipo) {
-			case "rojo":
-				
-				break;
-			case "amarillo":
-				if(golpeado.getBody().getUserData() instanceof Madera && pajaro.getBody().getLinearVelocity().x+pajaro.getBody().getLinearVelocity().y > 5){
-					System.out.println("Madera. Especialidad");
-					fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+		try{
+			if(golpeador.getBody().getUserData() instanceof Pajaro){
+				System.out.println("un pajaro");
+				switch (((Pajaro)golpeador.getBody().getUserData()).tipo) {
+				case "rojo":
+					
+					break;
+				case "amarillo":
+					if(golpeado.getBody().getUserData() instanceof Madera && pajaro.getBody().getInertia()>1){
+						System.out.println("Madera. Especialidad");
+						fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+					}
+					break;
+				case "rojoGrande":
+					if(golpeado.getBody().getUserData() instanceof Madera){
+						System.out.println("Madera. Especialidad");
+						fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+					}
+					break;
+	
+				default:
+					break;
 				}
-				break;
-			case "rojoGrande":
-				
-				break;
-
-			default:
-				break;
 			}
+		}catch(Exception e){System.out.println("ex");}
 	}
 	
 	//------------------------------------------------------------------------------------------------------------------

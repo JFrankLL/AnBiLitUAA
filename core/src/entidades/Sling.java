@@ -78,6 +78,7 @@ public class Sling extends EntityAB{
 				if(!pajaro.lanzado && estirando){//no se ha lanzado pero se estaba apuntando
 					pajaro.lanzar(Constantes.vecClickInicial.x, Constantes.vecClickInicial.y, this);
 					estirando = false;
+					pajaro.tocado = false;
 					//TODO: cambiar a siguiente pájaro
 				}
 				else if(posActual.dst(Constantes.vecClickInicial) > dstMin-1)//fuera de limites de estiramiento

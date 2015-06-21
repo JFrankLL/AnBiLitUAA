@@ -14,9 +14,5 @@ public abstract class Cerdos{
 			super(world, Constantes.Graficas.strTexPig);
 			body.setTransform(new Vector2(x/PPM, y/PPM), body.getAngle());
 		}
-		@Override
-		public void render(SpriteBatch sb) {
-			super.render(sb);
-		}
 	}
 }	

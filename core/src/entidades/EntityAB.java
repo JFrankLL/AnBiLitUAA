@@ -26,7 +26,7 @@ public abstract class EntityAB {
 	}
 	
 	public abstract void render(SpriteBatch sb);
-	public abstract void actualizar();
+	protected abstract void actualizar();
 	
 	public void dispose() {
 		textura.dispose();

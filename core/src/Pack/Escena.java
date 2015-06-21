@@ -1,11 +1,7 @@
 package Pack;
 
 import static utiles.Constantes.PPM;
-
-import java.util.ArrayList;
-
 import utiles.Constantes;
-import utiles.Constantes.Graficas.Bloques.Madera;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -33,12 +29,10 @@ import entidades.EntityAB;
 import entidades.Sling;
 import entidades.bloques.Bloque;
 import entidades.bloques.Bloques;
-import entidades.cerdos.CerdoBase;
 import entidades.cerdos.Cerdos.CerdoC;
 import entidades.pajaros.Pajaro;
 import entidades.pajaros.PajaroAmarillo;
 import entidades.pajaros.PajaroBlue;
-import entidades.pajaros.PajaroRed;
 import entidades.pajaros.PajaroRedGrande;
 
 public class Escena implements Screen, ContactListener {
@@ -68,7 +62,7 @@ public class Escena implements Screen, ContactListener {
 		back = new TextureRegion(new Texture("background.png"));
 		ground = new TextureRegion(new Texture("ground.png"));
 		
-		pajaro = new PajaroBlue(world);
+		pajaro = new PajaroRedGrande(world);
 		//Nivel Temporal//------------------------------------------------------------------------------
 		System.out.println("\n\n\n\n");
 		
@@ -76,17 +70,17 @@ public class Escena implements Screen, ContactListener {
 		entidades.add(new CerdoC(world, 300f, 200f));
 		
 		entidades.clear();
-		entidades.add(new Bloques.PiedraG(world,410f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,410f, 200f, (short)90));
-		entidades.add(new Bloques.VidrioG(world,410f, 300f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,1410f, 100f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,1410f, 200f, (short)90));
+		entidades.add(new Bloques.PiedraG(world,1410f, 300f, (short)90));
 		
-		entidades.add(new Bloques.PiedraG(world,420f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,420f, 200f, (short)90));
-		entidades.add(new Bloques.VidrioG(world,420f, 300f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,1420f, 100f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,1420f, 200f, (short)90));
+		entidades.add(new Bloques.PiedraG(world,1420f, 300f, (short)90));
 		
-		entidades.add(new Bloques.PiedraG(world,430f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,430f, 200f, (short)90));
-		entidades.add(new Bloques.VidrioG(world,430f, 300f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,1430f, 100f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,1430f, 200f, (short)90));
+		entidades.add(new Bloques.PiedraG(world,1430f, 300f, (short)90));
 		//Nivel Temporal//------------------------------------------------------------------------------
 		
 		Constantes.seguirPajaro = false;
@@ -148,10 +142,10 @@ public class Escena implements Screen, ContactListener {
 			//Pájaro
 			if(pajaro.lanzado) 
 				pajaro.render(game.batch);
-			//renderiza el pájaro (aveces), entre el sling y ligas.
+			//render el pájaro (a veces), entre el sling y ligas.
 			sling.render(game.batch);
-			for(EntityAB b: entidades)//renderiza elementos en el nivel
-				b.render(game.batch);
+			for(EntityAB entidad: entidades)//render elementos en el nivel
+				entidad.render(game.batch);
 			//piso/suelo
 			game.batch.draw(ground, 0, -125f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
 		game.batch.end();
@@ -242,9 +236,8 @@ public class Escena implements Screen, ContactListener {
 		if(golpeado.getBody()!=bFloor && golpeador.getBody()!=bFloor)//el piso no extiende de entity; se arroja excepción
 		try{
 			if(checarDanio(golpeado, golpeador, impulse)){
-				fixturesPorQuitar.add(golpeado.getBody());
 				((Bloque)golpeado.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData());
-				((EntityAB)golpeado.getBody().getUserData()).actualizar();
+				fixturesPorQuitar.add(golpeado.getBody());
 			}
 		}catch(Exception e){e.printStackTrace();}
 		//--------------------------NO  BORRAR--------------------------

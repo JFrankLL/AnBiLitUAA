@@ -17,7 +17,7 @@ public abstract class Bloque extends EntityAB {
 	
 	Sprite[] sprites = new Sprite[4];
 	
-	public Bloque(World world, String[] rutasSprites, float x, float y, short angulo) {
+	public Bloque(World world, String[] rutasSprites, float x, float y, short angulo, float densidad) {
 		super(rutasSprites[0]);
 		
 		for(int i=0; i<rutasSprites.length; i++){
@@ -40,7 +40,7 @@ public abstract class Bloque extends EntityAB {
 	    shape.setAsBox((sprite.getWidth()-0.1f)/4, (sprite.getHeight()-0.1f)/4);
 	    
 		FixtureDef fixtureDef = new FixtureDef();
-	    fixtureDef.density = 1f;//+- peso
+	    fixtureDef.density = densidad;//+- peso
 	    fixtureDef.friction = 1.0f;//para que se frene en el suelo
 	    fixtureDef.restitution = 0.1f;//rebote
 		fixtureDef.shape = shape;
@@ -60,13 +60,14 @@ public abstract class Bloque extends EntityAB {
 		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);//actualiza ángulo del ave (giración)
 		sprite.draw(sb);
 	}	
-	public void actualizar(){
+	protected void actualizar(){
 		try{
 			sprite = sprites[4-(int)(vida/25)];
 		}catch(Exception e){
-			sprite = sprites[0];
+			sprite = sprites[4];
 		}
-		System.out.println("actualizado "+ this.getClass().getSimpleName()+" vida: "+vida);
+//		System.out.println("actualizado "+ this.getClass().getSimpleName()+" vida: "+vida);
+//		System.out.println((int)(vida/25));
 	}
 	public abstract boolean daniar(EntityAB daniador);
 

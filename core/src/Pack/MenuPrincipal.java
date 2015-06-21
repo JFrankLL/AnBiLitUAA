@@ -2,7 +2,6 @@ package Pack;
 
 import UI.CircleButton;
 import utiles.Constantes;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
@@ -84,7 +83,6 @@ public class MenuPrincipal extends ScreenAdapter {
 	    conf.setBounds(gW-(gW+gH)/12-gW/12, gH/12, (gW+gH)/12, (gW+gH)/12);
 	}
 	public void hide(){
-		//game.theme.pause();
 		Constantes.click = false;
 	}
 	@Override

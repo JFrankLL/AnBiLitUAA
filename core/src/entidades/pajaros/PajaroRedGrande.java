@@ -9,7 +9,7 @@ public final class PajaroRedGrande extends Pajaro implements ComportamientoPajar
 	public PajaroRedGrande(World world) {
 		super(world, Constantes.Graficas.strTexRedG);
 		tipo = "rojoGrande";
-		fuerzaLanzamiento *= 4;
+		fuerzaLanzamiento *= 3;
 		danio*=2;
 	}
 	

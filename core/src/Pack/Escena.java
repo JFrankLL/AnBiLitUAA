@@ -36,25 +36,27 @@ import entidades.bloques.Bloques;
 import entidades.cerdos.CerdoBase;
 import entidades.cerdos.Cerdos.CerdoC;
 import entidades.pajaros.Pajaro;
+import entidades.pajaros.PajaroAmarillo;
+import entidades.pajaros.PajaroRed;
 import entidades.pajaros.PajaroRedGrande;
 
 public class Escena implements Screen, ContactListener {
+	AnBiLit game;
 	OrthographicCamera cam;
-	Pajaro pajaro;
-	Array<Bloque> bloques = new Array<Bloque>();
-	ArrayList<entidades.cerdos.CerdoBase> cerdos = new ArrayList<entidades.cerdos.CerdoBase>();
+	TextureRegion back, ground;
 	
-	//Array<Body> fixturesToDestroy = new Array<Body>();
+	World world;
+	Sling sling;
+	Pajaro pajaro;
+	Body bFloor;
+	
+	Array<Bloque> bloques = new Array<Bloque>();
+	Array<CerdoBase> cerdos = new Array<CerdoBase>();
 	Array<EntityAB> fixturesPorQuitar = new Array<EntityAB>();
 	
-	Sling sling;
-	TextureRegion back, ground;
-	World world;
-	AnBiLit game;
+	static float sumaFuerzas;
 	
 	Box2DDebugRenderer dr = new Box2DDebugRenderer();
-
-	Body bFloor;
 	
 	public Escena(AnBiLit game){
 		this.game = game;
@@ -66,7 +68,7 @@ public class Escena implements Screen, ContactListener {
 		back = new TextureRegion(new Texture("background.png"));
 		ground = new TextureRegion(new Texture("ground.png"));
 		
-		pajaro = new PajaroRedGrande(world);
+		pajaro = new PajaroAmarillo(world);
 		//Nivel Temporal//------------------------------------------------------------------------------
 		System.out.println("\n\n\n");
 		
@@ -74,16 +76,17 @@ public class Escena implements Screen, ContactListener {
 		cerdos.add(new CerdoC(world, 300f, 200f));
 		
 		bloques.clear();
-		bloques.add(new Bloques.VidrioG(world,300f, 100f, (short)90));
-		bloques.add(new Bloques.MaderaG(world,300f, 200f, (short)90));
-		bloques.add(new Bloques.MaderaG(world,400f, 100*5f, (short)90));
-		bloques.add(new Bloques.PiedraG(world,450f, 100*5f, (short)90));
-		bloques.add(new Bloques.MaderaG(world,500f, 100*5f, (short)90));
-		bloques.add(new Bloques.MaderaG(world,400f, 100*7f, (short)90));
-		bloques.add(new Bloques.MaderaG(world,450f, 100*7f, (short)90));
-		bloques.add(new Bloques.MaderaG(world,500f, 100*7f, (short)90));
-		bloques.add(new Bloques.PiedraG(world,1350f, 160*5f, (short)0));
-		bloques.add(new Bloques.VidrioG(world,1450f, 160*5f, (short)0));
+		bloques.add(new Bloques.PiedraG(world,410f, 100f, (short)90));
+		bloques.add(new Bloques.MaderaG(world,410f, 200f, (short)90));
+		bloques.add(new Bloques.VidrioG(world,410f, 300f, (short)90));
+		
+		bloques.add(new Bloques.PiedraG(world,420f, 100f, (short)90));
+		bloques.add(new Bloques.MaderaG(world,420f, 200f, (short)90));
+		bloques.add(new Bloques.VidrioG(world,420f, 300f, (short)90));
+		
+		bloques.add(new Bloques.PiedraG(world,430f, 100f, (short)90));
+		bloques.add(new Bloques.MaderaG(world,430f, 200f, (short)90));
+		bloques.add(new Bloques.VidrioG(world,430f, 300f, (short)90));
 		//Nivel Temporal//------------------------------------------------------------------------------
 		
 		Constantes.seguirPajaro = false;
@@ -111,7 +114,6 @@ public class Escena implements Screen, ContactListener {
         
         world.setContactListener(this);
 	}
-
 	@Override
 	public void render(float delta) {
 		world.step(1/60f, 6, 2);
@@ -154,26 +156,70 @@ public class Escena implements Screen, ContactListener {
 		if(Constantes.Configuracion.debugRender)
 			dr.render(world, cam.combined);
 		
+		//-------------------------------------------------------
 		for(EntityAB b: fixturesPorQuitar){
 			for(Bloque bl: bloques){
-				if(bl.getBody() == b.getBody()){
-					/*if(bl.estado>=1){
-						bl.estado--;
-						break;
-					}*/
-					//else{
-						world.destroyBody(b.getBody());
-						fixturesPorQuitar.removeValue(b, true);
-						bloques.removeValue(bl, true);
-						break;
-					//}
+				if(bl.getBody() == b.getBody() && bl.vida<0){
+					world.destroyBody(b.getBody());
+					fixturesPorQuitar.removeValue(b, true);
+					bloques.removeValue(bl, true);
+					break;
 				}
 			}
 		}
-		
+		//-------------------------------------------------------
 	}
-
-	private void camUpdate() {
+	//MECANICA EJECUCION
+	//------------------------------------------------------------------------------------------------------------------
+	@Override
+	public void resize(int width, int height) {
+		cam.setToOrtho(false, width/PPM, height/PPM);
+	}
+	@Override
+	public void pause() {}
+	@Override
+	public void resume() {}
+	@Override
+	public void hide() {}
+	@Override
+	public void dispose() {
+		game.batch.dispose();
+		world.dispose();
+		pajaro.dispose();
+		//Creo que faltan mas dispose (bloques y demás)
+	}
+	//MECANICA GAMEPLAY
+	//------------------------------------------------------------------------------------------------------------------
+	private void click() {//Entrada usuario
+		if(!Constantes.click)
+			Constantes.vecClickInicial = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
+			
+		if(sling.estirar(cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x, cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).y, cam))
+			return;
+		
+		//System.out.println(Constantes.vecClickInicial.toString());
+		Constantes.click = Gdx.input.isTouched();
+	}	
+	private void mover() {//Scroll de pantalla
+		if(!Gdx.input.isTouched())
+			return;
+        float iX = cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x,
+        	  iY = Gdx.input.getY()/PPM, 
+        	  gH = Gdx.graphics.getHeight()/PPM, 
+        	  rbX= pajaro.posision().x/PPM, rbY = pajaro.posision().y/PPM, x = cam.position.x, 
+        	  dX = Gdx.input.getDeltaX(), scrollDx = 0.000003f*x;
+        
+    	//---Movimiento en 'x' de la cámara
+    	if(dX!=0) dX=(dX>0)? -10 : 10;
+    	if(x+dX/PPM > (Gdx.graphics.getWidth()/2)/PPM && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2)/PPM && !pajaro.tocado) {
+    		if(iX > (150+sling.getTextura().getWidth())/PPM){//Después de la resortera
+    			Constantes.seguirPajaro = false;
+    			cam.position.x += dX/PPM;
+				cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx*PPM : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx*PPM : 0;
+    		}
+    	}
+	}
+	private void camUpdate() {//Actualizar/Refrescar Camera
 		if(Constantes.seguirPajaro){
 			Vector2 pajPos = pajaro.posision();
 			if(pajPos.x > Gdx.graphics.getWidth()/2/PPM &&
@@ -184,64 +230,15 @@ public class Escena implements Screen, ContactListener {
 		}
 		cam.update();
 	}
-
-	@Override
-	public void resize(int width, int height) {
-		cam.setToOrtho(false, width/PPM, height/PPM);
-	}
-
-	@Override
-	public void pause() {}
-
-	@Override
-	public void resume() {}
-
-	@Override
-	public void hide() {}
-
-	@Override
-	public void dispose() {
-		game.batch.dispose();
-		world.dispose();
-		pajaro.dispose();
-	}
+	//CONTACT LISTENER
+	//------------------------------------------------------------------------------------------------------------------
 	
-	private void click() {
-		if(!Constantes.click)
-			Constantes.vecClickInicial = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
-			
-		if(sling.estirar(cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x, cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).y, cam))
-			return;
-		
-		//System.out.println(Constantes.vecClickInicial.toString());
-		Constantes.click = Gdx.input.isTouched();
-	}
-	
-	private void mover(){
-		if(!Gdx.input.isTouched())
-			return;
-        float iX = cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x,
-        		iY = Gdx.input.getY()/PPM, 
-        		gH = Gdx.graphics.getHeight()/PPM, 
-        		rbX = pajaro.posision().x/PPM, rbY = pajaro.posision().y/PPM, x = cam.position.x, 
-        		dX = Gdx.input.getDeltaX(), scrollDx = 0.000003f*x;
-        
-    	//---Movimiento en 'x' de la cámara
-    	if(dX!=0) dX=(dX>0)? -10 : 10;
-    	if(x+dX/PPM > (Gdx.graphics.getWidth()/2)/PPM && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2)/PPM && !pajaro.tocado) {
-    		System.out.println("mover");
-    		if(iX > (150+sling.getTextura().getWidth())/PPM){//Después de la resortera
-    			Constantes.seguirPajaro = false;
-    			cam.position.x += dX/PPM;
-				cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx*PPM : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx*PPM : 0;
-				System.out.println("moviendome");
-    		}
-    	}
-	}
-	
-	//CONTACT LISTENER//------------------------------------------------------------------------------------------------
-	public void postSolve(Contact contact, ContactImpulse impulse) {/*
-		Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
+	//CONTACT LISTENER
+	//------------------------------------------------------------------------------------------------------------------
+	public void postSolve(Contact contact, ContactImpulse impulse) {
+		//--------------------------NO  BORRAR--------------------------
+		//							[version1]
+		/*Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
 		try{
 			if((golpeador.getBody().getUserData() instanceof Pajaro && golpeado.getBody().getUserData() instanceof Bloque)){
 				System.out.println("paj pega bloq");
@@ -266,68 +263,118 @@ public class Escena implements Screen, ContactListener {
 			//TODO: Checar tipo de material y pájaro para así poder 
 			//		dañar adecuadamente.
 			
-			if(((EntityAB)golpeado.getBody().getUserData()).aguanteGolpe < sum(impulse.getNormalImpulses()))
+			if(((EntityAB)golpeado.getBody().getUserData()).friccionMax < sum(impulse.getNormalImpulses()))
 				fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
-			//checar apachurramiento 
-			if(((EntityAB)golpeado.getBody().getUserData()).aguantePression < sum(impulse.getTangentImpulses()))
+			if(((EntityAB)golpeado.getBody().getUserData()).impactoMaximo < sum(impulse.getTangentImpulses()))
 				fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
 			 
-		}catch (Exception e) {
-			System.out.println("error");
-			e.printStackTrace();
-		}
-	*/}
-	public void beginContact(Contact contact) {}
-	public void endContact(Contact contact) {}
-	public void preSolve(Contact contact, Manifold oldManifold) {
+		}catch (Exception e) {e.printStackTrace();}
+		*/			
+		//--------------------------NO  BORRAR--------------------------
+		//							[version2]creo que esta es mejor
+	
 		Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
 		try{
 			if(golpeador.getBody().getUserData() instanceof Pajaro){
-				System.out.println("un pajaro");
+				float danio = ((Pajaro)golpeador.getBody().getUserData()).danio;
 				switch (((Pajaro)golpeador.getBody().getUserData()).tipo) {
 				case "rojo":
-					
+					if(golpeado.getBody().getUserData() instanceof entidades.bloques.Bloque)
+						if(golpeado.getBody().getUserData() instanceof entidades.bloques.Bloques.Piedra){
+							if(checarDanio(golpeado, golpeador, impulse))//suficiente impacto/friccion?
+								((Bloque)golpeado.getBody().getUserData()).vida -= danio*(sumaFuerzas)/2;//especial -
+							((Bloque)golpeado.getBody().getUserData()).actualizar();//actualizar bloque [sprite/vida]
+							if(((Bloque)golpeado.getBody().getUserData()).vida<0)//se le acabo la vida mandar a quitar
+								fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+						}
+						else {
+							if(checarDanio(golpeado, golpeador, impulse))//suficiente impacto/friccion?
+								((Bloque)golpeado.getBody().getUserData()).vida -= danio*(sumaFuerzas);//normal
+							((Bloque)golpeado.getBody().getUserData()).actualizar();//actualizar bloque [sprite/vida]
+							if(((Bloque)golpeado.getBody().getUserData()).vida<0)//se le acabo la vida mandar a quitar
+								fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+						}
+					else if(golpeado.getBody().getUserData() instanceof CerdoBase){
+						System.out.println("red pega cerdo");
+					}
+					System.out.println("daño: "+danio*(sumaFuerzas));
 					break;
+				//------------------------------------------------------------------------------------
 				case "amarillo":
-					if(golpeado.getBody().getUserData() instanceof Madera && pajaro.getBody().getInertia()>1){
-						System.out.println("Madera. Especialidad");
-						fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+					if(golpeado.getBody().getUserData() instanceof entidades.bloques.Bloque)
+						if(golpeado.getBody().getUserData() instanceof entidades.bloques.Bloques.Madera){
+							if(checarDanio(golpeado, golpeador, impulse))//suficiente impacto/friccion?
+								((Bloque)golpeado.getBody().getUserData()).vida -= danio*(sumaFuerzas)*2;//especial +
+							((Bloque)golpeado.getBody().getUserData()).actualizar();//actualizar bloque [sprite/vida]
+							if(((Bloque)golpeado.getBody().getUserData()).vida<0)//se le acabo la vida mandar a quitar
+								fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+						}
+						else {
+							if(checarDanio(golpeado, golpeador, impulse))//suficiente impacto/friccion?
+								((Bloque)golpeado.getBody().getUserData()).vida -=  danio*(sumaFuerzas);//normal
+							((Bloque)golpeado.getBody().getUserData()).actualizar();//actualizar bloque [sprite/vida]
+							if(((Bloque)golpeado.getBody().getUserData()).vida<0)//se le acabo la vida mandar a quitar
+								fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+						}
+					else if(golpeado.getBody().getUserData() instanceof CerdoBase){
+						System.out.println("amarillo pega cerdo");
 					}
 					break;
+				//------------------------------------------------------------------------------------
 				case "rojoGrande":
-					if(golpeado.getBody().getUserData() instanceof Madera){
-						System.out.println("Madera. Especialidad");
-						fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+					if(golpeado.getBody().getUserData() instanceof entidades.bloques.Bloque)
+						if(golpeado.getBody().getUserData() instanceof entidades.bloques.Bloques.Piedra){
+							if(checarDanio(golpeado, golpeador, impulse))//suficiente impacto/friccion?
+								((Bloque)golpeado.getBody().getUserData()).vida -=  danio*(sumaFuerzas)/4;//especial -
+							((Bloque)golpeado.getBody().getUserData()).actualizar();//actualizar bloque [sprite/vida]
+							if(((Bloque)golpeado.getBody().getUserData()).vida<0)//se le acabo la vida mandar a quitar
+								fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+						}
+						else {
+							if(checarDanio(golpeado, golpeador, impulse))//suficiente impacto/friccion?
+								((Bloque)golpeado.getBody().getUserData()).vida -=  danio*(sumaFuerzas);//normal
+							((Bloque)golpeado.getBody().getUserData()).actualizar();//actualizar bloque [sprite/vida]
+							if(((Bloque)golpeado.getBody().getUserData()).vida<0)//se le acabo la vida mandar a quitar
+								fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+						}
+					else if(golpeado.getBody().getUserData() instanceof CerdoBase){
+						System.out.println("redgigante pega cerdo");
 					}
 					break;
-	
+				//------------------------------------------------------------------------------------
+					//TODO azul, blanco, negro
 				default:
 					break;
 				}
 			}
+			else if(golpeador.getBody().getUserData() instanceof CerdoBase && golpeado.getBody().getUserData() instanceof Bloque){
+				System.out.println("Cerdo golpeo!!");
+			}
 		}catch(Exception e){System.out.println("ex");}
+		
+	}
+	public void beginContact(Contact contact) {}
+	public void endContact(Contact contact) {}
+	public void preSolve(Contact contact, Manifold oldManifold) {}
+	//COMPLEMENTOS A CONTACT LISTENER
+	//------------------------------------------------------------------------------------------------------------------
+	
+	private boolean checarDanio(Fixture golpeado, Fixture golpeador, ContactImpulse impulse){
+		// impacto
+		if(((EntityAB)golpeado.getBody().getUserData()).normalMax < sum(impulse.getNormalImpulses()))
+			return true;
+		// Fricción
+		if(((EntityAB)golpeado.getBody().getUserData()).tangentMax < sum(impulse.getTangentImpulses()))
+			return true;
+		return false;
+	}
+	
+	private static float sum(float[] a){//sumatoria -.-
+		sumaFuerzas = 0;
+		for(float f: a)
+			sumaFuerzas+=f;
+		return sumaFuerzas;
 	}
 	
 	//------------------------------------------------------------------------------------------------------------------
-	
-	
-	//para contact listener//------------------------
-	
-	private boolean checarDanio(Fixture golpeado, Fixture golpeador, ContactImpulse impulse){
-			if(((EntityAB)golpeado.getBody().getUserData()).aguanteGolpe < sum(impulse.getNormalImpulses()))
-				//fixturesToDestroy.add((EntityAB)golpeado.getBody().getUserData());
-				return true;
-			//checar apachurramiento 
-			if(((EntityAB)golpeado.getBody().getUserData()).aguantePression < sum(impulse.getTangentImpulses()))
-				//fixturesToDestroy.add((EntityAB)golpeado.getBody().getUserData());
-				return true;
-			return false;
-	}
-	
-	public static float sum(float[] a){
-		float s=0;
-		for(float f: a)
-			s+=f;
-		return s;
-	}
 }

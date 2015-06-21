@@ -31,7 +31,7 @@ public class CerdoBase extends EntityAB {
 	    body.setGravityScale(1);
 	    
 	    //body.setUserData(new Vector2(1f, 1f));
-	    aguanteGolpe = 1f;
+	    normalMax = 1f;
 	    body.setUserData(this);
 	    
         shape.dispose();

@@ -10,7 +10,6 @@ public class Constantes {
 	public static boolean seguirPajaro = false;
 	public static Vector2 vecClickInicial;
 	
-	
 	public static class Graficas{
 		
 		public static final String strTexRed = "red.png";

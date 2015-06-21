@@ -55,8 +55,8 @@ public class Sling extends EntityAB{
 
 		Vector2 posActual = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
 		
-		int limX = (x>208/PPM)?0:(x>80 /PPM)?1:0;//Limite rectangular x
-		int limY = (y>400/PPM)?0:(y>100/PPM)?1:0;//Limite rectangular y
+		/*int limX = (x>208/PPM)?0:(x>80 /PPM)?1:0;//Limite rectangular x
+		int limY = (y>400/PPM)?0:(y>100/PPM)?1:0;//Limite rectangular y*/
 		
 		if(!pajaro.lanzado)
 			if(Gdx.input.isTouched()){//Click

@@ -47,7 +47,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	    body.setGravityScale(0);//para que no se caiga
 	    
 	    //body.setUserData(new Vector2(1f, 1f));
-	    aguanteGolpe = 10f;
+	    normalMax = 10f;
 	    body.setUserData(this);
 	    
         shape.dispose();

@@ -5,6 +5,7 @@ import static utiles.Constantes.PPM;
 import java.util.ArrayList;
 
 import utiles.Constantes;
+import utiles.Constantes.Graficas.Bloques.Madera;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -74,10 +75,13 @@ public class Escena implements Screen, ContactListener {
 		
 		bloques.clear();
 		bloques.add(new Bloques.VidrioG(world,300f, 100f, (short)90));
-		bloques.add(new Bloques.PiedraG(world,300f, 200f, (short)90));
+		bloques.add(new Bloques.MaderaG(world,300f, 200f, (short)90));
 		bloques.add(new Bloques.MaderaG(world,400f, 100*5f, (short)90));
 		bloques.add(new Bloques.PiedraG(world,450f, 100*5f, (short)90));
 		bloques.add(new Bloques.MaderaG(world,500f, 100*5f, (short)90));
+		bloques.add(new Bloques.MaderaG(world,400f, 100*7f, (short)90));
+		bloques.add(new Bloques.MaderaG(world,450f, 100*7f, (short)90));
+		bloques.add(new Bloques.MaderaG(world,500f, 100*7f, (short)90));
 		bloques.add(new Bloques.PiedraG(world,1350f, 160*5f, (short)0));
 		bloques.add(new Bloques.VidrioG(world,1450f, 160*5f, (short)0));
 		//Nivel Temporal//------------------------------------------------------------------------------
@@ -209,7 +213,7 @@ public class Escena implements Screen, ContactListener {
 		if(sling.estirar(cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x, cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).y, cam))
 			return;
 		
-		//System.out.println(vec2.toString());
+		//System.out.println(Constantes.vecClickInicial.toString());
 		Constantes.click = Gdx.input.isTouched();
 	}
 	
@@ -233,7 +237,7 @@ public class Escena implements Screen, ContactListener {
 	}
 	
 	//CONTACT LISTENER//------------------------------------------------------------------------------------------------
-	public void postSolve(Contact contact, ContactImpulse impulse) {
+	public void postSolve(Contact contact, ContactImpulse impulse) {/*
 		Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
 		try{
 			if((golpeador.getBody().getUserData() instanceof Pajaro && golpeado.getBody().getUserData() instanceof Bloque)){
@@ -269,10 +273,30 @@ public class Escena implements Screen, ContactListener {
 			System.out.println("error");
 			e.printStackTrace();
 		}
-	}
+	*/}
 	public void beginContact(Contact contact) {}
 	public void endContact(Contact contact) {}
-	public void preSolve(Contact contact, Manifold oldManifold) {}
+	public void preSolve(Contact contact, Manifold oldManifold) {
+		Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
+		if(golpeador.getBody().getUserData() instanceof Pajaro)
+			switch (((Pajaro)golpeador.getBody().getUserData()).tipo) {
+			case "rojo":
+				
+				break;
+			case "amarillo":
+				if(golpeado.getBody().getUserData() instanceof Madera && pajaro.getBody().getLinearVelocity().x+pajaro.getBody().getLinearVelocity().y > 5){
+					System.out.println("Madera. Especialidad");
+					fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
+				}
+				break;
+			case "rojoGrande":
+				
+				break;
+
+			default:
+				break;
+			}
+	}
 	
 	//------------------------------------------------------------------------------------------------------------------
 	

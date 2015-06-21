@@ -8,6 +8,7 @@ public final class PajaroAmarillo extends Pajaro implements ComportamientoPajaro
 
 	public PajaroAmarillo(World world) {
 		super(world, Constantes.Graficas.strTexYel);
+		tipo = "amarillo";
 		danio += 10;
 	}
 

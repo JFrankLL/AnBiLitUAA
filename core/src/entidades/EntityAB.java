@@ -17,7 +17,7 @@ public abstract class EntityAB {
 	protected Body body;
 	protected BodyDef bodyDef;
 	
-	public float aguanteGolpe=6f, aguantePression=1000f;//este debe ser muy pequeño
+	public float aguanteGolpe=0.1f, aguantePression=0.1f;//este debe ser muy pequeño
 	
 	public EntityAB(World world, String rutaSprite) {
 		this.world = world;

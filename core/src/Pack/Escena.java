@@ -69,7 +69,6 @@ public class Escena implements Screen, ContactListener {
 		entidades.clear();
 		entidades.add(new CerdoC(world, 300f, 200f));
 		
-		entidades.clear();
 		entidades.add(new Bloques.VidrioG(world,1410f, 100f, (short)90));
 		entidades.add(new Bloques.MaderaG(world,1410f, 200f, (short)90));
 		entidades.add(new Bloques.PiedraG(world,1410f, 300f, (short)90));

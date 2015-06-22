@@ -14,7 +14,7 @@ public abstract class Bloques{
 	public static abstract class Vidrio extends Bloque{
 		public Vidrio(World world, String[] rutasSprites, float x, float y, short angulo) {
 			super(world, rutasSprites, x, y, angulo, 5);
-			normalMax += 80f; tangentMax += 1f;
+			normalMax += 20f; tangentMax += 1f;
 			normalMax /= 4;  tangentMax /= 4;
 		}
 		public boolean daniar(entidades.EntityAB daniador) {

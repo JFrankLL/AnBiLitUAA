@@ -69,17 +69,17 @@ public class Escena implements Screen, ContactListener {
 		entidades.clear();
 		entidades.add(new CerdoC(world, 300f, 200f));
 		
-		entidades.add(new Bloques.VidrioG(world,1410f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,1410f, 200f, (short)90));
-		entidades.add(new Bloques.PiedraG(world,1410f, 300f, (short)90));
+		entidades.add(new Bloques.PiedraG(world,410f, 100f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,410f, 200f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,410f, 300f, (short)90));
 		
-		entidades.add(new Bloques.VidrioG(world,1420f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,1420f, 200f, (short)90));
-		entidades.add(new Bloques.PiedraG(world,1420f, 300f, (short)90));
+		entidades.add(new Bloques.PiedraG(world,420f, 100f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,420f, 200f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,420f, 300f, (short)90));
 		
-		entidades.add(new Bloques.VidrioG(world,1430f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,1430f, 200f, (short)90));
-		entidades.add(new Bloques.PiedraG(world,1430f, 300f, (short)90));
+		entidades.add(new Bloques.PiedraG(world,430f, 100f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,430f, 200f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,430f, 300f, (short)90));
 		//Nivel Temporal//------------------------------------------------------------------------------
 		
 		Constantes.seguirPajaro = false;

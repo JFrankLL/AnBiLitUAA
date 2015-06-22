@@ -1,7 +1,5 @@
 package entidades;
 
-import static utiles.Constantes.PPM;
-
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -21,8 +19,8 @@ public abstract class EntityAB {
 	public EntityAB(String rutaSprite) {
 		textura = new Texture(rutaSprite);
 		sprite = new Sprite(textura);
-		sprite.setOrigin((sprite.getWidth()/2)/PPM, (sprite.getHeight()/2)/PPM);
-		sprite.setSize(sprite.getWidth()/PPM, sprite.getHeight()/PPM);
+		sprite.setOrigin((sprite.getWidth()/2), (sprite.getHeight()/2));
+		sprite.setSize(sprite.getWidth(), sprite.getHeight());
 	}
 	
 	public abstract void render(SpriteBatch sb);

@@ -1,6 +1,5 @@
 package entidades.pajaros;
 
-import static utiles.Constantes.PPM;
 import utiles.Constantes;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -26,7 +25,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	
 	public Pajaro(World world, String rutaTexture){
 		super(rutaTexture);
-		sprite.setPosition(170/PPM, 210/PPM);
+		sprite.setPosition(170, 210);
 		
 		bodyDef = new BodyDef();
 	    bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -38,7 +37,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 		FixtureDef fixtureDef = new FixtureDef();
 	    fixtureDef.density = 1f;//+- peso
 	    fixtureDef.friction = 1f;//para que se frene en el suelo
-	    fixtureDef.restitution = .5f;//rebote
+	    fixtureDef.restitution = 0.45f;//rebote
 		fixtureDef.shape = shape;
 	    
 		body.setAngularDamping(10.5f);//para que gire en el suelo
@@ -69,7 +68,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 		
 		body.setGravityScale(1);//actuar gravedad sobre este pajaro
 		//if(new Vector2(xib, yib).dst(body.getPosition().x, body.getPosition().y) < sling.dstMax)
-		body.applyForceToCenter((xib-body.getPosition().x)*PPM*fuerzaLanzamiento, (yib-body.getPosition().y)*PPM*fuerzaLanzamiento, true);
+		body.applyForceToCenter((xib-body.getPosition().x)*fuerzaLanzamiento, (yib-body.getPosition().y)*fuerzaLanzamiento, true);
 		lanzado = true;
 		Constantes.seguirPajaro = true;
 	}

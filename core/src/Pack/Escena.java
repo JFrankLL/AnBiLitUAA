@@ -1,7 +1,7 @@
 package Pack;
 
-import static utiles.Constantes.PPM;
 import utiles.Constantes;
+import utiles.StaticBody;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -13,15 +13,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
@@ -38,12 +35,11 @@ import entidades.pajaros.PajaroRedGrande;
 public class Escena implements Screen, ContactListener {
 	AnBiLit game;
 	OrthographicCamera cam;
-	TextureRegion back, ground;
-	
+	TextureRegion back;
+	StaticBody ground;
 	World world;
 	Sling sling;
 	Pajaro pajaro;
-	Body bFloor;
 	
 	Array<EntityAB> entidades = new Array<EntityAB>();
 	Array<Body> fixturesPorQuitar = new Array<Body>();
@@ -60,8 +56,7 @@ public class Escena implements Screen, ContactListener {
 	public void show() {
 		world = new World(new Vector2(0, -9.8f), true);
 		back = new TextureRegion(new Texture("background.png"));
-		ground = new TextureRegion(new Texture("ground.png"));
-		
+		ground = new StaticBody(world, "Imagenes/Escena/ground.json", "ground", new Texture("ground.png"));
 		pajaro = new PajaroRedGrande(world);
 		//Nivel Temporal//------------------------------------------------------------------------------
 		System.out.println("\n\n\n\n");
@@ -83,27 +78,11 @@ public class Escena implements Screen, ContactListener {
 		//Nivel Temporal//------------------------------------------------------------------------------
 		
 		Constantes.seguirPajaro = false;
-		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
+		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		sling = new Sling("slingshot.png", "slingshot2.png", pajaro);
-		
-		//CUERPO ESTATICO (Ground)
-        BodyDef groundBodyDef = new BodyDef();
-        groundBodyDef.type = BodyDef.BodyType.StaticBody;
-        groundBodyDef.position.set(1024/PPM, 32/PPM);
-        bFloor = world.createBody(groundBodyDef);
-	    
-        PolygonShape shape = new PolygonShape();
-	    shape.setAsBox(1024/PPM, 32/PPM);
-		FixtureDef fixtureDef = new FixtureDef();
-	    fixtureDef.shape = shape;
-	    fixtureDef.density = 1f;
-	    
-	    bFloor.createFixture(fixtureDef);
-	    
+			    
 	    dr.setDrawBodies(true);
 		dr.setDrawVelocities(true);
-	    
-        shape.dispose();
         
         world.setContactListener(this);
 	}
@@ -137,7 +116,7 @@ public class Escena implements Screen, ContactListener {
 		game.batch.setProjectionMatrix(cam.combined);
 		game.batch.begin();
 			//fondo
-			game.batch.draw(back, 0, -170f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
+			game.batch.draw(back, 0, -170f, back.getRegionWidth(), back.getRegionHeight());
 			//Pájaro
 			if(pajaro.lanzado) 
 				pajaro.render(game.batch);
@@ -146,7 +125,7 @@ public class Escena implements Screen, ContactListener {
 			for(EntityAB entidad: entidades)//render elementos en el nivel
 				entidad.render(game.batch);
 			//piso/suelo
-			game.batch.draw(ground, 0, -125f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
+			ground.draw(game.batch);
 		game.batch.end();
 		if(Constantes.Configuracion.debugRender)
 			dr.render(world, cam.combined);
@@ -157,7 +136,7 @@ public class Escena implements Screen, ContactListener {
 	//------------------------------------------------------------------------------------------------------------------
 	@Override
 	public void resize(int width, int height) {
-		cam.setToOrtho(false, width/PPM, height/PPM);
+		cam.setToOrtho(false, width, height);
 	}
 	@Override
 	public void pause() {}
@@ -188,29 +167,29 @@ public class Escena implements Screen, ContactListener {
 		if(!Gdx.input.isTouched())
 			return;
         float iX = cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x,
-        	  iY = Gdx.input.getY()/PPM, 
-        	  gH = Gdx.graphics.getHeight()/PPM, 
-        	  rbX= pajaro.posision().x/PPM, rbY = pajaro.posision().y/PPM, x = cam.position.x, 
+        	  iY = Gdx.input.getY(), 
+        	  gH = Gdx.graphics.getHeight(), 
+        	  rbX= pajaro.posision().x, rbY = pajaro.posision().y, x = cam.position.x, 
         	  dX = Gdx.input.getDeltaX(), scrollDx = 0.000003f*x;
         
     	//---Movimiento en 'x' de la cámara
     	if(dX!=0) dX=(dX>0)? -10 : 10;
-    	if(x+dX/PPM > (Gdx.graphics.getWidth()/2)/PPM && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2)/PPM && !pajaro.tocado) {
-    		if(iX > (150+sling.getTextura().getWidth())/PPM){//Después de la resortera
+    	if(x+dX > (Gdx.graphics.getWidth()/2) && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2) && !pajaro.tocado) {
+    		if(iX > (150+sling.getTextura().getWidth())){//Después de la resortera
     			Constantes.seguirPajaro = false;
-    			cam.position.x += dX/PPM;
-				cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx*PPM : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx*PPM : 0;
+    			cam.position.x += dX;
+				cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx : 0;
     		}
     	}
 	}
 	private void camUpdate() {//Actualizar/Refrescar Camera
 		if(Constantes.seguirPajaro){
 			Vector2 pajPos = pajaro.posision();
-			if(pajPos.x > Gdx.graphics.getWidth()/2/PPM &&
-				pajPos.x < (2048/PPM)-Gdx.graphics.getWidth()/2/PPM)
+			if(pajPos.x > Gdx.graphics.getWidth()/2 &&
+				pajPos.x < (2048)-Gdx.graphics.getWidth()/2)
 				cam.position.x = pajPos.x;
-			if(pajPos.y > (Gdx.graphics.getHeight())*0.75f/PPM)
-				cam.position.y = pajPos.y - (Gdx.graphics.getHeight()+PPM)*0.25f/PPM;
+			if(pajPos.y > (Gdx.graphics.getHeight())*0.75f)
+				cam.position.y = pajPos.y - (Gdx.graphics.getHeight())*0.25f;
 		}
 		cam.update();
 	}
@@ -232,7 +211,7 @@ public class Escena implements Screen, ContactListener {
 		Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
 		//--------------------------NO  BORRAR--------------------------
 		//							[version0]creo que esta es mas "simple"
-		if(golpeado.getBody()!=bFloor && golpeador.getBody()!=bFloor)//el piso no extiende de entity; se arroja excepción
+		if(golpeado.getBody()!=ground.body && golpeador.getBody()!=ground.body)//el piso no extiende de entity; se arroja excepción
 		try{
 			if(checarDanio(golpeado, golpeador, impulse)){
 				((Bloque)golpeado.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData());

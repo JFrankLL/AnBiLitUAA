@@ -75,8 +75,8 @@ public class MenuPrincipal extends ScreenAdapter {
 	public void resize(int width, int height){
 	    gW = Gdx.graphics.getWidth();
 	    gH = Gdx.graphics.getHeight();
-		cam.viewportWidth = width;
-		cam.viewportHeight = height;
+		cam.viewportWidth = gW;
+		cam.viewportHeight = gH;
 	    cam.position.x = gW/2;
 	    cam.position.y = gH/2;
 	    play.setBounds(gW/12, gH/12, (gW+gH)/12, (gW+gH)/12);

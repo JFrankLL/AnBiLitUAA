@@ -1,7 +1,5 @@
 package entidades.bloques;
 
-import static utiles.Constantes.PPM;
-
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,7 +24,7 @@ public abstract class Bloque extends EntityAB {
 			sprites[i].setSize(sprite.getWidth()/2, sprite.getHeight()/2);
 		}
 		
-		sprite.setPosition(x/PPM, y/PPM);
+		sprite.setPosition(x, y);
 		sprite.setOriginCenter();
 		sprite.setScale(0.5f);
 		

@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.Array;
 
 import entidades.EntityAB;
 import entidades.Sling;
+import entidades.Sling2;
 import entidades.bloques.Bloque;
 import entidades.bloques.Bloques;
 import entidades.cerdos.Cerdos.CerdoC;
@@ -38,7 +39,8 @@ public class Escena implements Screen, ContactListener {
 	TextureRegion back;
 	StaticBody ground;
 	World world;
-	Sling sling;
+	//Sling sling;
+	Sling2 sling2;
 	Pajaro pajaro;
 	
 	Array<EntityAB> entidades = new Array<EntityAB>();
@@ -79,8 +81,8 @@ public class Escena implements Screen, ContactListener {
 		
 		Constantes.seguirPajaro = false;
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		sling = new Sling("slingshot.png", "slingshot2.png", pajaro);
-			    
+		//sling = new Sling("slingshot0.png", "slingshot1.png", pajaro);
+		sling2 = new Sling2();
 	    dr.setDrawBodies(true);
 		dr.setDrawVelocities(true);
         
@@ -88,55 +90,59 @@ public class Escena implements Screen, ContactListener {
 	}
 	@Override
 	public void render(float delta) {
-		//MECANICA DE OPCIONES 
-        //---------------------------------------------------------------------------------------------------
-		//TODO: esto debe ser un switch, creo..
+//	ACTUALIZAR	//---------------------------------------------------------------------------------------------------
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClearColor((245/255f), (255/255f), (255/255f), 1); //RGB
+		camUpdate();
+//	MECANICA DE OPCIONES	//---------------------------------------------------------------------------------------
+		//esto debe ser un switch, creo..
 		if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
 			game.setScreen(game.menu);
 		else if(Gdx.input.isKeyJustPressed(Input.Keys.F4))
 			Constantes.Configuracion.debugRender=(Constantes.Configuracion.debugRender)?false:true;
 		else if(Gdx.input.isKeyJustPressed(Input.Keys.F2))
 			game.setScreen(game.escena);
-		//---------------------------------------------------------------------------------------------------
-		world.step(1/60f, 6, 2);
-		//ACTUALIZAR
-		camUpdate();
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		Gdx.gl.glClearColor((245/255f), (255/255f), (255/255f), 1); //RGB
-		
-		//MECANICA DE JUEGO// 
-        //---------------------------------------------------------------------------------------------------
+//	MECANICA DE JUEGO	// ------------------------------------------------------------------------------------------
 		click();//click inicial principalmente. para poder lanzar
-        mover();//Scroll en el juego
+		if(Gdx.input.isTouched()){
+			mover();
+			sling2.estirar();
+			Constantes.click = true;
+		}
+		if(!Gdx.input.isTouched()){
+			if(Constantes.click){
+				sling2.lanzar();
+				Constantes.click = false;
+			}
+		}/*
         if(Constantes.click && !(sling.estirando))//si click y no apuntando para lanzar
-        	pajaro.comportamiento();
+        	pajaro.comportamiento();*/
         removerRotos();//quitar entidades 'muertas'
-        //DIBUJAR//
-        //---------------------------------------------------------------------------------------------------
+//	DIBUJAR	//--------------------------------------------------------------------------------------------------------
 		game.batch.setProjectionMatrix(cam.combined);
 		game.batch.begin();
 			//fondo
 			game.batch.draw(back, 0, -170f, back.getRegionWidth(), back.getRegionHeight());
 			//Pájaro
-			if(pajaro.lanzado) 
-				pajaro.render(game.batch);
+			//if(pajaro.lanzado) //////////////////////////
+				//pajaro.render(game.batch);
 			//render el pájaro (a veces), entre el sling y ligas.
-			sling.render(game.batch);
+			//sling.render(game.batch);
+			sling2.draw(game.batch);
 			for(EntityAB entidad: entidades)//render elementos en el nivel
 				entidad.render(game.batch);
-			//piso/suelo
-			ground.draw(game.batch);
+			ground.draw(game.batch); //Piso, suelo
 		game.batch.end();
 		if(Constantes.Configuracion.debugRender)
 			dr.render(world, cam.combined);
-		//---------------------------------------------------------------------------------------------------
-		
+		world.step(1f*Gdx.graphics.getDeltaTime(), 6, 2);
 	}
 	//METODOS T.EJECUCION
 	//------------------------------------------------------------------------------------------------------------------
 	@Override
 	public void resize(int width, int height) {
 		cam.setToOrtho(false, width, height);
+		sling2.setBounds(100, 64, pajaro);
 	}
 	@Override
 	public void pause() {}
@@ -155,27 +161,19 @@ public class Escena implements Screen, ContactListener {
 	//------------------------------------------------------------------------------------------------------------------
 	private void click() {//Entrada usuario
 		if(!Constantes.click)
-			Constantes.vecClickInicial = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);	
-			
-		if(sling.estirar(cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x, cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).y, cam))
-			return;
+			Constantes.vecClickInicial = new Vector2(cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).x, cam.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(),0)).y);
+		/*if(sling.estirar(cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x, cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).y, cam))
+			return;*/
 		
 		//System.out.println(Constantes.vecClickInicial.toString());
 		Constantes.click = Gdx.input.isTouched();
 	}	
 	private void mover() {//Scroll de pantalla
-		if(!Gdx.input.isTouched())
-			return;
-        float iX = cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x,
-        	  iY = Gdx.input.getY(), 
-        	  gH = Gdx.graphics.getHeight(), 
-        	  rbX= pajaro.posision().x, rbY = pajaro.posision().y, x = cam.position.x, 
-        	  dX = Gdx.input.getDeltaX(), scrollDx = 0.000003f*x;
-        
-    	//---Movimiento en 'x' de la cámara
-    	if(dX!=0) dX=(dX>0)? -10 : 10;
-    	if(x+dX > (Gdx.graphics.getWidth()/2) && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2) && !pajaro.tocado) {
-    		if(iX > (150+sling.getTextura().getWidth())){//Después de la resortera
+        float iX = Gdx.input.getX(), gW = Gdx.graphics.getWidth(), x = cam.position.x, dX = Gdx.input.getDeltaX(), scrollDx = 0.000003f*x;
+    	dX = (dX==0)?0:(dX>0)? -10 :10;
+    	
+    	if(x+dX > (gW/2) && x+dX < (back.getRegionWidth()-gW/2) && !pajaro.tocado) {
+    		if(iX > (150)){
     			Constantes.seguirPajaro = false;
     			cam.position.x += dX;
 				cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx : 0;
@@ -205,8 +203,7 @@ public class Escena implements Screen, ContactListener {
 			}
 		}
 	}
-	//CONTACT LISTENER
-	//------------------------------------------------------------------------------------------------------------------
+//	CONTACT LISTENER	//------------------------------------------------------------------------------------------------------------------
 	public void postSolve(Contact contact, ContactImpulse impulse) {
 		Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
 		//--------------------------NO  BORRAR--------------------------
@@ -337,14 +334,11 @@ public class Escena implements Screen, ContactListener {
 	public void beginContact(Contact contact) {}
 	public void endContact(Contact contact) {}
 	public void preSolve(Contact contact, Manifold oldManifold) {}
-	//COMPLEMENTOS A CONTACT LISTENER
-	//------------------------------------------------------------------------------------------------------------------
+//	COMPLEMENTOS A CONTACT LISTENER		//------------------------------------------------------------------------------------------------------------------
 	private boolean checarDanio(Fixture golpeado, Fixture golpeador, ContactImpulse impulse){
-		// impacto
-		if(((EntityAB)golpeado.getBody().getUserData()).normalMax < sum(impulse.getNormalImpulses()))
+		if(((EntityAB)golpeado.getBody().getUserData()).normalMax < sum(impulse.getNormalImpulses()))	// impacto
 			return true;
-		// Fricción
-		if(((EntityAB)golpeado.getBody().getUserData()).tangentMax < sum(impulse.getTangentImpulses()))
+		if(((EntityAB)golpeado.getBody().getUserData()).tangentMax < sum(impulse.getTangentImpulses()))	// Fricción
 			return true;
 		return false;
 	}	

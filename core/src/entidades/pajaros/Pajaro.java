@@ -35,9 +35,9 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	    CircleShape shape = new CircleShape();
 	    shape.setRadius(sprite.getHeight()/2);
 		FixtureDef fixtureDef = new FixtureDef();
-	    fixtureDef.density = 1f;//+- peso
+	    fixtureDef.density = 5f;//+- peso
 	    fixtureDef.friction = 1f;//para que se frene en el suelo
-	    fixtureDef.restitution = 0.45f;//rebote
+	    fixtureDef.restitution = .6f;//rebote
 		fixtureDef.shape = shape;
 	    
 		body.setAngularDamping(10.5f);//para que gire en el suelo

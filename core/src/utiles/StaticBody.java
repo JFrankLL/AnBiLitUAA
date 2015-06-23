@@ -22,12 +22,12 @@ public class StaticBody {
 		
 		BodyDef bd = new BodyDef();
 		bd.position.set(-124, -124);
-		bd.type = BodyType.StaticBody;
+		bd.type = BodyType.DynamicBody;
 		
 		FixtureDef fd = new FixtureDef();
-		//fd.density = 100000;
-		fd.friction = 1f;
-		fd.restitution = 0f;
+		fd.density = 100000;
+		fd.friction = 0.5f;
+		fd.restitution = 0.3f;
 		
 		body = world.createBody(bd);
 		body.setGravityScale(0);

@@ -1,11 +1,7 @@
 package entidades;
 
 import utiles.Constantes;
-
-import com.badlogic.gdx.Gdx;
-
 import entidades.pajaros.Pajaro;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -14,56 +10,44 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Sling2 {
 	Pajaro pajaro;
-	Sprite sprites[] = new Sprite[2];
-	Vector2 pivotes[] = new Vector2[2], P, I;
-	boolean lanzado = false;
-	float x, y;
+	Sprite s1, s2;
+	Texture t1, t2;
+	Vector2 p1, p2, p;
 	float distMax, fuerza;
 	float pX1, pY1, pX2, pY2;
 	TextureRegion textureLiga;
 	
-	public Sling2(){
+	public Sling2(float x, float y, Pajaro pajaro){
 		textureLiga = new TextureRegion(new Texture(Constantes.Graficas.strNegroPxl));
-		for (int i = 0; i < 2; i++){
-			sprites[i] = new Sprite(new Texture("slingshot"+i+".png"));
-			pivotes[i] = new Vector2();
-		}
-		P = new Vector2();
-		I = new Vector2();
+		s1 = new Sprite(t1 = new Texture("slingshot.png"));
+		setBounds(s1, x, y, t1.getWidth(), t1.getHeight());
+		s2 = new Sprite(t2 = new Texture("slingshot2.png"));
+		setBounds(s2, x, y, t2.getWidth(), t2.getHeight());
+		this.pajaro = pajaro;
+		p1 = new Vector2();
+		p2 = new Vector2();
+		p = new Vector2();
 	}
-	public void setBounds(float x, float y, Pajaro pajaro){
-    	for (int i=0; i<2; i++){
-    		pivotes[i].set(150-i*38, 224-i*2);
-    		sprites[i].setBounds(x, y, sprites[i].getWidth(), sprites[i].getHeight());
-    	}
-    	P.set((pivotes[0].x+pivotes[1].x)/2, (pivotes[0].y+pivotes[1].y)/2);
-    	pajaro.mover(P.x, P.y);
-    	this.pajaro = pajaro;
+	public void setBounds(float x, float y, float width, float height){
+    	p1.set((46*t1.getWidth())/64, (108*t1.getHeight())/256);
+    	p2.set((8*t2.getWidth())/64, (110*t2.getHeight())/256);
+    	p.set((p2.x-p1.x)/2, (p2.y-p1.y)/2);
+    	pajaro.mover(p.x, p.y);
 	}
-    private void dibujarLiga(Vector2 pivote, float grosor, SpriteBatch batch) {
-	    float largoLinea = (float)(Math.sqrt((Gdx.input.getX())*(Gdx.input.getX()) + (Gdx.input.getY())*(Gdx.input.getY())));
-	    batch.draw(textureLiga, pivote.x, pivote.y, 0, 0, largoLinea, grosor, 1, 1, (float)(Math.atan2(I.y, I.x)));
-	}
+    public void setBounds(Sprite s, float x, float y, float width, float height){
+		setBounds(x, y, width, height);
+    	s.setPosition(x, y);
+    	s.setSize(width, height);
+    }
     public void draw(SpriteBatch batch){
-    	I.x = Gdx.input.getX();
-    	I.y = Gdx.graphics.getHeight()-Gdx.input.getY();
-    	sprites[0].draw(batch);
-    	dibujarLiga(pivotes[0], 10, batch);
-    	pajaro.render(batch);
-    	dibujarLiga(pivotes[1], 10, batch);
-    	sprites[1].draw(batch);
-    	//System.out.println("PIVOTE\nX: " + I.x + "\nY: " + I.y);
+    	s1.draw(batch);
+    	dibujarLiga(p1, 5, batch);
+    	dibujarLiga(p2, 5, batch);
+    	s2.draw(batch);
     }
-    public void estirar() {
-    	I.x = Gdx.input.getX();
-    	I.y = Gdx.graphics.getHeight()-Gdx.input.getY();
-		pajaro.body.setGravityScale(1);
-    	pajaro.mover(I.x, I.y);
+    private void dibujarLiga(Vector2 pivote, float grosor, SpriteBatch sb) {
+	    float largoLinea = (float)Math.sqrt(p.x*p.x + p.y*p.y)+(pajaro.sprite.getWidth()/2);
+	    float anguloRadianes = (float)Math.atan2(p.y, p.x);
+	    sb.draw(textureLiga, pivote.x, pivote.y, p.x, p.y, largoLinea, grosor, 1, 1, (float) Math.toDegrees(anguloRadianes));
 	}
-    public void lanzar(){
-		pajaro.body.applyForceToCenter(P.x-I.x, P.y-I.y, true);
-		pajaro.body.setGravityScale(1);
-		lanzado = true;
-		Constantes.seguirPajaro = true;
-    }
 }

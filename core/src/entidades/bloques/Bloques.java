@@ -1,6 +1,5 @@
 package entidades.bloques;
 
-import static utiles.Constantes.PPM;
 import utiles.Constantes;
 
 import com.badlogic.gdx.physics.box2d.World;
@@ -14,8 +13,8 @@ public abstract class Bloques{
 	//**********************************[VIDRIO]**********************************
 	public static abstract class Vidrio extends Bloque{
 		public Vidrio(World world, String[] rutasSprites, float x, float y, short angulo) {
-			super(world, rutasSprites, x, y, angulo, 5);
-			normalMax += 20f; tangentMax += 0.1f;
+			super(world, rutasSprites, x, y, angulo);
+			normalMax += 80f; tangentMax += 1f;
 			normalMax /= 4;  tangentMax /= 4;
 		}
 		public boolean daniar(entidades.EntityAB daniador) {
@@ -23,8 +22,6 @@ public abstract class Bloques{
 				vida -= daniador.danio*10;//especialidad +
 			else
 				vida -= daniador.danio;
-			
-			actualizar();
 			return vida<0;
 		}
 	}
@@ -46,17 +43,15 @@ public abstract class Bloques{
 	//**********************************[MADERA]**********************************
 	public static class Madera extends Bloque{
 		public Madera(World world, String[] rutasSprites, float x, float y,short angulo) {
-			super(world, rutasSprites, x, y, angulo, 15);
-			normalMax += 50f; tangentMax += 0.5f;
-			normalMax /= 4;  tangentMax /= 1;
+			super(world, rutasSprites, x, y, angulo);
+			normalMax += 50f; tangentMax += 5f;
+			normalMax /= 4;  tangentMax /= 4;
 		}
 		public boolean daniar(entidades.EntityAB daniador) {
 			if(daniador instanceof Pajaro && ((PajaroAmarillo)daniador).tipo=="blue")
 				vida -= daniador.danio*2;//especialidad +
 			else
 				vida -= daniador.danio;
-			
-			actualizar();
 			return vida<0;
 		}
 	}
@@ -78,7 +73,7 @@ public abstract class Bloques{
 	//**********************************[PIEDRA]**********************************
 	public static abstract class Piedra extends Bloque{
 		public Piedra(World world, String[] rutasSprites, float x, float y, short angulo) {
-			super(world, rutasSprites, x, y, angulo, 40);
+			super(world, rutasSprites, x, y, angulo);
 			normalMax += 70f; tangentMax += 7;
 			normalMax /= 4;  tangentMax /= 4;
 		}
@@ -87,8 +82,6 @@ public abstract class Bloques{
 				vida -= daniador.danio;//especialidad -
 			else
 				vida -= daniador.danio;
-			
-			actualizar();
 			return vida<0;
 		}
 	}

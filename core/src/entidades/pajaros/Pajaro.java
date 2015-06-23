@@ -1,5 +1,6 @@
 package entidades.pajaros;
 
+import static utiles.Constantes.PPM;
 import utiles.Constantes;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -25,20 +26,19 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	
 	public Pajaro(World world, String rutaTexture){
 		super(rutaTexture);
-		sprite.setPosition(170, 210);
+		sprite.setPosition(170/PPM, 210/PPM);
 		
 		bodyDef = new BodyDef();
 	    bodyDef.type = BodyDef.BodyType.DynamicBody;
 	    bodyDef.position.set(sprite.getX() + sprite.getWidth()/2, sprite.getY() + sprite.getHeight()/2);
 	    body = world.createBody(bodyDef);
-	    body.setGravityScale(1);
 	    
 	    CircleShape shape = new CircleShape();
 	    shape.setRadius(sprite.getHeight()/2);
 		FixtureDef fixtureDef = new FixtureDef();
-	    fixtureDef.density = 5f;//+- peso
+	    fixtureDef.density = 1f;//+- peso
 	    fixtureDef.friction = 1f;//para que se frene en el suelo
-	    fixtureDef.restitution = .6f;//rebote
+	    fixtureDef.restitution = .5f;//rebote
 		fixtureDef.shape = shape;
 	    
 		body.setAngularDamping(10.5f);//para que gire en el suelo
@@ -58,18 +58,18 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	
 	public void render(SpriteBatch sb){//debe ejecutarse con sb ya empezado (sb.start)
 		sprite.setPosition(body.getPosition().x - sprite.getWidth()/2, (body.getPosition().y) - sprite.getHeight()/2);
-		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);//actualiza ángulo del ave (giración)
+		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);//actualiza ï¿½ngulo del ave (giraciï¿½n)
 		sprite.draw(sb);
-		//sb deberá terminar donde fue llamada esta función
+		//sb deberï¿½ terminar donde fue llamada esta funciï¿½n
 	}
 
 	public void lanzar(float xib, float yib, Sling sling) {
-		//ya fue lanzado.. cámara!
+		//ya fue lanzado.. cï¿½mara!
 		if(lanzado) return;
 		
 		body.setGravityScale(1);//actuar gravedad sobre este pajaro
 		//if(new Vector2(xib, yib).dst(body.getPosition().x, body.getPosition().y) < sling.dstMax)
-		body.applyForceToCenter((xib-body.getPosition().x)*999999, (yib-body.getPosition().y)*999999, true);
+		body.applyForceToCenter((xib-body.getPosition().x)*PPM*fuerzaLanzamiento, (yib-body.getPosition().y)*PPM*fuerzaLanzamiento, true);
 		lanzado = true;
 		Constantes.seguirPajaro = true;
 	}
@@ -106,4 +106,3 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 		return body;
 	}
 }
-

@@ -41,9 +41,9 @@ public class CerdoBase extends EntityAB {
 	@Override
 	public void render(SpriteBatch sb){//debe ejecutarse con sb ya empezado (sb.start)
 		sprite.setPosition(body.getPosition().x - sprite.getWidth()/2, (body.getPosition().y) - sprite.getHeight()/2);
-		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);//actualiza ángulo del ave (giración)
+		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);//actualiza ï¿½ngulo del ave (giraciï¿½n)
 		sprite.draw(sb);
-		//sb deberá terminar donde fue llamada esta función
+		//sb deberï¿½ terminar donde fue llamada esta funciï¿½n
 	}
 	@Override
 	public void actualizar() {

@@ -1,5 +1,7 @@
 package entidades.bloques;
 
+import static utiles.Constantes.PPM;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,7 +17,7 @@ public abstract class Bloque extends EntityAB {
 	
 	Sprite[] sprites = new Sprite[4];
 	
-	public Bloque(World world, String[] rutasSprites, float x, float y, short angulo, float densidad) {
+	public Bloque(World world, String[] rutasSprites, float x, float y, short angulo) {
 		super(rutasSprites[0]);
 		
 		for(int i=0; i<rutasSprites.length; i++){
@@ -24,7 +26,7 @@ public abstract class Bloque extends EntityAB {
 			sprites[i].setSize(sprite.getWidth()/2, sprite.getHeight()/2);
 		}
 		
-		sprite.setPosition(x, y);
+		sprite.setPosition(x/PPM, y/PPM);
 		sprite.setOriginCenter();
 		sprite.setScale(0.5f);
 		
@@ -38,9 +40,9 @@ public abstract class Bloque extends EntityAB {
 	    shape.setAsBox((sprite.getWidth()-0.1f)/4, (sprite.getHeight()-0.1f)/4);
 	    
 		FixtureDef fixtureDef = new FixtureDef();
-	    fixtureDef.density = densidad;//+- peso
+	    fixtureDef.density = 3f;//+- peso
 	    fixtureDef.friction = 1.0f;//para que se frene en el suelo
-	    fixtureDef.restitution = 0.1f;//rebote
+	    fixtureDef.restitution = 0.4f;//rebote
 		fixtureDef.shape = shape;
 	    
 		body.setAngularDamping(1);//para que se frene en el suelo
@@ -55,17 +57,16 @@ public abstract class Bloque extends EntityAB {
 	@Override
 	public void render(SpriteBatch sb) {
 		sprite.setPosition(body.getPosition().x - sprite.getWidth()/2, body.getPosition().y - sprite.getHeight()/2);
-		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);//actualiza ángulo del ave (giración)
+		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);//actualiza ï¿½ngulo del ave (giraciï¿½n)
 		sprite.draw(sb);
 	}	
-	protected void actualizar(){
+	public void actualizar(){
 		try{
 			sprite = sprites[4-(int)(vida/25)];
 		}catch(Exception e){
-			sprite = sprites[4];
+			sprite = sprites[0];
 		}
-//		System.out.println("actualizado "+ this.getClass().getSimpleName()+" vida: "+vida);
-//		System.out.println((int)(vida/25));
+		System.out.println("actualizado "+ this.getClass().getSimpleName()+" vida: "+vida);
 	}
 	public abstract boolean daniar(EntityAB daniador);
 

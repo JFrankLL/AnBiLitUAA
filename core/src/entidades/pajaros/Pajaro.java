@@ -31,13 +31,14 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	    bodyDef.type = BodyDef.BodyType.DynamicBody;
 	    bodyDef.position.set(sprite.getX() + sprite.getWidth()/2, sprite.getY() + sprite.getHeight()/2);
 	    body = world.createBody(bodyDef);
+	    body.setGravityScale(1);
 	    
 	    CircleShape shape = new CircleShape();
 	    shape.setRadius(sprite.getHeight()/2);
 		FixtureDef fixtureDef = new FixtureDef();
-	    fixtureDef.density = 1f;//+- peso
+	    fixtureDef.density = 5f;//+- peso
 	    fixtureDef.friction = 1f;//para que se frene en el suelo
-	    fixtureDef.restitution = 0.45f;//rebote
+	    fixtureDef.restitution = .6f;//rebote
 		fixtureDef.shape = shape;
 	    
 		body.setAngularDamping(10.5f);//para que gire en el suelo
@@ -68,7 +69,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 		
 		body.setGravityScale(1);//actuar gravedad sobre este pajaro
 		//if(new Vector2(xib, yib).dst(body.getPosition().x, body.getPosition().y) < sling.dstMax)
-		body.applyForceToCenter((xib-body.getPosition().x)*fuerzaLanzamiento, (yib-body.getPosition().y)*fuerzaLanzamiento, true);
+		body.applyForceToCenter((xib-body.getPosition().x)*999999, (yib-body.getPosition().y)*999999, true);
 		lanzado = true;
 		Constantes.seguirPajaro = true;
 	}

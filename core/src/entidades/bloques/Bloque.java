@@ -59,12 +59,12 @@ public abstract class Bloque extends EntityAB {
 		sprite.setPosition(body.getPosition().x - sprite.getWidth()/2, body.getPosition().y - sprite.getHeight()/2);
 		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);//actualiza �ngulo del ave (giraci�n)
 		sprite.draw(sb);
-	}	
+	}
 	public void actualizar(){
 		try{
-			sprite = sprites[4-(int)(vida/25)];
+			sprite = sprites[(int)(vida/25)+3];
 		}catch(Exception e){
-			sprite = sprites[0];
+			sprite = sprites[3];
 		}
 		System.out.println("actualizado "+ this.getClass().getSimpleName()+" vida: "+vida);
 	}

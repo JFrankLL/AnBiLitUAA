@@ -244,6 +244,7 @@ package Pack;
  		if(golpeado.getBody()!=bFloor && golpeador.getBody()!=bFloor)//el piso no extiende de entity; se arroja excepción
  		try{
  			if(checarDanio(golpeado, golpeador, impulse)){
+ 				((Bloque)golpeado.getBody().getUserData()).actualizar();
  				((Bloque)golpeado.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData());
  				fixturesPorQuitar.add(golpeado.getBody());
  			}

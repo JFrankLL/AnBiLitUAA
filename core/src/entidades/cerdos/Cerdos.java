@@ -2,10 +2,13 @@ package entidades.cerdos;
 
 import static utiles.Constantes.PPM;
 import utiles.Constantes;
+import Pack.Escena;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+
+import entidades.EntityAB;
 
 public abstract class Cerdos{
 
@@ -18,5 +21,10 @@ public abstract class Cerdos{
 		public void render(SpriteBatch sb) {
 			super.render(sb);
 		}
+		public boolean daniar(EntityAB daniador) {
+			vida -= daniador.danio;
+		Escena.puntos+=75+100-vida;
+		return vida<0;
+	}
 	}
 }

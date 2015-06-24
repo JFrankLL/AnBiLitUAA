@@ -154,7 +154,7 @@ import entidades.pajaros.PajaroRedGrande;
  		camUpdate();
  		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
  		Gdx.gl.glClearColor((245/255f), (255/255f), (255/255f), 1); //RGB
- 		puntaje.actualizar(puntos*10);//TODO ALTIRO CON ESE 10
+ 		puntaje.actualizar(puntos);//TODO ALTIRO CON ESE 10
  		//MECANICA DE JUEGO// 
          //---------------------------------------------------------------------------------------------------
  		click();//click inicial principalmente. para poder lanzar
@@ -256,7 +256,7 @@ import entidades.pajaros.PajaroRedGrande;
  	private void removerRotos(){
  		for(Body b: fixturesPorQuitar){
  			for(EntityAB entidad: entidades){
- 				if(entidad.getBody()==b /*&& entidad.vida<0*/){
+ 				if(entidad.getBody()==b/* && entidad.vida<0*/){
  					world.destroyBody(b);
  					fixturesPorQuitar.removeValue(b, true);
  					entidades.removeValue(entidad, true);
@@ -282,14 +282,19 @@ import entidades.pajaros.PajaroRedGrande;
  		try{
  			if(checarDanio(golpeado, golpeador, impulse)){
  				((Bloque)golpeado.getBody().getUserData()).actualizar();
- 				((Bloque)golpeado.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData());
- 				fixturesPorQuitar.add(golpeado.getBody());
+ 				if(((Bloque)golpeado.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData()))
+ 					fixturesPorQuitar.add(golpeado.getBody());//se agrega si la vida es cero o menor
  			}
- 		}catch(Exception e){//e.printStackTrace();
+ 		}catch(Exception e){
+ 			//e.printStackTrace();
+ 			//-------------------------cerdos
  			if(golpeador.getBody().getUserData() instanceof CerdoBase){
- 				((EntityAB)golpeador.getBody().getUserData()).vida = 0;
- 				fixturesPorQuitar.add(golpeador.getBody());
+ 				if(((CerdoBase)golpeador.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData()))
+ 					fixturesPorQuitar.add(golpeador.getBody());//se agrega si la vida es cero o menor
  			}
+ 			else {
+				System.out.println("algo pasa");
+			}
  		}
  		
  		/*//otro metodo que no sirve del todo bien

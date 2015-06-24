@@ -1,5 +1,7 @@
 package entidades.cerdos;
 
+import Pack.Escena;
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -8,8 +10,10 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
 import entidades.EntityAB;
+import entidades.pajaros.Pajaro;
+import entidades.pajaros.PajaroAmarillo;
 
-public class CerdoBase extends EntityAB {
+public abstract class CerdoBase extends EntityAB {
 	public CerdoBase(World world, String rutaSprite) {
 		super(rutaSprite);
 		
@@ -37,7 +41,7 @@ public class CerdoBase extends EntityAB {
         shape.dispose();
 		
 	}
-
+	public abstract boolean daniar(EntityAB daniador);
 	@Override
 	public void render(SpriteBatch sb){//debe ejecutarse con sb ya empezado (sb.start)
 		sprite.setPosition(body.getPosition().x - sprite.getWidth()/2, (body.getPosition().y) - sprite.getHeight()/2);

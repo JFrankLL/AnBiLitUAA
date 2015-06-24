@@ -80,7 +80,7 @@ import entidades.pajaros.PajaroRedGrande;
  		ground = new TextureRegion(new Texture("ground.png"));
  		puntaje = new Puntos();
  		
- 		pajaro = new PajaroRedGrande(world);
+ 		pajaro = new PajaroAmarillo(world);
  		//Nivel Temporal//------------------------------------------------------------------------------
  		System.out.println("\n\n\n\n");
  		
@@ -132,10 +132,12 @@ import entidades.pajaros.PajaroRedGrande;
  		//TODO: esto debe ser un switch, creo..
  		if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
  			game.setScreen(game.menu);
- 		else if(Gdx.input.isKeyJustPressed(Input.Keys.F4))
- 			Constantes.Configuracion.debugRender=(Constantes.Configuracion.debugRender)?false:true;
  		else if(Gdx.input.isKeyJustPressed(Input.Keys.F2))
  			game.setScreen(this);//TODO
+ 		else if(Gdx.input.isKeyJustPressed(Input.Keys.F3))
+ 			Constantes.seguirPajaro=(Constantes.seguirPajaro)?false:true;
+ 		else if(Gdx.input.isKeyJustPressed(Input.Keys.F4))
+ 			Constantes.Configuracion.debugRender=(Constantes.Configuracion.debugRender)?false:true;
  		else if(Gdx.input.isKeyJustPressed(Input.Keys.MINUS))
  			cam.zoom+=cam.zoom*0.5f;
  		if(Gdx.input.isKeyPressed(Input.Keys.PLUS))
@@ -236,7 +238,8 @@ import entidades.pajaros.PajaroRedGrande;
      	if(dX!=0) dX=(dX>0)? -10 : 10;
      	if(x+dX/PPM > (Gdx.graphics.getWidth()/2)/PPM && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2)/PPM && !pajaro.tocado) {
      		if(iX > (150+sling.getTextura().getWidth())/PPM){//Después de la resortera
-     			Constantes.seguirPajaro = false;
+     			if(pajaro.lanzado && pajaro.comportamientoRealizado)
+     				Constantes.seguirPajaro = false;
      			cam.position.x += dX/PPM;
  				cam.zoom += (dX > 0 && cam.zoom-scrollDx > 0.7)? -scrollDx*PPM : (dX < 0 && cam.zoom+scrollDx <= 1 )? scrollDx*PPM : 0;
      		}
@@ -285,12 +288,20 @@ import entidades.pajaros.PajaroRedGrande;
  				if(((Bloque)golpeado.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData()))
  					fixturesPorQuitar.add(golpeado.getBody());//se agrega si la vida es cero o menor
  			}
+ 			if(golpeador.getBody().getUserData() instanceof Pajaro)
+ 				((Pajaro)golpeador.getBody().getUserData()).bloqueo();//ya no dibujar trayectoria ni comportaminto
  		}catch(Exception e){
  			//e.printStackTrace();
  			//-------------------------cerdos
  			if(golpeador.getBody().getUserData() instanceof CerdoBase){
- 				if(((CerdoBase)golpeador.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData()))
- 					fixturesPorQuitar.add(golpeador.getBody());//se agrega si la vida es cero o menor
+ 				if(checarDanio(golpeado, golpeador, impulse))
+ 					if(((CerdoBase)golpeador.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData()))
+ 						fixturesPorQuitar.add(golpeador.getBody());//se agrega si la vida es cero o menor
+ 				
+ 				((CerdoC)golpeador.getBody().getUserData()).daniarme(1);
+ 				
+ 				if(golpeado.getBody().getUserData() instanceof Pajaro)
+ 	 				((Pajaro)golpeado.getBody().getUserData()).bloqueo();//ya no dibujar trayectoria ni comportaminto
  			}
  			else {
 				System.out.println("algo pasa");

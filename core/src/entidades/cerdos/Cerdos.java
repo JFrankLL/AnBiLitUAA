@@ -25,6 +25,10 @@ public abstract class Cerdos{
 			vida -= daniador.danio;
 		Escena.puntos+=75+100-vida;
 		return vida<0;
-	}
+		}
+		@Override
+		public void daniarme(int danio) {
+			super.daniarme(danio);
+		}
 	}
 }

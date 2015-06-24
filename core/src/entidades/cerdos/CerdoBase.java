@@ -55,7 +55,6 @@ public abstract class CerdoBase extends EntityAB {
 	}
 	@Override
 	public void daniarme(int danio) {
-		// TODO Auto-generated method stub
-		
+		body.applyForceToCenter(0, 1000, true);
 	}
 }	

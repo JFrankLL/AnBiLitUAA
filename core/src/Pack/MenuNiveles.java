@@ -40,11 +40,11 @@ public class MenuNiveles extends ScreenAdapter{
 
 	@Override
 	public void render(float delta) {
-		int iX=Gdx.input.getX(), iY=Gdx.input.getY();
-		playSelected = play.selected(iX, iY, gH); 
+		int iX=Gdx.input.getX(), iY=Gdx.graphics.getHeight()-Gdx.input.getY();
+		playSelected = play.selected(iX, iY); 
 		for (int i = 0; i < lvlSelected.length; i++)
 			for (int j = 0; j < lvlSelected[i].length; j++)
-				lvlSelected[i][j] = lvl[i][j].selected(iX, iY, gH);
+				lvlSelected[i][j] = lvl[i][j].selected(iX, iY);
 		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glClearColor((0/255f), (0/255f), (0/255f), 1); //RGB

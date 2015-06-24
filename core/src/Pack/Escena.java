@@ -9,6 +9,7 @@ import utiles.Constantes;
 
 
 
+import UI.CircleButton;
 import UI.Puntos;
 
  import com.badlogic.gdx.Gdx;
@@ -37,6 +38,7 @@ import com.badlogic.gdx.utils.Array;
 
 
 
+
  import entidades.EntityAB;
 import entidades.Sling;
 import entidades.bloques.Bloque;
@@ -53,11 +55,11 @@ import entidades.pajaros.PajaroRedGrande;
  	AnBiLit game;
  	OrthographicCamera cam;
  	TextureRegion back, ground;
- 	
+ 	CircleButton menu, reset;
  	World world;
  	Sling sling;
- 	Pajaro pajaro;
  	Body bFloor;
+ 	Pajaro pajaro;
  	
  	Array<EntityAB> entidades = new Array<EntityAB>();
  	Array<Body> fixturesPorQuitar = new Array<Body>();
@@ -79,7 +81,8 @@ import entidades.pajaros.PajaroRedGrande;
  		back = new TextureRegion(new Texture("background.png"));
  		ground = new TextureRegion(new Texture("ground.png"));
  		puntaje = new Puntos();
- 		
+ 		menu = new CircleButton("Imagenes/Escena/menu.png");
+ 		reset = new CircleButton("Imagenes/Escena/reset.png");
  		pajaro = new PajaroAmarillo(world);
  		//Nivel Temporal//------------------------------------------------------------------------------
  		System.out.println("\n\n\n\n");
@@ -130,17 +133,13 @@ import entidades.pajaros.PajaroRedGrande;
  		//MECANICA DE OPCIONES 
         //---------------------------------------------------------------------------------------------------
  		//TODO: esto debe ser un switch, creo..
- 		if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
- 			game.setScreen(game.menu);
- 		else if(Gdx.input.isKeyJustPressed(Input.Keys.F2))
- 			game.setScreen(this);//TODO
- 		else if(Gdx.input.isKeyJustPressed(Input.Keys.F3))
+ 		if(Gdx.input.isKeyJustPressed(Input.Keys.F3))
  			Constantes.seguirPajaro=(Constantes.seguirPajaro)?false:true;
- 		else if(Gdx.input.isKeyJustPressed(Input.Keys.F4))
+ 		if(Gdx.input.isKeyJustPressed(Input.Keys.F4))
  			Constantes.Configuracion.debugRender=(Constantes.Configuracion.debugRender)?false:true;
- 		else if(Gdx.input.isKeyJustPressed(Input.Keys.MINUS))
+ 		if(Gdx.input.isKeyJustPressed(Input.Keys.MINUS))
  			cam.zoom+=cam.zoom*0.5f;
- 		if(Gdx.input.isKeyPressed(Input.Keys.PLUS))
+ 		if(Gdx.input.isKeyJustPressed(Input.Keys.PLUS))
  			cam.zoom-=cam.zoom*0.1f;
  		if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
  			cam.position.y-=0.5f;
@@ -170,7 +169,13 @@ import entidades.pajaros.PajaroRedGrande;
         	 game.setScreen(game.niveles);
         	//TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO//
          }
-         
+         if(Gdx.input.isTouched()){
+        	 if(menu.selectedPPM(cam, 10, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
+        		 game.setScreen(game.niveles);
+        	 if(reset.selectedPPM(cam, 74, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
+        		 game.setScreen(this);
+         }else{
+         }
          //DIBUJAR//
          //---------------------------------------------------------------------------------------------------
  		game.batch.setProjectionMatrix(cam.combined);
@@ -180,19 +185,17 @@ import entidades.pajaros.PajaroRedGrande;
  			//Pájaro
  			if(pajaro.lanzado) 
  				pajaro.render(game.batch);
- 			//render el pájaro (a veces), entre el sling y ligas.
- 			sling.render(game.batch);
- 			for(EntityAB entidad: entidades)//render elementos en el nivel
+ 			sling.render(game.batch); 									//render el pájaro (a veces), entre el sling y ligas.
+ 			for(EntityAB entidad: entidades)							//render elementos en el nivel
  				entidad.render(game.batch);
- 			//piso/suelo
- 			game.batch.draw(ground, 0, -125f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
- 			//puntaje
- 			puntaje.render(game.batch, 50/PPM, (Gdx.graphics.getHeight()+2000)/PPM, cam);
+ 			game.batch.draw(ground, 0, -125f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM); 	//piso/suelo
+ 			menu.render(game.batch, 10, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM, cam);
+ 			reset.render(game.batch, 74, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM, cam);
+ 			puntaje.render(game.batch, 50/PPM, (Gdx.graphics.getHeight()+2048)/PPM, cam); 					//puntaje
  		game.batch.end();
  		if(Constantes.Configuracion.debugRender)
  			dr.render(world, cam.combined);
  		//---------------------------------------------------------------------------------------------------
- 		
  	}
  	//METODOS T.EJECUCION
  	//------------------------------------------------------------------------------------------------------------------
@@ -238,6 +241,7 @@ import entidades.pajaros.PajaroRedGrande;
      	if(dX!=0) dX=(dX>0)? -10 : 10;
      	if(x+dX/PPM > (Gdx.graphics.getWidth()/2)/PPM && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2)/PPM && !pajaro.tocado) {
      		if(iX > (150+sling.getTextura().getWidth())/PPM){//Después de la resortera
+     			Constantes.seguirPajaro = false;
      			if(pajaro.lanzado && pajaro.comportamientoRealizado)
      				Constantes.seguirPajaro = false;
      			cam.position.x += dX/PPM;
@@ -294,14 +298,16 @@ import entidades.pajaros.PajaroRedGrande;
  			//e.printStackTrace();
  			//-------------------------cerdos
  			if(golpeador.getBody().getUserData() instanceof CerdoBase){
+ 				if(((CerdoBase)golpeador.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData()))
+ 					fixturesPorQuitar.add(golpeador.getBody());//se agrega si la vida es cero o menor
  				if(checarDanio(golpeado, golpeador, impulse))
  					if(((CerdoBase)golpeador.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData()))
  						fixturesPorQuitar.add(golpeador.getBody());//se agrega si la vida es cero o menor
  				
- 				((CerdoC)golpeador.getBody().getUserData()).daniarme(1);
- 				
- 				if(golpeado.getBody().getUserData() instanceof Pajaro)
- 	 				((Pajaro)golpeado.getBody().getUserData()).bloqueo();//ya no dibujar trayectoria ni comportaminto
+ 					((CerdoC)golpeador.getBody().getUserData()).daniarme(1);
+ 					
+ 					if(golpeado.getBody().getUserData() instanceof Pajaro)
+ 						((Pajaro)golpeado.getBody().getUserData()).bloqueo();//ya no dibujar trayectoria ni comportaminto
  			}
  			else {
 				System.out.println("algo pasa");

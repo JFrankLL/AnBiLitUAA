@@ -9,8 +9,10 @@ import UI.Puntos;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -49,6 +51,7 @@ import entidades.pajaros.PajaroRedGrande;
  	World world;
  	Sling sling;
  	Pajaro pajaro;
+ 	Sound level_start;
  	
  	Array<EntityAB> entidades = new Array<EntityAB>();
  	Array<Body> fixturesPorQuitar = new Array<Body>();
@@ -77,19 +80,19 @@ import entidades.pajaros.PajaroRedGrande;
  		System.out.println("\n\n\n\n");
  		
  		entidades.clear();
- 		entidades.add(new CerdoC(world, 880f, 240f));
+ 		entidades.add(new CerdoC(world, 1280f, 240f));
  		
- 		entidades.add(new Bloques.PiedraG(world,730f, 240f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,730f, 345f, (short)90));
-		entidades.add(new Bloques.VidrioG(world,730f, 450f, (short)90));
+ 		entidades.add(new Bloques.PiedraG(world,1130f, 240f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,1130f, 350f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,1130f, 450f, (short)90));
 		
-		entidades.add(new Bloques.PiedraG(world,820f, 240f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,820f, 345f, (short)90));
-		entidades.add(new Bloques.VidrioG(world,820f, 450f, (short)90));
+		entidades.add(new Bloques.PiedraG(world,1220f, 240f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,1220f, 350f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,1220f, 450f, (short)90));
 		
-		entidades.add(new Bloques.PiedraG(world,775f, 295f, (short)0));
-		entidades.add(new Bloques.MaderaG(world,775f, 400f, (short)0));
-		entidades.add(new Bloques.VidrioG(world,775f, 500f, (short)0));
+		entidades.add(new Bloques.PiedraG(world,1175f, 295f, (short)0));
+		entidades.add(new Bloques.MaderaG(world,1175f, 400f, (short)0));
+		entidades.add(new Bloques.VidrioG(world,1175f, 500f, (short)0));
  		//Nivel Temporal//------------------------------------------------------------------------------
  		
  		Constantes.seguirPajaro = false;
@@ -98,7 +101,8 @@ import entidades.pajaros.PajaroRedGrande;
  	    
  	    dr.setDrawBodies(true);
  		dr.setDrawVelocities(true);
- 		
+ 		level_start = Gdx.audio.newSound(Gdx.files.internal("Audio/level_start.mp3"));
+ 		level_start.play();
  		puntos=0;
         world.setContactListener(this);
  	}
@@ -142,11 +146,13 @@ import entidades.pajaros.PajaroRedGrande;
         	 game.setScreen(game.niveles);
          }
          if(Gdx.input.isTouched()){
+ 			 Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor0.png")), 0, 0);
         	 if(menu.selectedPPM(cam, 10, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
         		 game.setScreen(game.niveles);
         	 if(reset.selectedPPM(cam, 74, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
         		 game.setScreen(this);
          }else{
+ 			 Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
          }
          //DIBUJAR//
          //---------------------------------------------------------------------------------------------------
@@ -160,7 +166,6 @@ import entidades.pajaros.PajaroRedGrande;
  			sling.render(game.batch); 									//render el pájaro (a veces), entre el sling y ligas.
  			for(EntityAB entidad: entidades)							//render elementos en el nivel
  				entidad.render(game.batch);
- 			//game.batch.draw(ground, 0, -125f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM); 	//piso/suelo
  			ground.draw(game.batch);
  			menu.render(game.batch, 10, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM, cam);
  			reset.render(game.batch, 74, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM, cam);
@@ -190,7 +195,8 @@ import entidades.pajaros.PajaroRedGrande;
  		ground.dispose();
  	 	menu.dispose();
  	 	reset.dispose();
- 		//Creo que faltan mas dispose (bloques y demás)
+ 	 	for(EntityAB entidad: entidades)
+ 	 		entidad.dispose();
  	}
  	//MECANICA GAMEPLAY
  	//------------------------------------------------------------------------------------------------------------------
@@ -208,14 +214,12 @@ import entidades.pajaros.PajaroRedGrande;
  		if(!Gdx.input.isTouched())
  			return;
          float iX = cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x,
-         	  iY = Gdx.input.getY()/PPM, 
-         	  gH = Gdx.graphics.getHeight()/PPM, 
-         	  rbX= pajaro.posision().x/PPM, rbY = pajaro.posision().y/PPM, x = cam.position.x, 
+         	  gW = Gdx.graphics.getWidth(), x = cam.position.x, 
          	  dX = Gdx.input.getDeltaX(), scrollDx = 0.000003f*x;
          
      	//---Movimiento en 'x' de la cámara
      	if(dX!=0) dX=(dX>0)? -10 : 10;
-     	if(x+dX/PPM > (Gdx.graphics.getWidth()/2)/PPM && x+dX < (back.getRegionWidth()-Gdx.graphics.getWidth()/2)/PPM && !pajaro.tocado) {
+     	if(x+dX/PPM > (gW/2)/PPM && x+dX < (back.getRegionWidth()-gW/2)/PPM && !pajaro.tocado) {
      		if(iX > (150+sling.getTextura().getWidth())/PPM){//Después de la resortera
      			Constantes.seguirPajaro = false;
      			if(pajaro.lanzado && pajaro.comportamientoRealizado)
@@ -228,8 +232,7 @@ import entidades.pajaros.PajaroRedGrande;
  	private void camUpdate() {//Actualizar/Refrescar Camera
  		if(Constantes.seguirPajaro){
  			Vector2 pajPos = pajaro.posision();
- 			if(pajPos.x > Gdx.graphics.getWidth()/2/PPM &&
- 				pajPos.x < (2048/PPM)-Gdx.graphics.getWidth()/2/PPM)
+ 			if(pajPos.x > Gdx.graphics.getWidth()/2/PPM && pajPos.x < (2048/PPM)-Gdx.graphics.getWidth()/2/PPM)
  				cam.position.x = pajPos.x;
  			if(pajPos.y > (Gdx.graphics.getHeight())*0.75f/PPM)
  				cam.position.y = pajPos.y - (Gdx.graphics.getHeight()+PPM)*0.25f/PPM;
@@ -239,7 +242,7 @@ import entidades.pajaros.PajaroRedGrande;
  	private void removerRotos(){
  		for(Body b: fixturesPorQuitar){
  			for(EntityAB entidad: entidades){
- 				if(entidad.getBody()==b/* && entidad.vida<0*/){
+ 				if(entidad.getBody()==b && entidad.vida<0){
  					world.destroyBody(b);
  					fixturesPorQuitar.removeValue(b, true);
  					entidades.removeValue(entidad, true);

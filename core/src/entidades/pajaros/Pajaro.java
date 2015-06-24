@@ -6,6 +6,8 @@ import java.util.LinkedList;
 
 import utiles.Constantes;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -31,7 +33,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	Sprite trayectoriaSprite;
 	public boolean dibujarTrayectoria = true;
 	long ultimoStep;
-	
+	Sound flying;
 	public String tipo;
 	public float fuerzaLanzamiento = 10;
 	
@@ -67,6 +69,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	    body.setUserData(this);
 	    
         shape.dispose();
+        flying = Gdx.audio.newSound(Gdx.files.internal("Audio/flying.wav"));
 	}
 	
 	public void dispose(){
@@ -95,7 +98,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	public void lanzar(float xib, float yib, Sling sling) {
 		//ya fue lanzado.. c�mara!
 		if(lanzado) return;
-		
+		flying.play();
 		body.setGravityScale(1);//actuar gravedad sobre este pajaro
 		//if(new Vector2(xib, yib).dst(body.getPosition().x, body.getPosition().y) < sling.dstMax)
 		body.applyForceToCenter((xib-body.getPosition().x)*PPM*fuerzaLanzamiento, (yib-body.getPosition().y)*PPM*fuerzaLanzamiento, true);

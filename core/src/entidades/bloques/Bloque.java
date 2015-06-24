@@ -49,7 +49,7 @@ public abstract class Bloque extends EntityAB {
 	    body.createFixture(fixtureDef);
 	    
 	    body.setUserData(this);
-	    danio = 10;
+	    danio = 5;
 	    
         shape.dispose();
 	}
@@ -62,11 +62,10 @@ public abstract class Bloque extends EntityAB {
 	}
 	public void actualizar(){
 		try{
-			sprite = sprites[(int)(vida/25)+3];
+			sprite = sprites[4-(int)(vida/25)];
 		}catch(Exception e){
 			sprite = sprites[3];
 		}
-		System.out.println("actualizado "+ this.getClass().getSimpleName()+" vida: "+vida);
 	}
 	public abstract boolean daniar(EntityAB daniador);
 

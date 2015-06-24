@@ -9,7 +9,6 @@ public final class PajaroAmarillo extends Pajaro implements ComportamientoPajaro
 	public PajaroAmarillo(World world) {
 		super(world, Constantes.Graficas.strTexYel);
 		tipo = "amarillo";
-		danio += 10;
 	}
 
 	@Override
@@ -31,6 +30,11 @@ public final class PajaroAmarillo extends Pajaro implements ComportamientoPajaro
 	}
 	@Override
 	public void actualizar() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void daniarme(int danio) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -129,10 +129,6 @@
  	public Texture getTexturaAlt() {
  		return textureAlt;
  	}
- 	public int getFuerzaElastico() {
- 		//TODO rango de estiramiento devuelve diferente valor
- 		// a mayor distancia mayor fuerza;
- 		return fuerzaElastico;
- 	}
+ 	public void daniarme(int danio) {}
  	
  }

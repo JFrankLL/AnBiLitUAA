@@ -1,39 +1,53 @@
 package Pack;
  
  import static utiles.Constantes.PPM;
- import utiles.Constantes;
+
+import javax.swing.text.rtf.RTFEditorKit;
+
+import utiles.Constantes;
  
+
+
+
+import UI.Puntos;
+
  import com.badlogic.gdx.Gdx;
- import com.badlogic.gdx.Input;
- import com.badlogic.gdx.Screen;
- import com.badlogic.gdx.graphics.GL20;
- import com.badlogic.gdx.graphics.OrthographicCamera;
- import com.badlogic.gdx.graphics.Texture;
- import com.badlogic.gdx.graphics.g2d.TextureRegion;
- import com.badlogic.gdx.math.Vector2;
- import com.badlogic.gdx.math.Vector3;
- import com.badlogic.gdx.physics.box2d.Body;
- import com.badlogic.gdx.physics.box2d.BodyDef;
- import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
- import com.badlogic.gdx.physics.box2d.Contact;
- import com.badlogic.gdx.physics.box2d.ContactImpulse;
- import com.badlogic.gdx.physics.box2d.ContactListener;
- import com.badlogic.gdx.physics.box2d.Fixture;
- import com.badlogic.gdx.physics.box2d.FixtureDef;
- import com.badlogic.gdx.physics.box2d.Manifold;
- import com.badlogic.gdx.physics.box2d.PolygonShape;
- import com.badlogic.gdx.physics.box2d.World;
- import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
  
+
+
+
+
  import entidades.EntityAB;
- import entidades.Sling;
- import entidades.bloques.Bloque;
- import entidades.bloques.Bloques;
- import entidades.cerdos.Cerdos.CerdoC;
- import entidades.pajaros.Pajaro;
- import entidades.pajaros.PajaroAmarillo;
- import entidades.pajaros.PajaroBlue;
- import entidades.pajaros.PajaroRedGrande;
+import entidades.Sling;
+import entidades.bloques.Bloque;
+import entidades.bloques.Bloques;
+import entidades.cerdos.CerdoBase;
+import entidades.cerdos.Cerdos.CerdoC;
+import entidades.pajaros.Pajaro;
+import entidades.pajaros.PajaroAmarillo;
+import entidades.pajaros.PajaroBlue;
+import entidades.pajaros.PajaroRed;
+import entidades.pajaros.PajaroRedGrande;
  
  public class Escena implements Screen, ContactListener {
  	AnBiLit game;
@@ -49,6 +63,9 @@ package Pack;
  	Array<Body> fixturesPorQuitar = new Array<Body>();
  	
  	static float sumaFuerzas;
+ 	public static int puntos = 0;
+ 	
+ 	Puntos puntaje;
  	
  	Box2DDebugRenderer dr = new Box2DDebugRenderer();
  	
@@ -61,34 +78,26 @@ package Pack;
  		world = new World(new Vector2(0, -9.8f), true);
  		back = new TextureRegion(new Texture("background.png"));
  		ground = new TextureRegion(new Texture("ground.png"));
+ 		puntaje = new Puntos();
  		
  		pajaro = new PajaroRedGrande(world);
  		//Nivel Temporal//------------------------------------------------------------------------------
  		System.out.println("\n\n\n\n");
  		
  		entidades.clear();
- 		entidades.add(new CerdoC(world, 300f, 200f));
+ 		entidades.add(new CerdoC(world, 470f, 200f));
  		
-		entidades.add(new Bloques.VidrioG(world,1410f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,1410f, 200f, (short)90));
-		entidades.add(new Bloques.PiedraG(world,1410f, 300f, (short)90));
-		entidades.add(new Bloques.PiedraG(world,410f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,410f, 200f, (short)90));
-		entidades.add(new Bloques.VidrioG(world,410f, 300f, (short)90));
- 		
-		entidades.add(new Bloques.VidrioG(world,1420f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,1420f, 200f, (short)90));
-		entidades.add(new Bloques.PiedraG(world,1420f, 300f, (short)90));
-		entidades.add(new Bloques.PiedraG(world,420f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,420f, 200f, (short)90));
-		entidades.add(new Bloques.VidrioG(world,420f, 300f, (short)90));
- 		
-		entidades.add(new Bloques.VidrioG(world,1430f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,1430f, 200f, (short)90));
-		entidades.add(new Bloques.PiedraG(world,1430f, 300f, (short)90));
-		entidades.add(new Bloques.PiedraG(world,430f, 100f, (short)90));
+ 		entidades.add(new Bloques.PiedraG(world,430f, 100f, (short)90));
 		entidades.add(new Bloques.MaderaG(world,430f, 200f, (short)90));
 		entidades.add(new Bloques.VidrioG(world,430f, 300f, (short)90));
+		
+		entidades.add(new Bloques.PiedraG(world,440f, 100f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,440f, 200f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,440f, 300f, (short)90));
+		
+		entidades.add(new Bloques.PiedraG(world,450f, 100f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,450f, 200f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,450f, 300f, (short)90));
  		//Nivel Temporal//------------------------------------------------------------------------------
  		
  		Constantes.seguirPajaro = false;
@@ -113,27 +122,39 @@ package Pack;
  		dr.setDrawVelocities(true);
  	    
          shape.dispose();
-         
+         puntos=0;
          world.setContactListener(this);
  	}
  	@Override
  	public void render(float delta) {
  		//MECANICA DE OPCIONES 
-         //---------------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------------------------
  		//TODO: esto debe ser un switch, creo..
  		if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
  			game.setScreen(game.menu);
  		else if(Gdx.input.isKeyJustPressed(Input.Keys.F4))
  			Constantes.Configuracion.debugRender=(Constantes.Configuracion.debugRender)?false:true;
  		else if(Gdx.input.isKeyJustPressed(Input.Keys.F2))
- 			game.setScreen(game.escena);
+ 			game.setScreen(this);//TODO
+ 		else if(Gdx.input.isKeyJustPressed(Input.Keys.MINUS))
+ 			cam.zoom+=cam.zoom*0.5f;
+ 		if(Gdx.input.isKeyPressed(Input.Keys.PLUS))
+ 			cam.zoom-=cam.zoom*0.1f;
+ 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
+ 			cam.position.y-=0.5f;
+ 		if(Gdx.input.isKeyPressed(Input.Keys.UP))
+ 			cam.position.y+=0.5f;
+ 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
+ 			cam.position.x-=0.5f;
+ 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+ 			cam.position.x+=0.5f;
  		//---------------------------------------------------------------------------------------------------
  		world.step(1/60f, 6, 2);
  		//ACTUALIZAR
  		camUpdate();
  		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
  		Gdx.gl.glClearColor((245/255f), (255/255f), (255/255f), 1); //RGB
- 		
+ 		puntaje.actualizar(puntos*10);//TODO ALTIRO CON ESE 10
  		//MECANICA DE JUEGO// 
          //---------------------------------------------------------------------------------------------------
  		click();//click inicial principalmente. para poder lanzar
@@ -141,6 +162,13 @@ package Pack;
          if(Constantes.click && !(sling.estirando))//si click y no apuntando para lanzar
          	pajaro.comportamiento();
          removerRotos();//quitar entidades 'muertas'
+         if(terminoNivel()){
+        	//TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO//
+        	 System.out.println("Nivel se acabo!!!!!!!!!!!!!!!!!!! "+"Linea 53 en escena +-");
+        	 game.setScreen(game.niveles);
+        	//TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO//
+         }
+         
          //DIBUJAR//
          //---------------------------------------------------------------------------------------------------
  		game.batch.setProjectionMatrix(cam.combined);
@@ -156,6 +184,8 @@ package Pack;
  				entidad.render(game.batch);
  			//piso/suelo
  			game.batch.draw(ground, 0, -125f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM);
+ 			//puntaje
+ 			puntaje.render(game.batch, 50/PPM, (Gdx.graphics.getHeight()+2000)/PPM, cam);
  		game.batch.end();
  		if(Constantes.Configuracion.debugRender)
  			dr.render(world, cam.combined);
@@ -226,7 +256,7 @@ package Pack;
  	private void removerRotos(){
  		for(Body b: fixturesPorQuitar){
  			for(EntityAB entidad: entidades){
- 				if(entidad.getBody()==b && entidad.vida<0){
+ 				if(entidad.getBody()==b /*&& entidad.vida<0*/){
  					world.destroyBody(b);
  					fixturesPorQuitar.removeValue(b, true);
  					entidades.removeValue(entidad, true);
@@ -235,12 +265,19 @@ package Pack;
  			}
  		}
  	}
+ 	private boolean terminoNivel(){
+ 		for(EntityAB entidad: entidades)
+ 			if(entidad instanceof CerdoBase)
+ 				return false;//primer cerdo encontrado.. No termino
+ 		return true;//no cerdo.. nivel terminado
+ 	}
  	//CONTACT LISTENER
  	//------------------------------------------------------------------------------------------------------------------
  	public void postSolve(Contact contact, ContactImpulse impulse) {
  		Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
  		//--------------------------NO  BORRAR--------------------------
  		//							[version0]creo que esta es mas "simple"
+ 		
  		if(golpeado.getBody()!=bFloor && golpeador.getBody()!=bFloor)//el piso no extiende de entity; se arroja excepción
  		try{
  			if(checarDanio(golpeado, golpeador, impulse)){
@@ -248,122 +285,25 @@ package Pack;
  				((Bloque)golpeado.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData());
  				fixturesPorQuitar.add(golpeado.getBody());
  			}
- 		}catch(Exception e){e.printStackTrace();}
- 		//--------------------------NO  BORRAR--------------------------
- 		//							[version1]
- 		/*Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
- 		try{
- 			if((golpeador.getBody().getUserData() instanceof Pajaro && golpeado.getBody().getUserData() instanceof Bloque)){
- 				System.out.println("paj pega bloq");
- 				pajaro.comportamientoRealizado = true;
- 				if(checarDanio(golpeado, golpeador, impulse))
- 					((Bloque)golpeado.getBody().getUserData()).vida -= ((Pajaro)golpeador.getBody().getUserData()).fuerzaLanzamiento;
+ 		}catch(Exception e){//e.printStackTrace();
+ 			if(golpeador.getBody().getUserData() instanceof CerdoBase){
+ 				((EntityAB)golpeador.getBody().getUserData()).vida = 0;
+ 				fixturesPorQuitar.add(golpeador.getBody());
  			}
- 			else if((golpeador.getBody().getUserData() instanceof CerdoBase && golpeado.getBody().getUserData() instanceof Pajaro)){
- 				System.out.println("cer pega paj");
- 				pajaro.comportamientoRealizado = true;
- 			}
- 			else if((golpeador.getBody().getUserData() instanceof CerdoBase && golpeado.getBody().getUserData() instanceof Bloque)){
- 				System.out.println("cer pega bloq");
- 			}
- 			else{//cualquier otra cosa
- 				if(golpeador.getBody().getUserData() instanceof Pajaro)
- 					pajaro.isComportamientoRealizado();//bloquea el comportamiento según su tipo
- 				return;
- 			}
- 			//solo pasa aquí si los contactos fue entre pájaro-cerdo, pájaro-bloque, cerdo-bloque
- 			
- 			//TODO: Checar tipo de material y pájaro para así poder 
- 			//		dañar adecuadamente.
- 			
- 			if(((EntityAB)golpeado.getBody().getUserData()).friccionMax < sum(impulse.getNormalImpulses()))
- 				fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
- 			if(((EntityAB)golpeado.getBody().getUserData()).impactoMaximo < sum(impulse.getTangentImpulses()))
- 				fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
- 			 
- 		}catch (Exception e) {e.printStackTrace();}
- 		*/			
- 		//--------------------------NO  BORRAR--------------------------
- 		//							[version2]
+ 		}
  		
- 		/*try{
- 			if(golpeador.getBody().getUserData() instanceof Pajaro){
- 				float danio = ((Pajaro)golpeador.getBody().getUserData()).danio;
- 				switch (((Pajaro)golpeador.getBody().getUserData()).tipo) {
- 				case "rojo":
- 					if(golpeado.getBody().getUserData() instanceof entidades.bloques.Bloque)
- 						if(golpeado.getBody().getUserData() instanceof entidades.bloques.Bloques.Piedra){
- 							if(checarDanio(golpeado, golpeador, impulse))//suficiente impacto/friccion?
- 								((Bloque)golpeado.getBody().getUserData()).vida -= danio*(sumaFuerzas)/2;//especial -
- 							((Bloque)golpeado.getBody().getUserData()).actualizar();//actualizar bloque [sprite/vida]
- 							if(((Bloque)golpeado.getBody().getUserData()).vida<0)//se le acabo la vida mandar a quitar
- 								fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
- 						}
- 						else {
- 							if(checarDanio(golpeado, golpeador, impulse))//suficiente impacto/friccion?
- 								((Bloque)golpeado.getBody().getUserData()).vida -= danio*(sumaFuerzas);//normal
- 							((Bloque)golpeado.getBody().getUserData()).actualizar();//actualizar bloque [sprite/vida]
- 							if(((Bloque)golpeado.getBody().getUserData()).vida<0)//se le acabo la vida mandar a quitar
- 								fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
- 						}
- 					else if(golpeado.getBody().getUserData() instanceof CerdoBase){
- 						System.out.println("red pega cerdo");
- 					}
- 					System.out.println("daño: "+danio*(sumaFuerzas));
- 					break;
- 				//------------------------------------------------------------------------------------
- 				case "amarillo":
- 					if(golpeado.getBody().getUserData() instanceof entidades.bloques.Bloque)
- 						if(golpeado.getBody().getUserData() instanceof entidades.bloques.Bloques.Madera){
- 							if(checarDanio(golpeado, golpeador, impulse))//suficiente impacto/friccion?
- 								((Bloque)golpeado.getBody().getUserData()).vida -= danio*(sumaFuerzas)*2;//especial +
- 							((Bloque)golpeado.getBody().getUserData()).actualizar();//actualizar bloque [sprite/vida]
- 							if(((Bloque)golpeado.getBody().getUserData()).vida<0)//se le acabo la vida mandar a quitar
- 								fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
- 						}
- 						else {
- 							if(checarDanio(golpeado, golpeador, impulse))//suficiente impacto/friccion?
- 								((Bloque)golpeado.getBody().getUserData()).vida -=  danio*(sumaFuerzas);//normal
- 							((Bloque)golpeado.getBody().getUserData()).actualizar();//actualizar bloque [sprite/vida]
- 							if(((Bloque)golpeado.getBody().getUserData()).vida<0)//se le acabo la vida mandar a quitar
- 								fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
- 						}
- 					else if(golpeado.getBody().getUserData() instanceof CerdoBase){
- 						System.out.println("amarillo pega cerdo");
- 					}
- 					break;
- 				//------------------------------------------------------------------------------------
- 				case "rojoGrande":
- 					if(golpeado.getBody().getUserData() instanceof entidades.bloques.Bloque)
- 						if(golpeado.getBody().getUserData() instanceof entidades.bloques.Bloques.Piedra){
- 							if(checarDanio(golpeado, golpeador, impulse))//suficiente impacto/friccion?
- 								((Bloque)golpeado.getBody().getUserData()).vida -=  danio*(sumaFuerzas)/4;//especial -
- 							((Bloque)golpeado.getBody().getUserData()).actualizar();//actualizar bloque [sprite/vida]
- 							if(((Bloque)golpeado.getBody().getUserData()).vida<0)//se le acabo la vida mandar a quitar
- 								fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
- 						}
- 						else {
- 							if(checarDanio(golpeado, golpeador, impulse))//suficiente impacto/friccion?
- 								((Bloque)golpeado.getBody().getUserData()).vida -=  danio*(sumaFuerzas);//normal
- 							((Bloque)golpeado.getBody().getUserData()).actualizar();//actualizar bloque [sprite/vida]
- 							if(((Bloque)golpeado.getBody().getUserData()).vida<0)//se le acabo la vida mandar a quitar
- 								fixturesPorQuitar.add((EntityAB)golpeado.getBody().getUserData());
- 						}
- 					else if(golpeado.getBody().getUserData() instanceof CerdoBase){
- 						System.out.println("redgigante pega cerdo");
- 					}
- 					break;
- 				//------------------------------------------------------------------------------------
- 					//TODO azul, blanco, negro
- 				default:
- 					break;
- 				}
- 			}
- 			else if(golpeador.getBody().getUserData() instanceof CerdoBase && golpeado.getBody().getUserData() instanceof Bloque){
- 				System.out.println("Cerdo golpeo!!");
- 			}
- 		}catch(Exception e){System.out.println("ex");}*/
- 		
+ 		/*//otro metodo que no sirve del todo bien
+ 		 if(!(golpeado.getBody().getUserData() instanceof EntityAB))
+ 			return;
+ 		if(((EntityAB)golpeado.getBody().getUserData()).normalMax < sum(impulse.getNormalImpulses()) ||
+ 				((EntityAB)golpeado.getBody().getUserData()).tangentMax < sum(impulse.getTangentImpulses()))
+ 			fixturesPorQuitar.add(golpeado.getBody());
+ 		if(!(golpeador.getBody().getUserData() instanceof EntityAB))
+ 			return;
+ 		if(((EntityAB)golpeador.getBody().getUserData()).normalMax < sum(impulse.getNormalImpulses()) ||
+ 				((EntityAB)golpeador.getBody().getUserData()).tangentMax < sum(impulse.getTangentImpulses()))
+ 			fixturesPorQuitar.add(golpeador.getBody());
+ 		 * */
  	}
  	public void beginContact(Contact contact) {}
  	public void endContact(Contact contact) {}

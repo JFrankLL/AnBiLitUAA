@@ -49,4 +49,9 @@ public class CerdoBase extends EntityAB {
 	public void actualizar() {
 		//TODO: cambier sprite deacuerdo a la vida, como bloques
 	}
+	@Override
+	public void daniarme(int danio) {
+		// TODO Auto-generated method stub
+		
+	}
 }	

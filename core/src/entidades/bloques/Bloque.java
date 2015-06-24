@@ -2,6 +2,7 @@ package entidades.bloques;
 
 import static utiles.Constantes.PPM;
 
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -15,7 +16,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import entidades.EntityAB;
 
 public abstract class Bloque extends EntityAB {
-	Sound smash;
+	Music smash;
 	Sprite[] sprites = new Sprite[4];
 	
 	public Bloque(World world, String[] rutasSprites, float x, float y, short angulo) {
@@ -26,7 +27,6 @@ public abstract class Bloque extends EntityAB {
 			sprites[i].setOrigin((sprite.getWidth()/4), (sprite.getHeight()/4));
 			sprites[i].setSize(sprite.getWidth()/2, sprite.getHeight()/2);
 		}
-		
 		sprite.setPosition(x/PPM, y/PPM);
 		sprite.setOriginCenter();
 		sprite.setScale(0.5f);

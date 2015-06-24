@@ -18,10 +18,11 @@ public abstract class Bloques{
 		public Vidrio(World world, String[] rutasSprites, float x, float y, short angulo) {
 			super(world, rutasSprites, x, y, angulo);
 			normalMax += 5; tangentMax += 0.25f;
-			smash = Gdx.audio.newSound(Gdx.files.internal("Audio/glass.wav"));
+			smash = Gdx.audio.newMusic(Gdx.files.internal("Audio/glass.wav"));
 		}
 		public boolean daniar(entidades.EntityAB daniador) {
-			smash.play();
+			if(!smash.isPlaying())
+				smash.play();
 			if(daniador instanceof PajaroBlue)
 				vida -= daniador.danio*10;//especialidad +
 			else
@@ -54,10 +55,11 @@ public abstract class Bloques{
 			super(world, rutasSprites, x, y, angulo);
 			normalMax += 10f; tangentMax += 1.25f;
 			danio+=5;
-			smash = Gdx.audio.newSound(Gdx.files.internal("Audio/wood.wav"));
+			smash = Gdx.audio.newMusic(Gdx.files.internal("Audio/wood.wav"));
 		}
 		public boolean daniar(entidades.EntityAB daniador) {
-			smash.play();
+			if(!smash.isPlaying())
+				smash.play();
 			if(daniador instanceof PajaroAmarillo)
 				vida -= daniador.danio*2;//especialidad +
 			else
@@ -92,10 +94,11 @@ public abstract class Bloques{
 			super(world, rutasSprites, x, y, angulo);
 			normalMax += 20f; tangentMax += 2;
 			danio+=15;
-			smash = Gdx.audio.newSound(Gdx.files.internal("Audio/rock.wav"));
+			smash = Gdx.audio.newMusic(Gdx.files.internal("Audio/rock.wav"));
 		}
 		public boolean daniar(entidades.EntityAB daniador) {
-			smash.play();
+			if(!smash.isPlaying())
+				smash.play();
 			if(daniador instanceof PajaroRed || daniador instanceof PajaroRedGrande)
 				vida -= daniador.danio;//especialidad -
 			else

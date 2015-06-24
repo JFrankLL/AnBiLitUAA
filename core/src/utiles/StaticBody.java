@@ -1,9 +1,12 @@
 package utiles;
 
+import static utiles.Constantes.PPM;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -21,25 +24,25 @@ public class StaticBody {
 		BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal(path));
 		
 		BodyDef bd = new BodyDef();
-		bd.position.set(-124, -124);
-		bd.type = BodyType.DynamicBody;
+		bd.position.set(0,-125/PPM);
+		bd.type = BodyType.StaticBody;
 		
 		FixtureDef fd = new FixtureDef();
-		fd.density = 100000;
 		fd.friction = 0.5f;
 		fd.restitution = 0.3f;
 		
 		body = world.createBody(bd);
-		body.setGravityScale(0);
-		loader.attachFixture(body, name, fd, texture.getWidth());
+		loader.attachFixture(body, name, fd, texture.getWidth()/PPM);
 		sprite = new Sprite(texture);
-		modelOrigin = loader.getOrigin(name, texture.getWidth()).cpy();
+		sprite.setSize(texture.getWidth()/PPM, texture.getHeight()/PPM);
+		modelOrigin = loader.getOrigin(name, texture.getWidth()/PPM).cpy();
 	}
 	public void draw (SpriteBatch batch) {
 	    Vector2 bodyPos = body.getPosition().sub(modelOrigin);
 	    sprite.setPosition(bodyPos.x, bodyPos.y);
-	    sprite.setOrigin(modelOrigin.x, modelOrigin.y);
-	    sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
 	    sprite.draw(batch);
+	}
+	public void dispose(){
+		sprite.getTexture().dispose();
 	}
 }

@@ -1,18 +1,12 @@
 package Pack;
  
- import static utiles.Constantes.PPM;
-
-import javax.swing.text.rtf.RTFEditorKit;
-
+import static utiles.Constantes.PPM;
 import utiles.Constantes;
- 
-
-
-
+import utiles.StaticBody;
 import UI.CircleButton;
 import UI.Puntos;
 
- import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -33,13 +27,8 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
- 
 
-
-
-
-
- import entidades.EntityAB;
+import entidades.EntityAB;
 import entidades.Sling;
 import entidades.bloques.Bloque;
 import entidades.bloques.Bloques;
@@ -54,11 +43,11 @@ import entidades.pajaros.PajaroRedGrande;
  public class Escena implements Screen, ContactListener {
  	AnBiLit game;
  	OrthographicCamera cam;
- 	TextureRegion back, ground;
+ 	TextureRegion back;
+ 	StaticBody ground;
  	CircleButton menu, reset;
  	World world;
  	Sling sling;
- 	Body bFloor;
  	Pajaro pajaro;
  	
  	Array<EntityAB> entidades = new Array<EntityAB>();
@@ -79,7 +68,7 @@ import entidades.pajaros.PajaroRedGrande;
  	public void show() {
  		world = new World(new Vector2(0, -9.8f), true);
  		back = new TextureRegion(new Texture("background.png"));
- 		ground = new TextureRegion(new Texture("ground.png"));
+ 		ground = new StaticBody(world, "Imagenes/Escena/ground00.json", "ground", new Texture("Imagenes/Escena/ground00.png"));
  		puntaje = new Puntos();
  		menu = new CircleButton("Imagenes/Escena/menu.png");
  		reset = new CircleButton("Imagenes/Escena/reset.png");
@@ -88,45 +77,30 @@ import entidades.pajaros.PajaroRedGrande;
  		System.out.println("\n\n\n\n");
  		
  		entidades.clear();
- 		entidades.add(new CerdoC(world, 470f, 200f));
+ 		entidades.add(new CerdoC(world, 880f, 240f));
  		
- 		entidades.add(new Bloques.PiedraG(world,430f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,430f, 200f, (short)90));
-		entidades.add(new Bloques.VidrioG(world,430f, 300f, (short)90));
+ 		entidades.add(new Bloques.PiedraG(world,730f, 240f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,730f, 345f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,730f, 450f, (short)90));
 		
-		entidades.add(new Bloques.PiedraG(world,440f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,440f, 200f, (short)90));
-		entidades.add(new Bloques.VidrioG(world,440f, 300f, (short)90));
+		entidades.add(new Bloques.PiedraG(world,820f, 240f, (short)90));
+		entidades.add(new Bloques.MaderaG(world,820f, 345f, (short)90));
+		entidades.add(new Bloques.VidrioG(world,820f, 450f, (short)90));
 		
-		entidades.add(new Bloques.PiedraG(world,450f, 100f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,450f, 200f, (short)90));
-		entidades.add(new Bloques.VidrioG(world,450f, 300f, (short)90));
+		entidades.add(new Bloques.PiedraG(world,775f, 295f, (short)0));
+		entidades.add(new Bloques.MaderaG(world,775f, 400f, (short)0));
+		entidades.add(new Bloques.VidrioG(world,775f, 500f, (short)0));
  		//Nivel Temporal//------------------------------------------------------------------------------
  		
  		Constantes.seguirPajaro = false;
  		cam = new OrthographicCamera(Gdx.graphics.getWidth()/PPM, Gdx.graphics.getHeight()/PPM);
  		sling = new Sling("slingshot.png", "slingshot2.png", pajaro);
- 		
- 		//CUERPO ESTATICO (Ground)
-         BodyDef groundBodyDef = new BodyDef();
-         groundBodyDef.type = BodyDef.BodyType.StaticBody;
-         groundBodyDef.position.set(1024/PPM, 32/PPM);
-         bFloor = world.createBody(groundBodyDef);
- 	    
-         PolygonShape shape = new PolygonShape();
- 	    shape.setAsBox(1024/PPM, 32/PPM);
- 		FixtureDef fixtureDef = new FixtureDef();
- 	    fixtureDef.shape = shape;
- 	    fixtureDef.density = 1f;
- 	    
- 	    bFloor.createFixture(fixtureDef);
  	    
  	    dr.setDrawBodies(true);
  		dr.setDrawVelocities(true);
- 	    
-         shape.dispose();
-         puntos=0;
-         world.setContactListener(this);
+ 		
+ 		puntos=0;
+        world.setContactListener(this);
  	}
  	@Override
  	public void render(float delta) {
@@ -164,10 +138,8 @@ import entidades.pajaros.PajaroRedGrande;
          	pajaro.comportamiento();
          removerRotos();//quitar entidades 'muertas'
          if(terminoNivel()){
-        	//TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO//
         	 System.out.println("Nivel se acabo!!!!!!!!!!!!!!!!!!! "+"Linea 53 en escena +-");
         	 game.setScreen(game.niveles);
-        	//TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO////TODO//
          }
          if(Gdx.input.isTouched()){
         	 if(menu.selectedPPM(cam, 10, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
@@ -188,7 +160,8 @@ import entidades.pajaros.PajaroRedGrande;
  			sling.render(game.batch); 									//render el pájaro (a veces), entre el sling y ligas.
  			for(EntityAB entidad: entidades)							//render elementos en el nivel
  				entidad.render(game.batch);
- 			game.batch.draw(ground, 0, -125f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM); 	//piso/suelo
+ 			//game.batch.draw(ground, 0, -125f/PPM, back.getRegionWidth()/PPM, back.getRegionHeight()/PPM); 	//piso/suelo
+ 			ground.draw(game.batch);
  			menu.render(game.batch, 10, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM, cam);
  			reset.render(game.batch, 74, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM, cam);
  			puntaje.render(game.batch, 50/PPM, (Gdx.graphics.getHeight()+2048)/PPM, cam); 					//puntaje
@@ -214,6 +187,9 @@ import entidades.pajaros.PajaroRedGrande;
  		game.batch.dispose();
  		world.dispose();
  		pajaro.dispose();
+ 		ground.dispose();
+ 	 	menu.dispose();
+ 	 	reset.dispose();
  		//Creo que faltan mas dispose (bloques y demás)
  	}
  	//MECANICA GAMEPLAY
@@ -285,7 +261,7 @@ import entidades.pajaros.PajaroRedGrande;
  		//--------------------------NO  BORRAR--------------------------
  		//							[version0]creo que esta es mas "simple"
  		
- 		if(golpeado.getBody()!=bFloor && golpeador.getBody()!=bFloor)//el piso no extiende de entity; se arroja excepción
+ 		if(golpeado.getBody()!=ground.body && golpeador.getBody()!=ground.body)//el piso no extiende de entity; se arroja excepción
  		try{
  			if(checarDanio(golpeado, golpeador, impulse)){
  				((Bloque)golpeado.getBody().getUserData()).actualizar();

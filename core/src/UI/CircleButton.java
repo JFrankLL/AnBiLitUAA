@@ -39,4 +39,7 @@ public class CircleButton extends Button{
     		return true;
 		return false;
 	}
+	public void dispose() {
+		getTexture().dispose();
+	}
 }

@@ -80,7 +80,7 @@ import entidades.pajaros.PajaroRedGrande;
  		System.out.println("\n\n\n\n");
  		
  		entidades.clear();
- 		entidades.add(new CerdoC(world, 1280f, 240f));
+ 		entidades.add(new CerdoC(world, 680f, 240f));
  		
  		entidades.add(new Bloques.PiedraG(world,1130f, 240f, (short)90));
 		entidades.add(new Bloques.MaderaG(world,1130f, 350f, (short)90));
@@ -277,10 +277,10 @@ import entidades.pajaros.PajaroRedGrande;
  			//e.printStackTrace();
  			//-------------------------cerdos
  			if(golpeador.getBody().getUserData() instanceof CerdoBase){
- 				if(((CerdoBase)golpeador.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData()))
+ 				if(((CerdoBase)golpeador.getBody().getUserData()).daniar((EntityAB)golpeado.getBody().getUserData()))
  					fixturesPorQuitar.add(golpeador.getBody());//se agrega si la vida es cero o menor
  				if(checarDanio(golpeado, golpeador, impulse))
- 					if(((CerdoBase)golpeador.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData()))
+ 					if(((CerdoBase)golpeador.getBody().getUserData()).daniar((EntityAB)golpeado.getBody().getUserData()))
  						fixturesPorQuitar.add(golpeador.getBody());//se agrega si la vida es cero o menor
  				
  					((CerdoC)golpeador.getBody().getUserData()).daniarme(1);

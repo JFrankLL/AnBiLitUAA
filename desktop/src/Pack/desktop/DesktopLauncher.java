@@ -12,9 +12,12 @@ public class DesktopLauncher {
 		config.height = 720;
 
 	    // fullscreen
-		config.fullscreen = true;
+		//config.fullscreen = true;
 	    // vSync
 		config.vSyncEnabled = true;
+		config.allowSoftwareMode = true;
+		config.useGL30 = true;
+		config.title = "AnBiLitUAA";
 		
 		new LwjglApplication(new AnBiLit(), config);
 	}

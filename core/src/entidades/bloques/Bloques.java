@@ -1,12 +1,12 @@
 package entidades.bloques;
 
 import utiles.Constantes;
+import utiles.Contacto;
 import Pack.Escena;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.World;
 
-import entidades.pajaros.Pajaro;
 import entidades.pajaros.PajaroAmarillo;
 import entidades.pajaros.PajaroBlue;
 import entidades.pajaros.PajaroRed;
@@ -17,7 +17,8 @@ public abstract class Bloques{
 	public static abstract class Vidrio extends Bloque{
 		public Vidrio(World world, String[] rutasSprites, float x, float y, short angulo) {
 			super(world, rutasSprites, x, y, angulo);
-			normalMax += 5; tangentMax += 0.25f;
+			normalMax += 16; tangentMax += 2.5f;
+			body.setUserData(new Contacto.Rompible(normalMax, tangentMax, this));
 			smash = Gdx.audio.newMusic(Gdx.files.internal("Audio/glass.wav"));
 		}
 		public boolean daniar(entidades.EntityAB daniador) {
@@ -53,8 +54,9 @@ public abstract class Bloques{
 	public static class Madera extends Bloque{
 		public Madera(World world, String[] rutasSprites, float x, float y,short angulo) {
 			super(world, rutasSprites, x, y, angulo);
-			normalMax += 10f; tangentMax += 1.25f;
+			normalMax += 21f; tangentMax += 5f;
 			danio+=5;
+			body.setUserData(new Contacto.Rompible(normalMax, tangentMax, this));
 			smash = Gdx.audio.newMusic(Gdx.files.internal("Audio/wood.wav"));
 		}
 		public boolean daniar(entidades.EntityAB daniador) {
@@ -92,8 +94,9 @@ public abstract class Bloques{
 	public static abstract class Piedra extends Bloque{
 		public Piedra(World world, String[] rutasSprites, float x, float y, short angulo) {
 			super(world, rutasSprites, x, y, angulo);
-			normalMax += 20f; tangentMax += 2;
+			normalMax += 31f; tangentMax += 10;
 			danio+=15;
+			body.setUserData(new Contacto.Rompible(normalMax, tangentMax, this));
 			smash = Gdx.audio.newMusic(Gdx.files.internal("Audio/rock.wav"));
 		}
 		public boolean daniar(entidades.EntityAB daniador) {

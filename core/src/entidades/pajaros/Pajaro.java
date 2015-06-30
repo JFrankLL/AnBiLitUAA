@@ -5,6 +5,7 @@ import static utiles.Constantes.PPM;
 import java.util.LinkedList;
 
 import utiles.Constantes;
+import utiles.Contacto;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
@@ -19,7 +20,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
 
 import entidades.EntityAB;
 import entidades.Sling;
@@ -36,7 +36,6 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	Sound flying;
 	public String tipo;
 	public float fuerzaLanzamiento = 10;
-	
 	
 	public Pajaro(World world, String rutaTexture){
 		super(rutaTexture);
@@ -66,7 +65,8 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	    normalMax = 10f;
 	    danio = 25;
 	    trayectoria = new LinkedList<Vector3>();
-	    body.setUserData(this);
+	    //body.setUserData(this);
+	    body.setUserData(new Contacto.Rompible(10, 10, this));
 	    
         shape.dispose();
         flying = Gdx.audio.newSound(Gdx.files.internal("Audio/flying.wav"));
@@ -89,7 +89,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 		//pajaro
 		sprite.draw(sb);
 		if(lanzado && dibujarTrayectoria && System.currentTimeMillis()>ultimoStep+50){
-			trayectoria.add(new Vector3(posision(),0));
+			trayectoria.addFirst(new Vector3(posision(),0));
 			ultimoStep = System.currentTimeMillis();
 		}
 		//sb deber� terminar donde fue llamada esta funci�n
@@ -113,7 +113,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 				comportamientoRealizado = true;
 				System.out.println("comportamiento");
 			}
-		trayectoria.add(new Vector3(posision(),1));//agraga un punto mas grande "" uso z de vector 3
+		trayectoria.addLast(new Vector3(posision(),1));//agraga un punto mas grande "" uso z de vector 3
 		return comportamientoRealizado;
 	}
 	 

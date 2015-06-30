@@ -1,6 +1,5 @@
 package UI;
 
-import utiles.Constantes;
 import static utiles.Constantes.PPM;
 
 import com.badlogic.gdx.Gdx;
@@ -44,8 +43,6 @@ class Numero{
 	}
 	
 	public void actualizar(int num){//cambia numero
-		String[] numerosStrings = {"numeros/0.png","numeros/1.png","numeros/2.png","numeros/3.png",
-				"numeros/4.png","numeros/5.png","numeros/6.png","numeros/7.png","numeros/8.png","numeros/9.png"};
 		this.num = num;
 		sprite = new Sprite(new Texture("numeros/"+num+".png"));
 		sprite.setSize(sprite.getWidth()/PPM/2, sprite.getHeight()/PPM/2);

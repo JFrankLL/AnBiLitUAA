@@ -2,6 +2,7 @@ package Pack;
  
 import static utiles.Constantes.PPM;
 import utiles.Constantes;
+import utiles.Contacto;
 import utiles.StaticBody;
 import UI.CircleButton;
 import UI.Puntos;
@@ -12,37 +13,24 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
 import entidades.EntityAB;
 import entidades.Sling;
-import entidades.bloques.Bloque;
 import entidades.bloques.Bloques;
 import entidades.cerdos.CerdoBase;
 import entidades.cerdos.Cerdos.CerdoC;
 import entidades.pajaros.Pajaro;
-import entidades.pajaros.PajaroAmarillo;
-import entidades.pajaros.PajaroBlue;
-import entidades.pajaros.PajaroRed;
 import entidades.pajaros.PajaroRedGrande;
  
- public class Escena implements Screen, ContactListener {
+ public class Escena implements Screen{
  	AnBiLit game;
  	OrthographicCamera cam;
  	TextureRegion back;
@@ -54,11 +42,9 @@ import entidades.pajaros.PajaroRedGrande;
  	Sound level_start;
  	
  	Array<EntityAB> entidades = new Array<EntityAB>();
- 	Array<Body> fixturesPorQuitar = new Array<Body>();
- 	
- 	static float sumaFuerzas;
+ 	public static Array<Body> fixturesPorQuitar = new Array<Body>();
+
  	public static int puntos = 0;
- 	
  	Puntos puntaje;
  	
  	Box2DDebugRenderer dr = new Box2DDebugRenderer();
@@ -75,12 +61,14 @@ import entidades.pajaros.PajaroRedGrande;
  		puntaje = new Puntos();
  		menu = new CircleButton("Imagenes/Escena/menu.png");
  		reset = new CircleButton("Imagenes/Escena/reset.png");
- 		pajaro = new PajaroAmarillo(world);
+ 		pajaro = new PajaroRedGrande(world);
  		//Nivel Temporal//------------------------------------------------------------------------------
  		System.out.println("\n\n\n\n");
  		
  		entidades.clear();
  		entidades.add(new CerdoC(world, 680f, 240f));
+ 		for(int i=0;i<Math.random()*100;i++)
+ 		entidades.add(new CerdoC(world, (float) (680*Math.random()+680), (float) (240*Math.random()+100)));
  		
  		entidades.add(new Bloques.PiedraG(world,1130f, 240f, (short)90));
 		entidades.add(new Bloques.MaderaG(world,1130f, 350f, (short)90));
@@ -104,13 +92,15 @@ import entidades.pajaros.PajaroRedGrande;
  		level_start = Gdx.audio.newSound(Gdx.files.internal("Audio/level_start.mp3"));
  		level_start.play();
  		puntos=0;
-        world.setContactListener(this);
+        world.setContactListener(new Contacto());
  	}
  	@Override
  	public void render(float delta) {
  		//MECANICA DE OPCIONES 
         //---------------------------------------------------------------------------------------------------
  		//TODO: esto debe ser un switch, creo..
+ 		if(Gdx.input.isKeyJustPressed(Input.Keys.F2))
+ 			game.setScreen(this);
  		if(Gdx.input.isKeyJustPressed(Input.Keys.F3))
  			Constantes.seguirPajaro=(Constantes.seguirPajaro)?false:true;
  		if(Gdx.input.isKeyJustPressed(Input.Keys.F4))
@@ -146,13 +136,13 @@ import entidades.pajaros.PajaroRedGrande;
         	 game.setScreen(game.niveles);
          }
          if(Gdx.input.isTouched()){
- 			 Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor0.png")), 0, 0);
+ 			 //Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor0.png")), 0, 0);
         	 if(menu.selectedPPM(cam, 10, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
         		 game.setScreen(game.niveles);
         	 if(reset.selectedPPM(cam, 74, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
         		 game.setScreen(this);
          }else{
- 			 Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
+ 			 //Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
          }
          //DIBUJAR//
          //---------------------------------------------------------------------------------------------------
@@ -240,11 +230,12 @@ import entidades.pajaros.PajaroRedGrande;
  		cam.update();
  	}
  	private void removerRotos(){
- 		for(Body b: fixturesPorQuitar){
+ 		if(fixturesPorQuitar.size >= 1)
+ 		for(Body body: fixturesPorQuitar){
  			for(EntityAB entidad: entidades){
- 				if(entidad.getBody()==b && entidad.vida<0){
- 					world.destroyBody(b);
- 					fixturesPorQuitar.removeValue(b, true);
+ 				if(entidad.getBody()==body /*&& entidad.vida<0*/){
+ 					world.destroyBody(body);
+ 					fixturesPorQuitar.removeValue(body, true);
  					entidades.removeValue(entidad, true);
  					break;
  				}
@@ -257,74 +248,6 @@ import entidades.pajaros.PajaroRedGrande;
  				return false;//primer cerdo encontrado.. No termino
  		return true;//no cerdo.. nivel terminado
  	}
- 	//CONTACT LISTENER
- 	//------------------------------------------------------------------------------------------------------------------
- 	public void postSolve(Contact contact, ContactImpulse impulse) {
- 		Fixture golpeado = contact.getFixtureA(), golpeador = contact.getFixtureB();
- 		//--------------------------NO  BORRAR--------------------------
- 		//							[version0]creo que esta es mas "simple"
- 		
- 		if(golpeado.getBody()!=ground.body && golpeador.getBody()!=ground.body)//el piso no extiende de entity; se arroja excepción
- 		try{
- 			if(checarDanio(golpeado, golpeador, impulse)){
- 				((Bloque)golpeado.getBody().getUserData()).actualizar();
- 				if(((Bloque)golpeado.getBody().getUserData()).daniar((EntityAB)golpeador.getBody().getUserData()))
- 					fixturesPorQuitar.add(golpeado.getBody());//se agrega si la vida es cero o menor
- 			}
- 			if(golpeador.getBody().getUserData() instanceof Pajaro)
- 				((Pajaro)golpeador.getBody().getUserData()).bloqueo();//ya no dibujar trayectoria ni comportaminto
- 		}catch(Exception e){
- 			//e.printStackTrace();
- 			//-------------------------cerdos
- 			if(golpeador.getBody().getUserData() instanceof CerdoBase){
- 				if(((CerdoBase)golpeador.getBody().getUserData()).daniar((EntityAB)golpeado.getBody().getUserData()))
- 					fixturesPorQuitar.add(golpeador.getBody());//se agrega si la vida es cero o menor
- 				if(checarDanio(golpeado, golpeador, impulse))
- 					if(((CerdoBase)golpeador.getBody().getUserData()).daniar((EntityAB)golpeado.getBody().getUserData()))
- 						fixturesPorQuitar.add(golpeador.getBody());//se agrega si la vida es cero o menor
- 				
- 					((CerdoC)golpeador.getBody().getUserData()).daniarme(1);
- 					
- 					if(golpeado.getBody().getUserData() instanceof Pajaro)
- 						((Pajaro)golpeado.getBody().getUserData()).bloqueo();//ya no dibujar trayectoria ni comportaminto
- 			}
- 			else {
-				System.out.println("algo pasa");
-			}
- 		}
- 		
- 		/*//otro metodo que no sirve del todo bien
- 		 if(!(golpeado.getBody().getUserData() instanceof EntityAB))
- 			return;
- 		if(((EntityAB)golpeado.getBody().getUserData()).normalMax < sum(impulse.getNormalImpulses()) ||
- 				((EntityAB)golpeado.getBody().getUserData()).tangentMax < sum(impulse.getTangentImpulses()))
- 			fixturesPorQuitar.add(golpeado.getBody());
- 		if(!(golpeador.getBody().getUserData() instanceof EntityAB))
- 			return;
- 		if(((EntityAB)golpeador.getBody().getUserData()).normalMax < sum(impulse.getNormalImpulses()) ||
- 				((EntityAB)golpeador.getBody().getUserData()).tangentMax < sum(impulse.getTangentImpulses()))
- 			fixturesPorQuitar.add(golpeador.getBody());
- 		 * */
- 	}
- 	public void beginContact(Contact contact) {}
- 	public void endContact(Contact contact) {}
- 	public void preSolve(Contact contact, Manifold oldManifold) {}
- 	//COMPLEMENTOS A CONTACT LISTENER
- 	//------------------------------------------------------------------------------------------------------------------
- 	private boolean checarDanio(Fixture golpeado, Fixture golpeador, ContactImpulse impulse){
- 		// impacto
- 		if(((EntityAB)golpeado.getBody().getUserData()).normalMax < sum(impulse.getNormalImpulses()))
- 			return true;
- 		// Fricción
- 		if(((EntityAB)golpeado.getBody().getUserData()).tangentMax < sum(impulse.getTangentImpulses()))
- 			return true;
- 		return false;
- 	}	
- 	private static float sum(float[] a){//sumatoria -.-
- 		sumaFuerzas = 0;
- 		for(float f: a)
- 			sumaFuerzas+=f;
- 		return sumaFuerzas;
- 	}
+ 	
  	//------------------------------------------------------------------------------------------------------------------
  }

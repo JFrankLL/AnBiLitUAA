@@ -1,6 +1,5 @@
 package UI;
 
-import com.badlogic.gdx.Gdx;
 
 public class SquareButton extends Button{
 	public SquareButton(String path) {

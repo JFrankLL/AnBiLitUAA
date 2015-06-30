@@ -2,6 +2,7 @@ package entidades.cerdos;
 
 import static utiles.Constantes.PPM;
 import utiles.Constantes;
+import utiles.Contacto;
 import Pack.Escena;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -16,6 +17,7 @@ public abstract class Cerdos{
 		public CerdoC(World world, float x, float y) {
 			super(world, Constantes.Graficas.strTexPig);
 			body.setTransform(new Vector2(x/PPM, y/PPM), body.getAngle());
+			body.setUserData(new Contacto.Rompible(31, 5, this));
 		}
 		@Override
 		public void render(SpriteBatch sb) {

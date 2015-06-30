@@ -3,7 +3,6 @@ package entidades.bloques;
 import static utiles.Constantes.PPM;
 
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -49,7 +48,7 @@ public abstract class Bloque extends EntityAB {
 		body.setAngularDamping(1);//para que se frene en el suelo
 	    body.createFixture(fixtureDef);
 	    
-	    body.setUserData(this);
+	    //body.setUserData(this);
 	    danio = 5;
 	    
         shape.dispose();

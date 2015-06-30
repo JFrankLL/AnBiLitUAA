@@ -1,25 +1,23 @@
  package entidades;
  
  import static utiles.Constantes.PPM;
- import utiles.Constantes;
- 
- import com.badlogic.gdx.Gdx;
- import com.badlogic.gdx.graphics.Camera;
- import com.badlogic.gdx.graphics.Texture;
- import com.badlogic.gdx.graphics.g2d.SpriteBatch;
- import com.badlogic.gdx.graphics.g2d.TextureRegion;
- import com.badlogic.gdx.math.Vector2;
- import com.badlogic.gdx.math.Vector3;
- import com.badlogic.gdx.physics.box2d.World;
- 
- import entidades.pajaros.Pajaro;
+import utiles.Constantes;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+
+import entidades.pajaros.Pajaro;
  
  public class Sling extends EntityAB{
  	
  	Texture textureAlt;//segunda parte del sling//frontal (creo)
  	private TextureRegion textureLiga;
  	
- 	private int fuerzaElastico;//fuerza de lanzamiento Nota::incremental
  	public Vector2 pivote0, pivote1, pivote2;//donde esta amarrado el elástico: para posteriormente dibujarse
  	public float dstMax = 128f/PPM, dstMin = 32f/PPM, dst=1, grosor = (32f/PPM)/dst;
  	public boolean estiramiento, estirando = false;

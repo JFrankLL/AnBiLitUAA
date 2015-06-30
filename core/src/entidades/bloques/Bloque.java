@@ -67,6 +67,6 @@ public abstract class Bloque extends EntityAB {
 			sprite = sprites[3];
 		}
 	}
-	public abstract boolean daniar(EntityAB daniador);
+	public abstract boolean daniar(Object daniador);
 
 }

@@ -13,6 +13,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -66,21 +67,22 @@ import entidades.pajaros.PajaroRedGrande;
  		System.out.println("\n\n\n\n");
  		
  		entidades.clear();
- 		entidades.add(new CerdoC(world, 680f, 240f));
- 		for(int i=0;i<Math.random()*100;i++)
- 		entidades.add(new CerdoC(world, (float) (680*Math.random()+680), (float) (240*Math.random()+100)));
+ 		entidades.add(new CerdoC(world, 680f, 220f));
+ 		for(int i=0;i<Math.random()*100;i++){
+ 		//entidades.add(new CerdoC(world, (float) (680*Math.random()+880), (float) (240*Math.random()+100)));
  		
- 		entidades.add(new Bloques.PiedraG(world,1130f, 240f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,1130f, 350f, (short)90));
-		entidades.add(new Bloques.VidrioG(world,1130f, 450f, (short)90));
-		
-		entidades.add(new Bloques.PiedraG(world,1220f, 240f, (short)90));
-		entidades.add(new Bloques.MaderaG(world,1220f, 350f, (short)90));
-		entidades.add(new Bloques.VidrioG(world,1220f, 450f, (short)90));
-		
-		entidades.add(new Bloques.PiedraG(world,1175f, 295f, (short)0));
-		entidades.add(new Bloques.MaderaG(world,1175f, 400f, (short)0));
-		entidades.add(new Bloques.VidrioG(world,1175f, 500f, (short)0));
+ 		entidades.add(new Bloques.PiedraG(world,530f+i*100, 180f, (short)90));
+ 		entidades.add(new Bloques.PiedraG(world,620f+i*100, 180f, (short)90));
+ 		entidades.add(new Bloques.PiedraG(world,575f+i*100, 240f, (short)0));
+ 		
+ 		entidades.add(new Bloques.MaderaM(world,550f+i*100, 280f, (short)90));
+ 		entidades.add(new Bloques.MaderaM(world,620f+i*100, 280f, (short)90));
+ 		entidades.add(new Bloques.MaderaM(world,585f+i*100, 330f, (short)0));
+ 		
+ 		entidades.add(new Bloques.VidrioC(world,590f+i*100, 350f, (short)90));
+ 		entidades.add(new Bloques.VidrioC(world,620f+i*100, 350f, (short)90));
+ 		entidades.add(new Bloques.VidrioC(world,605f+i*100, 380f, (short)0));
+ 		}
  		//Nivel Temporal//------------------------------------------------------------------------------
  		
  		Constantes.seguirPajaro = false;
@@ -131,19 +133,18 @@ import entidades.pajaros.PajaroRedGrande;
          if(Constantes.click && !(sling.estirando))//si click y no apuntando para lanzar
          	pajaro.comportamiento();
          removerRotos();//quitar entidades 'muertas'
-         if(terminoNivel()){
-        	 System.out.println("Nivel se acabo!!!!!!!!!!!!!!!!!!! "+"Linea 53 en escena +-");
+         if(terminoNivel())
         	 game.setScreen(game.niveles);
-         }
          if(Gdx.input.isTouched()){
- 			 //Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor0.png")), 0, 0);
         	 if(menu.selectedPPM(cam, 10, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
         		 game.setScreen(game.niveles);
         	 if(reset.selectedPPM(cam, 74, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
         		 game.setScreen(this);
-         }else{
- 			 //Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
          }
+         if(Constantes.click)
+        	 Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor0.png")), 0, 0);
+         else
+ 			 Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
          //DIBUJAR//
          //---------------------------------------------------------------------------------------------------
  		game.batch.setProjectionMatrix(cam.combined);

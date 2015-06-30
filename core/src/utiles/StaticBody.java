@@ -22,7 +22,7 @@ public class StaticBody {
 		BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal(path));
 		
 		BodyDef bd = new BodyDef();
-		bd.position.set(0, -128/PPM);
+		bd.position.set(0, (-128-700)/PPM);
 		bd.type = BodyType.StaticBody;
 		
 		FixtureDef fd = new FixtureDef();

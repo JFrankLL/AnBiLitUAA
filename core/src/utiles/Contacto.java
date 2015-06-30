@@ -15,8 +15,9 @@ public class Contacto implements ContactListener {
 	public void postSolve(Contact contact, ContactImpulse impulse) {
  		Fixture fixA = contact.getFixtureA(), fixB = contact.getFixtureB();
  		
- 		if(checarDanio(fixA, impulse))
+ 		if(checarDanio(fixA, impulse)){
  			Escena.fixturesPorQuitar.add(fixA.getBody());
+ 		}
  		if(checarDanio(fixB, impulse))
  			Escena.fixturesPorQuitar.add(fixB.getBody());
  		

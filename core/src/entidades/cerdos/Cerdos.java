@@ -3,13 +3,10 @@ package entidades.cerdos;
 import static utiles.Constantes.PPM;
 import utiles.Constantes;
 import utiles.Contacto;
-import Pack.Escena;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-
-import entidades.EntityAB;
 
 public abstract class Cerdos{
 
@@ -17,20 +14,15 @@ public abstract class Cerdos{
 		public CerdoC(World world, float x, float y) {
 			super(world, Constantes.Graficas.strTexPig);
 			body.setTransform(new Vector2(x/PPM, y/PPM), body.getAngle());
-			body.setUserData(new Contacto.Rompible(31, 5, this));
+			body.setUserData(new Contacto.Rompible(0f, 0f, this));//31 5
 		}
 		@Override
 		public void render(SpriteBatch sb) {
 			super.render(sb);
 		}
-		public boolean daniar(EntityAB daniador) {
-			vida -= daniador.danio;
-		Escena.puntos+=75+100-vida;
-		return vida<0;
-		}
 		@Override
-		public void daniarme(int danio) {
-			super.daniarme(danio);
+		public boolean daniar(Object daniador) {
+			return super.daniar(daniador);
 		}
 	}
 }

@@ -49,7 +49,7 @@ public abstract class Bloque extends EntityAB {
 	    body.createFixture(fixtureDef);
 	    
 	    //body.setUserData(this);
-	    danio = 5;
+	    danio = 25;
 	    
         shape.dispose();
 	}
@@ -60,13 +60,16 @@ public abstract class Bloque extends EntityAB {
 		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);//actualiza �ngulo del ave (giraci�n)
 		sprite.draw(sb);
 	}
+	
+	public abstract boolean daniar(Object daniador);
+	
 	public void actualizar(){
+		//TODO cambiar sprite de acuerdo vida restante
 		try{
 			sprite = sprites[4-(int)(vida/25)];
 		}catch(Exception e){
 			sprite = sprites[3];
 		}
+		System.out.println("vida"+ vida);
 	}
-	public abstract boolean daniar(Object daniador);
-
 }

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import utiles.Constantes;
 import utiles.Contacto;
+import Pack.Escena;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
@@ -105,7 +106,6 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 		lanzado = true;
 		Constantes.seguirPajaro = true;
 	}
-	
 	@Override //de la interface
 	public boolean comportamiento(){
 		if(lanzado)
@@ -120,21 +120,17 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	public void mover(float x, float y) {
 		body.setTransform(x, y, body.getAngle());
 	}
-	
 	public void mover(Vector2 vec2) {
 		body.setTransform(vec2.x, vec2.y, body.getAngle());
 	}
-	
 	public Vector2 posision(){
 		return new Vector2(body.getPosition().x, body.getPosition().y);
 	}
 	
 	public abstract boolean isComportamientoRealizado();
-	
 	public Sprite getSprite() {
 		return sprite;
 	}
-	
 	public Body getBody() {
 		return body;
 	}
@@ -142,5 +138,13 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	public void bloqueo(){
 		dibujarTrayectoria = false;
 		comportamientoRealizado = true;
+	}
+
+	@Override
+	public boolean daniar(Object daniador) {
+		vida -= danio;
+		Escena.puntos+=75+100-vida;
+		actualizar();
+		return vida<0;
 	}
 }

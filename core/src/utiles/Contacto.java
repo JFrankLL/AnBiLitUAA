@@ -1,26 +1,35 @@
 package utiles;
 
-import Pack.Escena;
-
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
+import entidades.EntityAB;
 import entidades.pajaros.Pajaro;
 
 public class Contacto implements ContactListener {
 	
 	public void postSolve(Contact contact, ContactImpulse impulse) {
  		Fixture fixA = contact.getFixtureA(), fixB = contact.getFixtureB();
- 		
- 		if(checarDanio(fixA, impulse)){
- 			Escena.fixturesPorQuitar.add(fixA.getBody());
- 		}
+ 		if(checarDanio(fixA, impulse))
+			if(fixA.getBody().getUserData() instanceof Rompible)
+				if(((Rompible)fixA.getBody().getUserData()).thisObject instanceof EntityAB)
+					((EntityAB)((Rompible)fixA.getBody().getUserData()).thisObject).daniar(fixB.getBody().getUserData());
  		if(checarDanio(fixB, impulse))
- 			Escena.fixturesPorQuitar.add(fixB.getBody());
- 		
+			if(fixB.getBody().getUserData() instanceof Rompible)
+				if(((Rompible)fixB.getBody().getUserData()).thisObject instanceof EntityAB)
+					((EntityAB)((Rompible)fixB.getBody().getUserData()).thisObject).daniar(fixA.getBody().getUserData());
+		
+		//bloquear pajaro
+		if(fixA.getBody().getUserData()!=null && fixA.getBody().getUserData() instanceof Rompible)
+			if(((Rompible)fixA.getBody().getUserData()).thisObject instanceof Pajaro)
+				((Pajaro)((Rompible)fixA.getBody().getUserData()).thisObject).bloqueo();
+		if(fixA.getBody().getUserData()!=null && fixA.getBody().getUserData() instanceof Rompible)
+			if(((Rompible)fixB.getBody().getUserData()).thisObject instanceof Pajaro)
+				((Pajaro)((Rompible)fixB.getBody().getUserData()).thisObject).bloqueo();
+		
  	}
  	public void beginContact(Contact contact) {}
  	public void endContact(Contact contact) {}
@@ -43,10 +52,10 @@ public class Contacto implements ContactListener {
  		return false;
  	}	
  	private static float sum(float[] a){//sumatoria -.-
- 		int sumaFuerzas = 0;
+ 		Constantes.ultimaFuerza = 0;
  		for(float f: a)
- 			sumaFuerzas+=f;
- 		return sumaFuerzas;
+ 			Constantes.ultimaFuerza+=f;
+ 		return Constantes.ultimaFuerza;
 	 }
  	
  	////////////////////////////////////////////////////////////////
@@ -54,9 +63,9 @@ public class Contacto implements ContactListener {
  	////////////////////////////////////////////////////////////////
  	public static class Rompible{
  		float normalMax, tangentMax;
- 		public Object thisObject;
+ 		public EntityAB thisObject;
  		
- 		public Rompible(float normalMax, float tangentMax, Object thisObject) {
+ 		public Rompible(float normalMax, float tangentMax, EntityAB thisObject) {
  			this.normalMax = normalMax;
  			this.tangentMax = tangentMax;
  			this.thisObject = thisObject;

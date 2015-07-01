@@ -30,9 +30,4 @@ public final class PajaroRedGrande extends Pajaro implements ComportamientoPajar
 		// TODO Auto-generated method stub
 		
 	}
-	@Override
-	public void daniarme(int danio) {
-		// TODO Auto-generated method stub
-		
-	}
 }

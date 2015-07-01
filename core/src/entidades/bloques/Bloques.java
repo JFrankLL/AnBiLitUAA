@@ -21,18 +21,17 @@ public abstract class Bloques{
 			body.setUserData(new Contacto.Rompible(normalMax, tangentMax, this));
 			smash = Gdx.audio.newMusic(Gdx.files.internal("Audio/glass.wav"));
 		}
+		@Override
 		public boolean daniar(Object daniador) {
 			if(!smash.isPlaying())
 				smash.play();
 			if(daniador instanceof PajaroBlue)
-				vida -= ((PajaroBlue)daniador).danio*10;//especialidad +
+				vida -= Constantes.ultimaFuerza*2;//especialidad +
 			else
-				vida -= ((PajaroBlue)daniador).danio;
-			Escena.puntos+=25+100-vida;
+				vida -= Constantes.ultimaFuerza;
+			Escena.puntos+=100-vida;
+			super.actualizar();
 			return vida<0;
-		}
-		@Override
-		public void daniarme(int danio) {
 		}
 	}
 	public static class VidrioG extends Vidrio {
@@ -51,28 +50,25 @@ public abstract class Bloques{
 		}
 	}
 	//**********************************[MADERA]**********************************
-	public static class Madera extends Bloque{
+	public static abstract class Madera extends Bloque{
 		public Madera(World world, String[] rutasSprites, float x, float y,short angulo) {
 			super(world, rutasSprites, x, y, angulo);
 			normalMax += 21f; tangentMax += 5f;
-			danio+=5;
+			danio+=8;
 			body.setUserData(new Contacto.Rompible(normalMax, tangentMax, this));
 			smash = Gdx.audio.newMusic(Gdx.files.internal("Audio/wood.wav"));
 		}
+		@Override
 		public boolean daniar(Object daniador) {
 			if(!smash.isPlaying())
 				smash.play();
 			if(daniador instanceof PajaroAmarillo)
-				vida -= ((PajaroAmarillo)daniador).danio*2;//especialidad +
+				vida -= Constantes.ultimaFuerza*2;//especialidad +
 			else
-				vida -= ((PajaroAmarillo)daniador).danio;
-			Escena.puntos+=50+100-vida;
+				vida -= Constantes.ultimaFuerza;
+			Escena.puntos+=100-vida;
+			super.actualizar();
 			return vida<0;
-		}
-		@Override
-		public void daniarme(int danio) {
-			// TODO Auto-generated method stub
-			
 		}
 	}
 	public static class MaderaG extends Madera {
@@ -99,20 +95,17 @@ public abstract class Bloques{
 			body.setUserData(new Contacto.Rompible(normalMax, tangentMax, this));
 			smash = Gdx.audio.newMusic(Gdx.files.internal("Audio/rock.wav"));
 		}
+		@Override
 		public boolean daniar(Object daniador) {
 			if(!smash.isPlaying())
 				smash.play();
-			if(daniador instanceof PajaroRed || daniador instanceof PajaroRedGrande)
-				vida -= ((PajaroRedGrande)daniador).danio/2;//especialidad -
+			if(daniador instanceof PajaroRedGrande || daniador instanceof PajaroRed)
+				vida -= Constantes.ultimaFuerza/2;//especialidad -
 			else
-				vida -= ((PajaroRedGrande)daniador).danio;
-			Escena.puntos+=100+100-vida;
+				vida -= Constantes.ultimaFuerza;
+			Escena.puntos+=100-vida;
+			super.actualizar();
 			return vida<0;
-		}
-		@Override
-		public void daniarme(int danio) {
-			// TODO Auto-generated method stub
-			
 		}
 	}
 	public static class PiedraG extends Piedra {

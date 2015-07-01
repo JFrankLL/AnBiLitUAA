@@ -127,6 +127,10 @@ import entidades.pajaros.Pajaro;
  	public Texture getTexturaAlt() {
  		return textureAlt;
  	}
- 	public void daniarme(int danio) {}
+ 	@Override
+ 	public boolean daniar(Object daniador) {
+ 		// TODO Auto-generated method stub
+ 		return false;
+ 	}
  	
  }

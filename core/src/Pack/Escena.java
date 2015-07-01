@@ -29,7 +29,7 @@ import entidades.bloques.Bloques;
 import entidades.cerdos.CerdoBase;
 import entidades.cerdos.Cerdos.CerdoC;
 import entidades.pajaros.Pajaro;
-import entidades.pajaros.PajaroRedGrande;
+import entidades.pajaros.PajaroAmarillo;
  
  public class Escena implements Screen{
  	AnBiLit game;
@@ -62,7 +62,7 @@ import entidades.pajaros.PajaroRedGrande;
  		puntaje = new Puntos();
  		menu = new CircleButton("Imagenes/Escena/menu.png");
  		reset = new CircleButton("Imagenes/Escena/reset.png");
- 		pajaro = new PajaroRedGrande(world);
+ 		pajaro = new PajaroAmarillo(world);
  		//Nivel Temporal//------------------------------------------------------------------------------
  		System.out.println("\n\n\n\n");
  		
@@ -129,24 +129,24 @@ import entidades.pajaros.PajaroRedGrande;
  		//MECANICA DE JUEGO// 
          //---------------------------------------------------------------------------------------------------
  		click();//click inicial principalmente. para poder lanzar
-         mover();//Scroll en el juego
-         if(Constantes.click && !(sling.estirando))//si click y no apuntando para lanzar
-         	pajaro.comportamiento();
-         removerRotos();//quitar entidades 'muertas'
-         if(terminoNivel())
-        	 game.setScreen(game.niveles);
-         if(Gdx.input.isTouched()){
-        	 if(menu.selectedPPM(cam, 10, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
-        		 game.setScreen(game.niveles);
-        	 if(reset.selectedPPM(cam, 74, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
-        		 game.setScreen(this);
-         }
-         if(Constantes.click)
-        	 Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor0.png")), 0, 0);
-         else
- 			 Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
-         //DIBUJAR//
-         //---------------------------------------------------------------------------------------------------
+        mover();//Scroll en el juego
+        if(Constantes.click && !(sling.estirando))//si click y no apuntando para lanzar
+        	pajaro.comportamiento();
+        removerRotos();//quitar entidades 'muertas'
+        if(terminoNivel())
+        	game.setScreen(game.niveles);
+        if(Gdx.input.isTouched()){
+        	if(menu.selectedPPM(cam, 10, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
+        		game.setScreen(game.niveles);
+        	if(reset.selectedPPM(cam, 74, (Gdx.graphics.getHeight()+2000)/PPM-10, 64/PPM, 64/PPM))
+        		game.setScreen(this);
+        }
+        if(Constantes.click)
+        	Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor0.png")), 0, 0);
+        else
+        	Gdx.input.setCursorImage(new Pixmap(Gdx.files.internal("Imagenes/cursor1.png")), 0, 0);
+        //DIBUJAR//
+        //---------------------------------------------------------------------------------------------------
  		game.batch.setProjectionMatrix(cam.combined);
  		game.batch.begin();
  			//fondo

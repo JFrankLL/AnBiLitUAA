@@ -27,7 +27,7 @@ public abstract class EntityAB {
 	
 	public abstract void render(SpriteBatch sb);
 	public abstract void actualizar();
-	public abstract void daniarme(int danio);
+	public abstract boolean daniar(Object daniador);
 	
 	public void dispose() {
 		textura.dispose();

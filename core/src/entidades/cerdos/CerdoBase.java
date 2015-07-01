@@ -1,5 +1,7 @@
 package entidades.cerdos;
 
+import Pack.Escena;
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -32,12 +34,12 @@ public abstract class CerdoBase extends EntityAB {
 	    
 	    //body.setUserData(new Vector2(1f, 1f));
 	    normalMax = 1f;
-	    body.setUserData(this);
+	    
+	    danio = 25;
 	    
         shape.dispose();
 		
 	}
-	public abstract boolean daniar(EntityAB daniador);
 	@Override
 	public void render(SpriteBatch sb){//debe ejecutarse con sb ya empezado (sb.start)
 		sprite.setPosition(body.getPosition().x - sprite.getWidth()/2, (body.getPosition().y) - sprite.getHeight()/2);
@@ -50,7 +52,10 @@ public abstract class CerdoBase extends EntityAB {
 		//TODO: cambier sprite deacuerdo a la vida, como bloques
 	}
 	@Override
-	public void daniarme(int danio) {
-		body.applyForceToCenter(0, 1000, true);
+	public boolean daniar(Object daniador) {
+		vida -= danio;
+		Escena.puntos+=75+100-vida;
+		actualizar();
+		return vida<0;
 	}
 }	

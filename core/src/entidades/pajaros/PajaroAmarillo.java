@@ -15,7 +15,6 @@ public final class PajaroAmarillo extends Pajaro implements ComportamientoPajaro
 	public boolean comportamiento() {
 		if(comportamientoRealizado)
 			return false;
-		danio+=20;
 		body.applyForceToCenter(body.getLinearVelocity().setLength(800), true);
 		//body.applyForceToCenter( new Vector2((float) Math.pow(fuerzaLanzamiento, 3), (float) Math.pow(fuerzaLanzamiento, 3)), false);
 		super.comportamiento();

@@ -32,11 +32,6 @@ public abstract class CerdoBase extends EntityAB {
 	    body.createFixture(fixtureDef);
 	    body.setGravityScale(1);
 	    
-	    //body.setUserData(new Vector2(1f, 1f));
-	    normalMax = 1f;
-	    
-	    danio = 25;
-	    
         shape.dispose();
 		
 	}
@@ -53,7 +48,7 @@ public abstract class CerdoBase extends EntityAB {
 	}
 	@Override
 	public boolean daniar(Object daniador) {
-		vida -= danio;
+		vida -= 25;
 		Escena.puntos+=75+100-vida;
 		actualizar();
 		return vida<0;

@@ -15,7 +15,6 @@ public abstract class EntityAB {
 	protected Body body;
 	protected BodyDef bodyDef;
 	
-	public float danio, normalMax=0f, tangentMax=0f;
 	public int vida = 100;
 	
 	public EntityAB(String rutaSprite) {

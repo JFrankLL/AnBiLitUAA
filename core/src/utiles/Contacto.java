@@ -1,5 +1,7 @@
 package utiles;
 
+import Pack.Escena;
+
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -16,11 +18,13 @@ public class Contacto implements ContactListener {
  		if(checarDanio(fixA, impulse))
 			if(fixA.getBody().getUserData() instanceof Rompible)
 				if(((Rompible)fixA.getBody().getUserData()).thisObject instanceof EntityAB)
-					((EntityAB)((Rompible)fixA.getBody().getUserData()).thisObject).daniar(fixB.getBody().getUserData());
+					if(((EntityAB)((Rompible)fixA.getBody().getUserData()).thisObject).daniar(fixB.getBody().getUserData()))
+						Escena.fixturesPorQuitar.add(fixA.getBody());
  		if(checarDanio(fixB, impulse))
 			if(fixB.getBody().getUserData() instanceof Rompible)
 				if(((Rompible)fixB.getBody().getUserData()).thisObject instanceof EntityAB)
-					((EntityAB)((Rompible)fixB.getBody().getUserData()).thisObject).daniar(fixA.getBody().getUserData());
+					if(((EntityAB)((Rompible)fixB.getBody().getUserData()).thisObject).daniar(fixA.getBody().getUserData()))
+						Escena.fixturesPorQuitar.add(fixB.getBody());
 		
 		//bloquear pajaro
 		if(fixA.getBody().getUserData()!=null && fixA.getBody().getUserData() instanceof Rompible)

@@ -2,7 +2,6 @@ package entidades.bloques;
 
 import static utiles.Constantes.PPM;
 
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,7 +14,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import entidades.EntityAB;
 
 public abstract class Bloque extends EntityAB {
-	Music smash;
 	Sprite[] sprites = new Sprite[4];
 	
 	public Bloque(World world, String[] rutasSprites, float x, float y, short angulo) {
@@ -48,9 +46,6 @@ public abstract class Bloque extends EntityAB {
 		body.setAngularDamping(1);//para que se frene en el suelo
 	    body.createFixture(fixtureDef);
 	    
-	    //body.setUserData(this);
-	    danio = 25;
-	    
         shape.dispose();
 	}
 
@@ -64,7 +59,6 @@ public abstract class Bloque extends EntityAB {
 	public abstract boolean daniar(Object daniador);
 	
 	public void actualizar(){
-		//TODO cambiar sprite de acuerdo vida restante
 		try{
 			sprite = sprites[4-(int)(vida/25)];
 		}catch(Exception e){

@@ -63,10 +63,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 	    body.createFixture(fixtureDef);
 	    body.setGravityScale(0);//para que no se caiga
 	    
-	    normalMax = 10f;
-	    danio = 25;
 	    trayectoria = new LinkedList<Vector3>();
-	    //body.setUserData(this);
 	    body.setUserData(new Contacto.Rompible(10, 10, this));
 	    
         shape.dispose();
@@ -142,7 +139,7 @@ public abstract class Pajaro extends EntityAB implements ComportamientoPajaro{
 
 	@Override
 	public boolean daniar(Object daniador) {
-		vida -= danio;
+		vida -= 25;
 		Escena.puntos+=75+100-vida;
 		actualizar();
 		return vida<0;

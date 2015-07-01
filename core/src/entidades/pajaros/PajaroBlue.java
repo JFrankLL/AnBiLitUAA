@@ -9,7 +9,6 @@ public class PajaroBlue extends Pajaro implements ComportamientoPajaro {
 	public PajaroBlue(World world) {
 		super(world, Constantes.Graficas.strTexBlu);//aun no estan la texturas buenas
 		tipo = "azul";
-		danio += 10;
 	}
 
 	@Override

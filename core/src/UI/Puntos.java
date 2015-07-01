@@ -10,16 +10,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
 public class Puntos {
-	
-	Numero[] numeros = new Numero[5];
-	
+	int tam = 8;
+	Numero[] numeros = new Numero[tam];
 	public Puntos() {
 		for(int i=0; i<numeros.length; i++)
 			numeros[i] = new Numero(0);
 	}
 	
 	public void actualizar(int puntos){
-		String puntajeString = String.format("%05d", puntos);//rellena con ceros
+		String puntajeString = String.format("%0"+String.valueOf(tam)+"d", puntos);//rellena con ceros
 		for(int i=0; i<numeros.length; i++)
 			numeros[i].actualizar(Character.getNumericValue(puntajeString.charAt(numeros.length-i-1)));//cada numero
 	}

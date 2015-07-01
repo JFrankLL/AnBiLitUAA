@@ -69,7 +69,7 @@ import entidades.pajaros.PajaroAmarillo;
  		entidades.clear();
  		entidades.add(new CerdoC(world, 680f, 220f));
  		for(int i=0;i<Math.random()*100;i++){
- 		//entidades.add(new CerdoC(world, (float) (680*Math.random()+880), (float) (240*Math.random()+100)));
+ 		entidades.add(new CerdoC(world, (float) (680*Math.random()+880), (float) (240*Math.random()+100)));
  		
  		entidades.add(new Bloques.PiedraG(world,530f+i*100, 180f, (short)90));
  		entidades.add(new Bloques.PiedraG(world,620f+i*100, 180f, (short)90));

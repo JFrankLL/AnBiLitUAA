@@ -10,7 +10,6 @@ public class PajaroRed extends Pajaro implements ComportamientoPajaro {
 		super(world, Constantes.Graficas.strTexRed);
 		tipo = "rojo";
 		fuerzaLanzamiento += 1;
-		danio+=10;
 	}
 	
 	@Override

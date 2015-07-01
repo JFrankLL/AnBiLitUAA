@@ -14,7 +14,7 @@ public abstract class Cerdos{
 		public CerdoC(World world, float x, float y) {
 			super(world, Constantes.Graficas.strTexPig);
 			body.setTransform(new Vector2(x/PPM, y/PPM), body.getAngle());
-			body.setUserData(new Contacto.Rompible(0f, 0f, this));//31 5
+			body.setUserData(new Contacto.Rompible(5f, 500f, this));//31 5
 		}
 		@Override
 		public void render(SpriteBatch sb) {
